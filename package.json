@@ -10,6 +10,7 @@
     "check": "astro check",
     "indexnow": "node scripts/indexnow.cjs",
     "deploy": "npm run build && npm run indexnow",
+    "postinstall": "node scripts/patch_sitemap.cjs",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -1,82 +1,72 @@
 const fs = require('fs');
 const path = require('path');
 
-const srcDir = path.join(process.cwd(), 'src');
-
-function getAllFiles(dir) {
+function getFiles(dir) {
   let results = [];
   const list = fs.readdirSync(dir);
-  for (const file of list) {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-    if (stat.isDirectory()) {
-      results = results.concat(getAllFiles(fullPath));
+  list.forEach(file => {
+    const full = path.join(dir, file);
+    const stat = fs.statSync(full);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(getFiles(full));
     } else {
-      results.push(fullPath);
+      results.push(full);
     }
-  }
+  });
   return results;
 }
 
-const allFiles = getAllFiles(srcDir);
-const caseErrors = [];
+const allFiles = getFiles('src');
+let issues = [];
 
-allFiles.forEach(file => {
-  if (!file.endsWith('.astro') && !file.endsWith('.ts') && !file.endsWith('.tsx') && !file.endsWith('.md') && !file.endsWith('.mdx')) {
-    return;
-  }
-  const content = fs.readFileSync(file, 'utf8');
+allFiles.forEach(filePath => {
+  if (!/\.(astro|ts|tsx|js|mjs|mdx)$/.test(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf8');
   const importRegex = /(?:import|from)\s+['"](\.[^'"]+)['"]/g;
   let match;
   while ((match = importRegex.exec(content)) !== null) {
-    const relImport = match[1];
-    const dir = path.dirname(file);
-    const targetBase = path.resolve(dir, relImport);
-
-    // Try extensions
-    const possibleExts = ['', '.ts', '.astro', '.tsx', '.js', '.json', '.mjs', '/index.ts', '/index.astro', '/index.js'];
-    let found = false;
-    let actualName = null;
-
-    for (const ext of possibleExts) {
-      const candidate = targetBase + ext;
-      if (fs.existsSync(candidate)) {
-        // Now check exact case of each segment in candidate!
-        const parsed = path.parse(candidate);
-        const parentDir = parsed.dir;
-        const baseName = parsed.base;
-        if (fs.existsSync(parentDir)) {
-          const filesInParent = fs.readdirSync(parentDir);
-          if (filesInParent.includes(baseName)) {
-            found = true;
+    const relPath = match[1];
+    const baseDir = path.dirname(filePath);
+    const target = path.resolve(baseDir, relPath);
+    
+    const candidates = [
+      target,
+      target + '.ts',
+      target + '.tsx',
+      target + '.js',
+      target + '.mjs',
+      target + '.astro',
+      target + '.json',
+      path.join(target, 'index.ts'),
+      path.join(target, 'index.js'),
+      path.join(target, 'index.astro')
+    ];
+    
+    let resolved = null;
+    for (const c of candidates) {
+      if (fs.existsSync(c)) {
+        const dir = path.dirname(c);
+        const base = path.basename(c);
+        if (fs.existsSync(dir)) {
+          const filesInDir = fs.readdirSync(dir);
+          if (filesInDir.includes(base)) {
+            resolved = c;
             break;
           } else {
-            const matchingCaseInsensitive = filesInParent.find(f => f.toLowerCase() === baseName.toLowerCase());
-            if (matchingCaseInsensitive) {
-              caseErrors.push({
-                file: path.relative(process.cwd(), file),
-                import: relImport,
-                expected: matchingCaseInsensitive,
-                actualInImport: baseName
-              });
-              found = true;
+            const caseMismatch = filesInDir.find(f => f.toLowerCase() === base.toLowerCase());
+            if (caseMismatch) {
+              issues.push({ file: filePath, import: relPath, actual: caseMismatch, expected: base });
+              resolved = c;
               break;
             }
           }
         }
       }
     }
-
-    if (!found) {
-      console.log(`Unresolved import in ${path.relative(process.cwd(), file)}: ${relImport}`);
+    if (!resolved) {
+      issues.push({ file: filePath, import: relPath, error: 'NOT FOUND' });
     }
   }
 });
 
-console.log('Case errors found:', caseErrors.length);
-caseErrors.forEach(err => {
-  console.log(`  File: ${err.file}`);
-  console.log(`    Imported: ${err.import}`);
-  console.log(`    Disk has: ${err.expected} vs import wants ${err.actualInImport}`);
-});
-
+console.log('Issues found:', JSON.stringify(issues, null, 2));
