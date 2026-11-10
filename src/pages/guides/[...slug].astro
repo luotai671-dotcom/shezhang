@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { generateArticleSchema } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const data = guide.data;
+const { Content } = await guide.render();
+
+const articleSchema = generateArticleSchema({
+  title: data.title,
+  description: data.description,
+  publishDate: data.publishDate,
+  updatedDate: data.updatedDate,
+  author: data.author,
+  url: `https://jichangshezhang.com/guides/${guide.slug}`,
+});
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  publishedTime={data.publishDate}
+  modifiedTime={data.updatedDate}
+  author={data.author}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs
+      items={[
+        { label: data.category === 'client' ? '客户端教程' : '新手进阶教程', href: data.category === 'client' ? '/clients' : '/guides' },
+        { label: data.title },
+      ]}
+    />
+
+    <!-- Article Header -->
+    <header class="my-8 space-y-4">
+      <div class="flex items-center gap-2 flex-wrap">
+        {data.tags.map((tag) => (
+          <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-brand-700 border border-blue-200 text-xs font-medium">
+            #{tag}
+          </span>
+        ))}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-black text-ink-heading tracking-tight leading-tight">
+        {data.title}
+      </h1>
+
+      <div class="flex items-center gap-4 text-xs text-ink-muted pt-2 border-b border-surface-border pb-6 font-mono">
+        <span class="flex items-center gap-1.5 text-ink-body font-sans">
+          <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+          作者：{data.author}
+        </span>
+        <span>·</span>
+        <span>更新：{data.updatedDate}</span>
+        <span>·</span>
+        <span>阅读：{data.readingTime}</span>
+      </div>
+    </header>
+
+    <!-- Markdown Article Content (Desktop 17px, Mobile 16px, line-height 1.85, contrast > 7:1) -->
+    <article class="prose max-w-none text-ink-body text-base lg:text-[17px] leading-relaxed7 my-8">
+      <Content />
+    </article>
+
+    <!-- Inline Recommended Airport Callout (Vercel Style Card) -->
+    <div class="my-12 p-6 rounded-2xl bg-surface-subtle border border-brand-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="space-y-1 text-center sm:text-left">
+        <div class="text-xs font-bold text-brand-700 uppercase tracking-wider font-mono">
+          搭配高速专线使用效果更佳
+        </div>
+        <div class="text-lg font-bold text-ink-heading">
+          还没有稳定好用的专线节点？
+        </div>
+        <p class="text-xs text-ink-muted leading-relaxed">
+          查看 2026 年度社长精选的 6 大 IPLC 专线服务商，立享独家 7 折与 24H 退款保障。
+        </p>
+      </div>
+      <a
+        href="/#airport-list"
+        class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all shrink-0"
+      >
+        挑选专线机场 ➔
+      </a>
+    </div>
+
+  </div>
+
+  <JsonLd schema={articleSchema} />
+</BaseLayout>

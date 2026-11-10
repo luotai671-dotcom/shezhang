@@ -1,0 +1,48 @@
+---
+export interface Props {
+  variant?: 'banner' | 'card' | 'inline';
+}
+
+const { variant = 'banner' } = Astro.props;
+---
+
+{variant === 'banner' && (
+  <div class="my-6 bg-slate-50 border border-surface-border rounded-2xl p-4 sm:p-5 text-xs text-text-muted leading-relaxed flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex items-start gap-3">
+      <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 text-sm font-bold">
+        📢
+      </div>
+      <div>
+        <span class="font-bold text-text-heading">推广透明度与实测免责声明：</span>
+        本站部分链接包含独家推荐分成（Affiliate Links）。当您通过专属链接注册或订阅时，社长可能会获得微薄佣金。该收入用于维持 7×24 小时全球网络探针机房与自费购买测试订阅，绝不影响评测数据的客观性与真实性。
+      </div>
+    </div>
+    <div class="shrink-0 flex items-center gap-2">
+      <span class="px-2.5 py-1 rounded-md bg-white border border-surface-border text-[11px] font-semibold text-emerald-700">
+        ✓ 100% 自费实测
+      </span>
+      <span class="px-2.5 py-1 rounded-md bg-white border border-surface-border text-[11px] font-semibold text-blue-700">
+        ✓ Google E-E-A-T 合规
+      </span>
+    </div>
+  </div>
+)}
+
+{variant === 'card' && (
+  <div class="p-4 rounded-xl bg-surface-ground border border-surface-border text-xs text-text-muted space-y-2">
+    <div class="font-bold text-text-heading flex items-center gap-1.5">
+      <span>🛡️</span>
+      <span>合规推广与独立评测准则</span>
+    </div>
+    <p class="leading-relaxed">
+      机场社长坚持“数据先行，实测说话”。所有推荐项目均经过延迟、晚高峰带宽压测、Scamalytics 纯净度与流媒体解锁的连续 30 天监测，并标明数据采集状态。任何被证实严重超售或跑路风险的服务商将立即除名。
+    </p>
+  </div>
+)}
+
+{variant === 'inline' && (
+  <p class="text-[11px] text-text-muted italic">
+    * 推广披露：本文包含返利推广外链，点击购买可能产生佣金，评测结果由实验室自测独立生成。
+  </p>
+)}
+

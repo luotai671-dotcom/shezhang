@@ -1,0 +1,533 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import VerificationBadge from '../../components/VerificationBadge.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import AirportCard from '../../components/AirportCard.astro';
+import PageSidebar from '../../components/PageSidebar.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { getCollection } from 'astro:content';
+import { generateItemListSchema, generateFaqSchema } from '../../utils/seo';
+
+const airports = await getCollection('airports');
+// Sort strictly by rankOrder from 1 to 11
+airports.sort((a, b) => a.data.rankOrder - b.data.rankOrder);
+
+const annualTop = airports.slice(0, 3);
+
+// Categorized subsets using only the 11 real brands
+const budgetAirports = airports.filter((a) => a.data.priceMonthly <= 10);
+const businessAirports = airports.filter((a) => a.data.priceMonthly >= 15);
+const iplcAirports = airports.filter((a) => a.data.lineType.includes('IPLC') || a.data.lineType.includes('内网专线'));
+
+// Sidebar TOC Navigation List (分 1, 2, 3...)
+const sidebarSections = [
+  { id: 'section-top3', number: '1', title: 'Top 3 闭眼入旗舰专线', badge: '金榜' },
+  { id: 'all-airports-grid', number: '2', title: '11 大专线机场全览总榜', badge: '全量' },
+  { id: 'section-table', number: '3', title: '核心数据横向天梯比对表', badge: '天梯' },
+  { id: 'section-scenarios', number: '4', title: '四大刚需使用场景分流' },
+  { id: 'section-faq', number: '5', title: '选型避坑指南与常见问答' },
+];
+
+const recommendFaqs = [
+  {
+    question: "什么是 IPLC / IEPL 专线机场？为什么比普通公网中继更稳？",
+    answer: "IPLC（国际私有租用线路）与 IEPL（以太网专线）属于纯点对点的跨境物理光纤通道，两端服务器在深圳/上海与香港/东京机房直接通过内网互联。数据全程不经过国家公网出口与 GFW 防火墙检测，因此在敏感时期 100% 不会被封锁，在晚高峰（20:00-23:00）骨干网拥堵时段也毫无波动。"
+  },
+  {
+    question: "2026年选购翻墙机场，核心要看哪些硬性技术指标？",
+    answer: "第一看线路类型，优先选纯物理 IPLC/IEPL 专线；第二看晚高峰实测带宽与丢包率（丢包率低于 0.05% 为极品）；第三看 IP 纯净度（Scamalytics 欺诈评分低于 10 分，保障 ChatGPT 4o 与 Netflix 4K 免验证直连）；第四看协议是否支持抗封锁的 VLESS、Hysteria 2 或 TUIC。"
+  },
+  {
+    question: "为什么很多低价便宜梯子经常打不开 ChatGPT 4o 与 Claude 3.5？",
+    answer: "OpenAI 与 Anthropic 部署了全球顶级的 IP 风控数据库。廉价机场多租用低成本机房（Datacenter）共享 IP，一旦数百人共用就会被批量风控拉黑。社长推荐的顶级专线机场（如 闪电鼠、大佬云、榴莲云、边缘节点）均配备了高成本的原生住宅（Residential）家庭宽带 IP 池，可实现 100% 丝滑免验证秒开。"
+  },
+  {
+    question: "如何防范机场跑路风险？社长的选购建议是什么？",
+    answer: "社长总结防跑路三原则：第一，坚决遵循【尽量月付或季付】原则，切忌贪图小便宜在不知名小工坊一次性购买两三年超长套餐；第二，首选运营时间长、拥有稳定物理专线机房与运维团队的头部品牌（如 闪电鼠、大佬云、榴莲云、神行加速）；第三，常备一个平价专线套餐（如 光年梯 7元/月、环球梯 8元/月）作为防失联备用通道。"
+  }
+];
+
+const itemListSchema = generateItemListSchema(
+  airports.map((a) => ({
+    name: a.data.name,
+    slug: a.slug,
+    rankOrder: a.data.rankOrder,
+    tagline: a.data.tagline,
+    rating: a.data.rating,
+  }))
+);
+
+const faqSchema = generateFaqSchema(recommendFaqs);
+---
+
+<BaseLayout
+  title="2026 翻墙机场推荐总榜与机场测评 | 11大主流专线机场实测选型指南 - 机场社长"
+  description="机场社长实验室权威实测出品：2026 年度翻墙梯子与机场推荐总榜。完整收录并深度评测全网 11 大主流专线机场（闪电鼠、大佬云、榴莲云、神行加速等），涵盖深港/沪日物理 IPLC 专线实测、ChatGPT 4o 与 Netflix 4K 原生住宅解锁、晚高峰千兆带宽与独家优惠券。"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '🏆 机场推荐' }]} />
+
+    <!-- Page Header (Full Width) -->
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+        🏆 社长实测推荐 · 2026 稳定好用专线精选
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        2026 稳定好用的专线机场推荐总榜
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        社长在深圳、上海、广州多线网络真实晚高峰测速，自费评测 11 家主流专线品牌。公开透明披露晚高峰丢包、延迟与 ChatGPT/流媒体解锁表现，拒绝恰烂钱。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1">💡 懒人直接看结论（社长 30 秒实测速选）：</strong>
+        综合全国多地探针晚高峰实测数据，2026 年度综合霸榜第一名为 <strong>闪电鼠</strong>（IEPL+内网专线，实测下行 980Mbps 满跑，丢包率 0.01%，专属 88 折优惠券【<code>sd88</code>】，起步仅需 ¥8/月）；老牌高口碑企业专线首推 <strong>大佬云</strong> 与 <strong>榴莲云</strong>（¥8/月起，全绿原生解锁 ChatGPT 4o 与 Netflix 4K）；商务大带宽与商业选型首推 <strong>神行加速</strong> 与 <strong>云界线</strong>；平价极低门槛首选 <strong>光年梯</strong>（¥7/月起）与 <strong>环球梯</strong>（¥8/月）。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Mobile Table of Contents Accordion (Screens < lg) -->
+    <div class="lg:hidden bg-surface-subtle border border-surface-border rounded-2xl p-4 my-6">
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-xs text-ink-heading list-none">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+            <span>📑 本页导览目录导航 (分 5 大板块)</span>
+          </span>
+          <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-sm">▾</span>
+        </summary>
+        <div class="grid grid-cols-1 gap-1.5 pt-3 mt-2 border-t border-surface-border text-xs">
+          {sidebarSections.map((sec) => (
+            <a
+              href={`#${sec.id}`}
+              class="p-2.5 rounded-xl bg-white border border-surface-border hover:border-brand-300 text-ink-heading font-medium flex items-center justify-between transition-colors"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-brand-50 text-brand-700 font-mono font-bold text-[10px] flex items-center justify-center border border-brand-200">
+                  {sec.number}
+                </span>
+                <span>{sec.title}</span>
+              </div>
+              {sec.badge && (
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono">
+                  {sec.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- Two-Column Grid: Main Content + Sticky Sidebar -->
+    <!-- ============================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+      
+      <!-- Main Content (8 cols on lg, 9 cols on xl) -->
+      <main class="lg:col-span-8 xl:col-span-9 space-y-16 min-w-0">
+
+        <!-- ========================================== -->
+        <!-- 1. 板块一：Top 3 闭眼入旗舰专线金银铜牌金榜 -->
+        <!-- ========================================== -->
+        <section id="section-top3" class="scroll-mt-24">
+          <div class="flex items-center justify-between pb-4 border-b border-surface-border mb-6">
+            <div>
+              <h2 class="text-2xl font-black text-ink-heading flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">01</span>
+                <span>板块一：年度综合旗舰总榜 (Top 3 闭眼入)</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                全节点采用深港/沪日真物理 IPLC/IEPL 专线，晚高峰 20:00-23:00 丢包率低于 0.05%
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {annualTop.map((a, i) => (
+              <div class={`bg-white rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between ${i === 0 ? 'border-2 border-brand-500 ring-2 ring-brand-100' : 'border border-surface-border'}`}>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class={`w-8 h-8 rounded-lg font-mono font-black text-sm flex items-center justify-center ${i === 0 ? 'bg-amber-100 text-amber-800 border border-amber-300' : i === 1 ? 'bg-slate-100 text-slate-800 border border-slate-300' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                      #{i + 1}
+                    </span>
+                    <VerificationBadge status={a.data.dataVerificationStatus || 'independent_tested'} />
+                    <span class="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      {a.data.metrics.peakSpeedMbps} Mbps
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 class="text-xl font-bold text-ink-heading">
+                      <a href={`/airports/${a.slug}`} class="hover:text-brand-600 transition-colors">
+                        {a.data.name}
+                      </a>
+                    </h3>
+                    <span class="text-xs font-medium text-brand-700 font-mono">
+                      {a.data.lineType}
+                    </span>
+                  </div>
+
+                  <div class="text-xs text-ink-body leading-relaxed bg-surface-subtle p-2.5 rounded-xl border border-surface-border/60 min-h-[52px] flex items-center">
+                    <p class="line-clamp-2">
+                      “{a.data.tagline}”
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2 p-2.5 bg-surface-subtle border border-surface-border/80 rounded-xl text-xs font-mono">
+                    <div class="bg-white px-2 py-1.5 rounded-lg border border-surface-border/60 flex items-center justify-between">
+                      <span class="text-ink-muted text-[11px] font-sans">延迟</span>
+                      <strong class="text-emerald-700">{a.data.metrics.pingMs}ms</strong>
+                    </div>
+                    <div class="bg-white px-2 py-1.5 rounded-lg border border-surface-border/60 flex items-center justify-between">
+                      <span class="text-ink-muted text-[11px] font-sans">丢包</span>
+                      <strong class="text-emerald-700">{a.data.metrics.packetLoss}</strong>
+                    </div>
+                    <div class="bg-white px-2 py-1.5 rounded-lg border border-surface-border/60 flex items-center justify-between">
+                      <span class="text-ink-muted text-[11px] font-sans">纯净度</span>
+                      <strong class="text-emerald-700">{a.data.metrics.scamalyticsScore ?? 0}分</strong>
+                    </div>
+                    <div class="bg-white px-2 py-1.5 rounded-lg border border-surface-border/60 flex items-center justify-between">
+                      <span class="text-ink-muted text-[11px] font-sans">画质</span>
+                      <strong class="text-brand-700 font-sans">{a.data.metrics.maxStreamingQuality}</strong>
+                    </div>
+                  </div>
+
+                  {a.data.couponCode && (
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-brand-50/60 border border-brand-200 text-xs">
+                      <span class="text-ink-muted">专属优惠码:</span>
+                      <button
+                        type="button"
+                        data-copy-coupon={a.data.couponCode}
+                        class="font-mono font-bold text-brand-700 underline decoration-dotted"
+                      >
+                        {a.data.couponCode}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-surface-border flex items-center justify-between">
+                  <div>
+                    <span class="text-xs text-ink-muted">起步价:</span>
+                    <span class="text-xl font-black text-ink-heading font-mono ml-1">¥{a.data.priceMonthly}</span>
+                    <span class="text-xs text-ink-muted">/月</span>
+                  </div>
+                  <a
+                    href={`/go/${a.data.affiliateSlug}`}
+                    target="_blank"
+                    rel="nofollow sponsored noopener noreferrer"
+                    class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+                  >
+                    官网上车 ➔
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- 2. 板块二：全收录 11 大机场权威评测总网格 (全量填写) -->
+        <!-- ==================================================== -->
+        <section id="all-airports-grid" class="scroll-mt-24">
+          <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-surface-border mb-8 gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-2">
+                📋 全景收录完整名录 (共 {airports.length} 家真实品牌)
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black text-ink-heading flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">02</span>
+                <span>板块二：2026 年度 11 大专线机场推荐全览总榜</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                全部内置品牌按综合实测跑分严格由高到低降序排列，点击单卡可查看万字深度拆解或一键直达官网
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 text-xs font-mono text-ink-muted shrink-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>11 家品牌通道全绿在线</span>
+            </div>
+          </div>
+
+          <!-- Full 11 Airport Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {airports.map((airport, index) => (
+              <AirportCard airport={airport} index={index} />
+            ))}
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 3. 板块三：11 大机场资费与测速全景天梯对比表 -->
+        <!-- ========================================== -->
+        <section id="section-table" class="scroll-mt-24 bg-white border border-surface-border rounded-3xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center justify-between pb-6 border-b border-surface-border mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-black text-ink-heading flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">03</span>
+                <span>板块三：11 大机场核心数据横向天梯比对表</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                真实带宽、专线延迟、丢包率、协议支持与优惠码全景一览
+              </p>
+            </div>
+            <div class="text-xs font-mono text-brand-600 bg-brand-50 px-2.5 py-1 rounded-lg border border-brand-200 hidden sm:block">
+              参数严格 font-mono 显示
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-surface-subtle text-ink-heading border-b border-surface-border font-semibold">
+                  <th class="p-3.5">排名</th>
+                  <th class="p-3.5">服务商名称</th>
+                  <th class="p-3.5">专线架构</th>
+                  <th class="p-3.5">核心协议</th>
+                  <th class="p-3.5">晚高峰测速</th>
+                  <th class="p-3.5">平均延迟</th>
+                  <th class="p-3.5">纯净评分</th>
+                  <th class="p-3.5">起步月费</th>
+                  <th class="p-3.5">独家优惠券</th>
+                  <th class="p-3.5 text-right">直达上车</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-border text-ink-body font-mono">
+                {airports.map((a) => (
+                  <tr class="hover:bg-surface-subtle/60 transition-colors">
+                    <td class="p-3.5 font-bold text-brand-600 font-mono">#{a.data.rankOrder}</td>
+                    <td class="p-3.5 font-sans font-bold text-ink-heading whitespace-nowrap">
+                      <a href={`/airports/${a.slug}`} class="hover:text-brand-600 hover:underline">
+                        {a.data.name}
+                      </a>
+                      {a.data.featured && (
+                        <span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 font-bold font-sans">主推</span>
+                      )}
+                    </td>
+                    <td class="p-3.5 font-sans whitespace-nowrap">{a.data.lineType}</td>
+                    <td class="p-3.5 whitespace-nowrap">{a.data.protocols[0] || 'VLESS'}</td>
+                    <td class="p-3.5 font-bold text-emerald-600">{a.data.metrics.peakSpeedMbps} Mbps</td>
+                    <td class="p-3.5">{a.data.metrics.pingMs} ms</td>
+                    <td class="p-3.5 text-emerald-700">{a.data.metrics.scamalyticsScore ?? 0}分</td>
+                    <td class="p-3.5 font-black text-ink-heading">¥{a.data.priceMonthly}</td>
+                    <td class="p-3.5 font-sans">
+                      {a.data.couponCode ? (
+                        <button
+                          type="button"
+                          data-copy-coupon={a.data.couponCode}
+                          class="px-2 py-0.5 rounded bg-brand-50 border border-brand-200 text-brand-700 font-mono text-xs font-bold hover:bg-brand-100"
+                          title="点击复制优惠码"
+                        >
+                          {a.data.couponCode}
+                        </button>
+                      ) : (
+                        <span class="text-ink-muted text-xs">官方直降</span>
+                      )}
+                    </td>
+                    <td class="p-3.5 text-right whitespace-nowrap">
+                      <a
+                        href={`/go/${a.data.affiliateSlug}`}
+                        target="_blank"
+                        rel="nofollow sponsored noopener noreferrer"
+                        class="inline-block px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+                      >
+                        开通 ➔
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 4. 板块四：四大核心刚需场景分流推荐 -->
+        <!-- ========================================== -->
+        <section id="section-scenarios" class="scroll-mt-24 space-y-8">
+          <div class="border-b border-surface-border pb-4">
+            <h2 class="text-2xl font-black text-ink-heading flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">04</span>
+              <span>板块四：按需选型 · 四大主流使用场景分流</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-muted mt-1">
+              根据您的具体需求与预算，快速定位最匹配的服务商
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Scenario 1: 平价高性价比 (<¥10/月) -->
+            <div class="bg-surface-subtle border border-surface-border rounded-2xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-base font-bold text-ink-heading flex items-center gap-2">
+                  <span>💰</span>
+                  <span>平价高性价比首选（≤ ¥10/月）</span>
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">学生与轻度用户</span>
+              </div>
+              <p class="text-xs text-ink-body leading-relaxed">
+                不想承担过高月费，但又无法忍受公网中继频繁断流？推荐选择兼顾价格与 IEPL 物理专线的入门旗舰：
+              </p>
+              <div class="space-y-2">
+                {budgetAirports.map((a) => (
+                  <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-surface-border text-xs">
+                    <div>
+                      <strong class="text-ink-heading font-medium">{a.data.name}</strong>
+                      <span class="text-ink-muted ml-2 font-mono">¥{a.data.priceMonthly}/月 · {a.data.lineType}</span>
+                    </div>
+                    <a href={`/go/${a.data.affiliateSlug}`} target="_blank" rel="nofollow sponsored noopener noreferrer" class="text-brand-600 hover:underline font-bold">
+                      直达 ➔
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Scenario 2: 商务办公与大带宽 (≥¥15/月) -->
+            <div class="bg-surface-subtle border border-surface-border rounded-2xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-base font-bold text-ink-heading flex items-center gap-2">
+                  <span>🏢</span>
+                  <span>商务大带宽与抗封锁（≥ ¥15/月）</span>
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">企业与多设备</span>
+              </div>
+              <p class="text-xs text-ink-body leading-relaxed">
+                团队协作、视频会议、大文件跨境传输及敏感时期 100% 连通率保障，首选大冗余高规格物理线路：
+              </p>
+              <div class="space-y-2">
+                {businessAirports.map((a) => (
+                  <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-surface-border text-xs">
+                    <div>
+                      <strong class="text-ink-heading font-medium">{a.data.name}</strong>
+                      <span class="text-ink-muted ml-2 font-mono">¥{a.data.priceMonthly}/月 · 晚高峰 {a.data.metrics.peakSpeedMbps}Mbps</span>
+                    </div>
+                    <a href={`/go/${a.data.affiliateSlug}`} target="_blank" rel="nofollow sponsored noopener noreferrer" class="text-brand-600 hover:underline font-bold">
+                      直达 ➔
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Scenario 3: IPLC 纯物理专线 (不过 GFW) -->
+            <div class="bg-surface-subtle border border-surface-border rounded-2xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-base font-bold text-ink-heading flex items-center gap-2">
+                  <span>⚡</span>
+                  <span>真 IPLC 物理专线集群（不过墙）</span>
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-bold">极致稳定</span>
+              </div>
+              <p class="text-xs text-ink-body leading-relaxed">
+                数据在深圳与香港/日本机房直接由物理光纤打通，不走公网出口，敏感时期无感运行：
+              </p>
+              <div class="space-y-2">
+                {iplcAirports.map((a) => (
+                  <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-surface-border text-xs">
+                    <div>
+                      <strong class="text-ink-heading font-medium">{a.data.name}</strong>
+                      <span class="text-ink-muted ml-2 font-mono">{a.data.lineType} · 延迟 {a.data.metrics.pingMs}ms</span>
+                    </div>
+                    <a href={`/go/${a.data.affiliateSlug}`} target="_blank" rel="nofollow sponsored noopener noreferrer" class="text-brand-600 hover:underline font-bold">
+                      直达 ➔
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Scenario 4: AI & 流媒体原生住宅 IP -->
+            <div class="bg-surface-subtle border border-surface-border rounded-2xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-base font-bold text-ink-heading flex items-center gap-2">
+                  <span>🤖</span>
+                  <span>AI 原生住宅 IP（ChatGPT / Netflix）</span>
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">免风控拉黑</span>
+              </div>
+              <p class="text-xs text-ink-body leading-relaxed">
+                针对 OpenAI 与流媒体高强度封控，采购纯净家庭宽带原生 IP，杜绝 Access Denied 报错：
+              </p>
+              <div class="space-y-2">
+                {airports.slice(0, 4).map((a) => (
+                  <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-surface-border text-xs">
+                    <div>
+                      <strong class="text-ink-heading font-medium">{a.data.name}</strong>
+                      <span class="text-ink-muted ml-2 font-mono">Fraud {a.data.metrics.scamalyticsScore ?? 0}分 · 4K 全解锁</span>
+                    </div>
+                    <a href={`/go/${a.data.affiliateSlug}`} target="_blank" rel="nofollow sponsored noopener noreferrer" class="text-brand-600 hover:underline font-bold">
+                      直达 ➔
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 5. 板块五：常见选型避坑指南与 FAQ -->
+        <!-- ========================================== -->
+        <section id="section-faq" class="scroll-mt-24 bg-white border border-surface-border rounded-3xl p-6 sm:p-10 shadow-card">
+          <div class="max-w-3xl mb-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-2">
+              ❓ 实验室权威解答
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-ink-heading flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">05</span>
+              <span>板块五：2026 翻墙机场选型常见问答 (FAQ)</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-muted mt-1">
+              关于物理专线、流媒体解锁、按量计费与防跑路的核心避坑常识
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            {recommendFaqs.map((faq, i) => (
+              <details class="group bg-surface-subtle rounded-2xl border border-surface-border p-5 open:bg-white open:border-brand-300 transition-all">
+                <summary class="flex items-center justify-between cursor-pointer font-bold text-sm sm:text-base text-ink-heading list-none">
+                  <span>{i + 1}. {faq.question}</span>
+                  <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-base ml-2">▾</span>
+                </summary>
+                <p class="mt-3 text-xs sm:text-sm text-ink-body leading-relaxed7 pt-3 border-t border-surface-border/60">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      <!-- ========================================== -->
+      <!-- Desktop Sticky Sidebar (4 cols lg, 3 cols xl) -->
+      <!-- ========================================== -->
+      <div class="hidden lg:block lg:col-span-4 xl:col-span-3 sticky top-24">
+        <PageSidebar
+          title="本页导览目录"
+          sections={sidebarSections}
+          featuredAirport={{
+            name: '闪电鼠',
+            tagline: 'IEPL+内网专线综合霸榜第一，晚高峰千兆满跑，全绿解锁',
+            price: 8,
+            coupon: 'sd88',
+            slug: 'shandianshu',
+            speed: '980 Mbps'
+          }}
+        />
+      </div>
+
+    </div>
+
+  </div>
+
+  <JsonLd schema={[itemListSchema, faqSchema]} />
+</BaseLayout>

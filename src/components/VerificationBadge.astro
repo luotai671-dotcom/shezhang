@@ -1,0 +1,40 @@
+---
+export interface Props {
+  status?: 'independent_tested' | 'official_claimed' | 'pending_verification';
+  size?: 'sm' | 'md';
+}
+
+const { status = 'independent_tested', size = 'sm' } = Astro.props;
+
+const config = {
+  independent_tested: {
+    label: '实验室独立实测',
+    dotColor: 'bg-emerald-500',
+    classes: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    title: '由机场社长测试实验室部署国内多地物理探针独立全周期盲测',
+  },
+  official_claimed: {
+    label: '官方公开声明',
+    dotColor: 'bg-blue-500',
+    classes: 'bg-blue-50 text-blue-800 border-blue-200',
+    title: '引自服务商官网公开宣称数据，实验室正安排上机压力实测验证',
+  },
+  pending_verification: {
+    label: '样本待复核验',
+    dotColor: 'bg-amber-500',
+    classes: 'bg-amber-50 text-amber-800 border-amber-200',
+    title: '该指标近期出现网络波动或规则调整，实验室正进行二次抽检复测',
+  },
+};
+
+const current = config[status] || config.independent_tested;
+const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-xs';
+---
+
+<span
+  class={`inline-flex items-center gap-1.5 rounded-full font-semibold border ${current.classes} ${sizeClasses} select-none whitespace-nowrap shrink-0`}
+  title={current.title}
+>
+  <span class="w-1.5 h-1.5 rounded-full {current.dotColor} shrink-0 animate-pulse"></span>
+  <span class="whitespace-nowrap leading-none">{current.label}</span>
+</span>

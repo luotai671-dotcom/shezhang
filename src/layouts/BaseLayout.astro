@@ -1,0 +1,192 @@
+---
+import SeoHead from '../components/seo/SeoHead.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/seo';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'product';
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  noindex?: boolean;
+  extraSchema?: Record<string, any> | Array<Record<string, any>>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = 'website',
+  publishedTime,
+  modifiedTime,
+  author,
+  noindex = false,
+  extraSchema,
+} = Astro.props;
+
+const websiteSchema = generateWebsiteSchema();
+const organizationSchema = generateOrganizationSchema();
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <SeoHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      author={author}
+      noindex={noindex}
+    />
+
+    <!-- Global Technical SEO Structured Data -->
+    <JsonLd schema={[websiteSchema, organizationSchema]} />
+    {extraSchema && <JsonLd schema={extraSchema} />}
+
+    <!-- Local file:// protocol offline routing interceptor (Runs in capturing phase before browser handles navigation) -->
+    <script is:inline>
+      (function() {
+        if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+          function handleFileLink(e) {
+            var el = e.target;
+            while (el && el.tagName !== 'A') {
+              el = el.parentElement || el.parentNode;
+            }
+            if (!el || !el.getAttribute) return;
+            var href = el.getAttribute('href');
+            if (!href || /^(https?:|\/\/|mailto:|tel:|javascript:)/i.test(href) || href.charAt(0) === '#') {
+              return;
+            }
+
+            // Only intercept if it's an absolute path starting with /
+            if (href.charAt(0) === '/') {
+              e.preventDefault();
+              if (e.stopPropagation) e.stopPropagation();
+
+              var currentUrl = window.location.href;
+              var distIndex = currentUrl.indexOf('/dist/');
+              var base = '';
+              if (distIndex !== -1) {
+                base = currentUrl.substring(0, distIndex + 6);
+              } else {
+                var lastSlash = currentUrl.lastIndexOf('/');
+                base = currentUrl.substring(0, lastSlash + 1);
+              }
+
+              var target = '';
+              if (href === '/') {
+                target = base + 'index.html';
+              } else if (href.indexOf('/#') === 0) {
+                target = base + 'index.html' + href.substring(1);
+              } else {
+                var hashIdx = href.indexOf('#');
+                var hash = hashIdx !== -1 ? href.substring(hashIdx) : '';
+                var pathOnly = hashIdx !== -1 ? href.substring(0, hashIdx) : href;
+                var cleanPath = pathOnly.replace(/^\/+/, '').replace(/\/+$/, '');
+                target = base + cleanPath + '/index.html' + hash;
+              }
+
+              if (el.getAttribute('target') === '_blank') {
+                window.open(target, '_blank');
+              } else {
+                window.location.href = target;
+              }
+            }
+          }
+
+          document.addEventListener('click', handleFileLink, true);
+          document.addEventListener('auxclick', handleFileLink, true);
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-white text-ink-body min-h-screen flex flex-col font-sans antialiased text-[16px] lg:text-[17px] leading-relaxed7 selection:bg-brand-100 selection:text-brand-900">
+    <!-- Skip to main content for accessibility / Core Web Vitals -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-brand-600 text-white font-bold rounded-lg shadow-lg">
+      跳转至正文内容
+    </a>
+
+    <!-- Top Promo / Announcement Bar -->
+    <AnnouncementBar />
+
+    <!-- Sticky Main Navigation -->
+    <Header />
+
+    <!-- Main Page Body marked with data-pagefind-body for local search indexing -->
+    <main id="main-content" class="flex-grow" data-pagefind-body>
+      <slot />
+    </main>
+
+    <!-- Global High Authority Footer -->
+    <Footer />
+
+    <!-- Global Toast Container (Clean Light Theme) -->
+    <div
+      id="toast"
+      class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-white border border-surface-border shadow-xl text-ink-heading text-sm font-medium px-4 py-3 rounded-xl"
+    >
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+      <span id="toast-text">优惠码已成功复制！</span>
+    </div>
+
+    <script is:inline>
+      (function() {
+        // Global toast dispatcher
+        var displayToast = function(message) {
+          var toast = document.getElementById('toast');
+          var toastText = document.getElementById('toast-text');
+          if (toast && toastText) {
+            toastText.textContent = message;
+            toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(function() {
+              toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+              toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 2800);
+          }
+        };
+
+        window.showToast = displayToast;
+
+        // Global 1-click copy coupon handler
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+          while (target && target !== document.body) {
+            if (target.hasAttribute && target.hasAttribute('data-copy-coupon')) {
+              var code = target.getAttribute('data-copy-coupon');
+              if (code) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                  navigator.clipboard.writeText(code).then(function() {
+                    displayToast('🎉 优惠码【' + code + '】已成功复制到剪贴板！');
+                  }).catch(function() {
+                    displayToast('已复制：' + code);
+                  });
+                } else {
+                  displayToast('已复制：' + code);
+                }
+              }
+              break;
+            }
+            target = target.parentElement;
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

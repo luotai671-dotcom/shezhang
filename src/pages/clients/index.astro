@@ -1,0 +1,892 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+
+interface ClientTool {
+  id: string;
+  name: string;
+  subtitle: string;
+  platforms: Array<'windows' | 'macos' | 'ios' | 'android'>;
+  platformLabels: string[];
+  rating: number;
+  badge: string;
+  badgeColor: 'emerald' | 'brand' | 'amber' | 'purple' | 'rose' | 'sky';
+  pricing: string;
+  readingTime: string;
+  updatedDate: string;
+  kernel: string;
+  protocols: string[];
+  tunSupport: boolean;
+  ruleSupport: boolean;
+  description: string;
+  highlights: string[];
+  guideSlug: string;
+  iconBg: string;
+  iconColor: string;
+  iconType: 'clash' | 'rocket' | 'singbox' | 'v2ray' | 'surge' | 'stash' | 'wave' | 'qx';
+}
+
+const clientList: ClientTool[] = [
+  // 1. Clash Verge Rev (Windows)
+  {
+    id: 'clash-verge-rev-win',
+    name: 'Clash Verge Rev',
+    subtitle: 'Windows 首选 · 替代原版 CFW 的开源全能旗舰',
+    platforms: ['windows'],
+    platformLabels: ['Windows 10/11'],
+    rating: 5.0,
+    badge: '社长力荐 · Win 首选',
+    badgeColor: 'brand',
+    pricing: '开源免费',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Mihomo (Clash.Meta)',
+    protocols: ['Shadowsocks', 'VLESS-Reality', 'Hysteria 2', 'TUIC'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '基于 Tauri 框架打造，内存占用仅 30MB。内置 Mihomo 最新内核，支持原生 TUN 虚拟网卡接管全流量、规则分流与开机自启。',
+    highlights: ['原生 TUN 虚拟网卡', '内存仅占 30MB', '外服游戏全加速'],
+    guideSlug: 'clash-verge-rev-guide',
+    iconBg: 'bg-blue-50',
+    iconColor: 'text-blue-600',
+    iconType: 'clash',
+  },
+  // 2. Shadowrocket (iOS)
+  {
+    id: 'shadowrocket-ios',
+    name: 'Shadowrocket (小火箭)',
+    subtitle: 'iOS 平台装机量第一 · 稳定省电买断首选',
+    platforms: ['ios'],
+    platformLabels: ['iOS (iPhone/iPad)'],
+    rating: 5.0,
+    badge: 'iOS 必装 · 综合第一',
+    badgeColor: 'emerald',
+    pricing: 'App Store $2.99',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: '自研轻量级网络引擎',
+    protocols: ['Shadowsocks', 'VLESS', 'Trojan', 'Hysteria 2'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '苹果生态统治级工具。后台保活极稳，支持一键导入专线订阅与按规则自动分流，完美解锁 ChatGPT App 与 Netflix 4K。',
+    highlights: ['美区 $2.99 终身买断', '极低耗电后台稳', 'ChatGPT 全绿解锁'],
+    guideSlug: 'shadowrocket-ios-tutorial',
+    iconBg: 'bg-rose-50',
+    iconColor: 'text-rose-600',
+    iconType: 'rocket',
+  },
+  // 3. v2rayNG (Android)
+  {
+    id: 'v2rayng-android',
+    name: 'v2rayNG',
+    subtitle: '安卓/鸿蒙最稳工具 · 极简上手与分应用代理',
+    platforms: ['android'],
+    platformLabels: ['Android / 鸿蒙'],
+    rating: 5.0,
+    badge: '安卓装机首选',
+    badgeColor: 'emerald',
+    pricing: '开源免费',
+    readingTime: '5 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Xray-core',
+    protocols: ['VLESS-Reality', 'VMess', 'Trojan', 'Shadowsocks'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: 'Android 平台最成熟的开源工具。支持分应用代理隔离、绕过大陆模式与系统电池保活白名单，国内国外 App 互不干扰。',
+    highlights: ['分应用代理隔离', '电池优化防杀后台', '原生 Material 界面'],
+    guideSlug: 'v2rayng-android-tutorial',
+    iconBg: 'bg-emerald-50',
+    iconColor: 'text-emerald-600',
+    iconType: 'v2ray',
+  },
+  // 4. Clash Verge Rev (macOS)
+  {
+    id: 'clash-verge-rev-mac',
+    name: 'Clash Verge Rev (Mac 版)',
+    subtitle: 'macOS 首选 · 原生适配 Apple Silicon 芯片',
+    platforms: ['macos'],
+    platformLabels: ['macOS (M系列 & Intel)'],
+    rating: 5.0,
+    badge: 'Mac 开源首推',
+    badgeColor: 'brand',
+    pricing: '开源免费',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Mihomo (Clash.Meta)',
+    protocols: ['Shadowsocks', 'VLESS-Reality', 'Hysteria 2', 'TUIC'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '提供原生 ARM64 架构安装包，MacBook 运行零发热、超低功耗。支持安装特权帮助程序开启系统级 TUN 虚拟网卡。',
+    highlights: ['Apple Silicon 原生', '低发热超长续航', '帮助程序接管网卡'],
+    guideSlug: 'clash-verge-rev-guide',
+    iconBg: 'bg-sky-50',
+    iconColor: 'text-sky-600',
+    iconType: 'clash',
+  },
+  // 5. Sing-box (全平台)
+  {
+    id: 'sing-box-universal',
+    name: 'Sing-box',
+    subtitle: '极客与发烧友的下一代通用代理内核',
+    platforms: ['windows', 'macos', 'ios', 'android'],
+    platformLabels: ['Windows', 'macOS', 'iOS', 'Android'],
+    rating: 4.9,
+    badge: '全平台 · 极客利器',
+    badgeColor: 'purple',
+    pricing: '开源免费',
+    readingTime: '8 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Sing-box 官方 Go 内核',
+    protocols: ['Hysteria 2', 'TUIC v5', 'Shadowsocks 2022', 'VLESS'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '以极致吞吐性能著称。对基于 UDP 的现代抗封锁协议（Hy2/TUIC）支持最前沿，二进制规则集毫秒级匹配，iOS 端可免费下载。',
+    highlights: ['Hy2/TUIC 前沿支持', 'iOS 端完全免费', '高性能二进制规则'],
+    guideSlug: 'sing-box-tutorial',
+    iconBg: 'bg-purple-50',
+    iconColor: 'text-purple-600',
+    iconType: 'singbox',
+  },
+  // 6. Clash Meta for Android (CMFA)
+  {
+    id: 'cmfa-android',
+    name: 'Clash Meta for Android (CMFA)',
+    subtitle: '安卓端最强 Clash · 继承原版 CFA 完整衣钵',
+    platforms: ['android'],
+    platformLabels: ['Android / 鸿蒙'],
+    rating: 4.9,
+    badge: '安卓 Clash 旗舰',
+    badgeColor: 'brand',
+    pricing: '开源免费',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Mihomo (Clash.Meta)',
+    protocols: ['VLESS', 'Hysteria 2', 'Trojan', 'Shadowsocks'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '继承原版 Clash for Android 经典界面的基础上，升级为全新 Mihomo 内核，完美支持 VLESS、规则覆盖与应用黑白名单分流。',
+    highlights: ['经典 Clash 操作习惯', 'Mihomo 强悍性能', '应用分流绕过'],
+    guideSlug: 'clash-meta-android-guide',
+    iconBg: 'bg-indigo-50',
+    iconColor: 'text-indigo-600',
+    iconType: 'clash',
+  },
+  // 7. Stash (iOS)
+  {
+    id: 'stash-ios',
+    name: 'Stash (iOS 版)',
+    subtitle: 'iOS 平台上的 Clash · 语法规则 100% 完美兼容',
+    platforms: ['ios'],
+    platformLabels: ['iOS (iPhone/iPad)'],
+    rating: 4.9,
+    badge: 'iOS 优雅之选',
+    badgeColor: 'purple',
+    pricing: '$3.99',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Stash 自研引擎',
+    protocols: ['Shadowsocks', 'VLESS', 'Hysteria 2', 'Trojan'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '苹果生态原生支持 Clash 配置文件的神级 App。支持按需连接（On Demand）、Web 仪表盘、JavaScript 脚本覆写与 Apple TV 联动。',
+    highlights: ['100% 兼容 Clash 规则', '按需自动连接', '多端生态联动'],
+    guideSlug: 'stash-ios-guide',
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-600',
+    iconType: 'stash',
+  },
+  // 8. Surge Mac
+  {
+    id: 'surge-mac',
+    name: 'Surge Mac',
+    subtitle: 'macOS 专业网络开发与调试的天花板级网关',
+    platforms: ['macos'],
+    platformLabels: ['macOS 专享'],
+    rating: 4.9,
+    badge: '商业级天花板',
+    badgeColor: 'amber',
+    pricing: '商业买断 (含试用)',
+    readingTime: '7 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Surge 专用引擎',
+    protocols: ['Shadowsocks', 'Trojan', 'VMess', 'Snell'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '苹果电脑端最专业的网络分析调试工具。具备业界首创的“增强模式 (Enhanced Mode)”，透明接管整机与虚拟机全量 TCP/UDP。',
+    highlights: ['增强模式透明代理', '专业抓包调试', '能效控制极佳'],
+    guideSlug: 'surge-mac-guide',
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-700',
+    iconType: 'surge',
+  },
+  // 9. v2rayN (Windows)
+  {
+    id: 'v2rayn-windows',
+    name: 'v2rayN',
+    subtitle: 'Windows 老牌常青树 · Xray 核心全协议支持',
+    platforms: ['windows'],
+    platformLabels: ['Windows 10/11'],
+    rating: 4.8,
+    badge: '老牌经典 · Xray',
+    badgeColor: 'emerald',
+    pricing: '开源免费',
+    readingTime: '6 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Xray-core / Sing-box',
+    protocols: ['VLESS-Reality', 'VMess', 'Trojan', 'Shadowsocks', 'Hysteria 2'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '功能极度丰富的 Windows 传统工具。支持一键切换 Xray 与 Sing-box 核心，提供一键真连接延迟测速、路由规则分流与 TUN 模式。',
+    highlights: ['多内核无缝切换', '真连接批量测速', '免安装便携运行'],
+    guideSlug: 'v2rayn-windows-guide',
+    iconBg: 'bg-teal-50',
+    iconColor: 'text-teal-600',
+    iconType: 'v2ray',
+  },
+  // 10. Clash Nyanpasu (Win/Mac)
+  {
+    id: 'clash-nyanpasu-win',
+    name: 'Clash Nyanpasu',
+    subtitle: '萌系设计美学 · 极简轻量级多平台客户端',
+    platforms: ['windows', 'macos'],
+    platformLabels: ['Windows', 'macOS'],
+    rating: 4.8,
+    badge: '高颜值 · 萌系轻量',
+    badgeColor: 'rose',
+    pricing: '开源免费',
+    readingTime: '5 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Mihomo 内核',
+    protocols: ['Shadowsocks', 'VLESS', 'Hysteria 2', 'Trojan'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '由社区精心调教的高颜值现代化客户端。界面优雅轻快，去除繁杂冗余选项，内置最新 Mihomo 核心，完美契合年轻用户审美。',
+    highlights: ['现代化清新 UI', '轻量低系统占用', '订阅一键自动化'],
+    guideSlug: 'clash-nyanpasu-windows-guide',
+    iconBg: 'bg-pink-50',
+    iconColor: 'text-pink-600',
+    iconType: 'clash',
+  },
+  // 11. Quantumult X (iOS)
+  {
+    id: 'quantumult-x-ios',
+    name: 'Quantumult X (圈X)',
+    subtitle: 'iOS 极客高玩神器 · 脚本解密重写与精细策略组',
+    platforms: ['ios'],
+    platformLabels: ['iOS (iPhone/iPad)'],
+    rating: 4.8,
+    badge: 'iOS 极客定制',
+    badgeColor: 'purple',
+    pricing: '$7.99',
+    readingTime: '7 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'QX 专用引擎',
+    protocols: ['Shadowsocks', 'Trojan', 'VMess', 'VLESS'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '专为高级玩家打造的 iOS 旗舰。支持 JavaScript 脚本改包、去广告重写、灵活的策略组嵌套分流以及超低待机电量损耗。',
+    highlights: ['强大 JS 脚本扩展', '多层策略组嵌套', '去广告重写能力'],
+    guideSlug: 'quantumult-x-guide',
+    iconBg: 'bg-violet-50',
+    iconColor: 'text-violet-600',
+    iconType: 'qx',
+  },
+  // 12. Surfboard (Android)
+  {
+    id: 'surfboard-android',
+    name: 'Surfboard (冲浪板)',
+    subtitle: '安卓上的 Surge · Material You 极美交互与图表',
+    platforms: ['android'],
+    platformLabels: ['Android / 鸿蒙'],
+    rating: 4.7,
+    badge: '安卓高颜值',
+    badgeColor: 'sky',
+    pricing: '免费软件',
+    readingTime: '5 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Surfboard Core',
+    protocols: ['Shadowsocks', 'Trojan', 'VMess', 'VLESS'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: '完全兼容 Surge 配置文件语法的安卓神器。具备极其出色的网络带宽实时流速图表，分应用代理体验丝滑顺畅。',
+    highlights: ['Surge 配置直读', '实时可视化仪表盘', '分应用代理流畅'],
+    guideSlug: 'surfboard-android-guide',
+    iconBg: 'bg-cyan-50',
+    iconColor: 'text-cyan-600',
+    iconType: 'wave',
+  },
+  // 13. Loon Mac
+  {
+    id: 'loon-mac',
+    name: 'Loon Mac',
+    subtitle: '轻巧极速 · 专为 Apple Silicon 优化的现代客户端',
+    platforms: ['macos'],
+    platformLabels: ['macOS (Apple Silicon)'],
+    rating: 4.7,
+    badge: 'M 芯片极简',
+    badgeColor: 'emerald',
+    pricing: '商业付费',
+    readingTime: '5 分钟',
+    updatedDate: '2026-11-10',
+    kernel: 'Loon Core',
+    protocols: ['Shadowsocks', 'Trojan', 'VMess', 'VLESS'],
+    tunSupport: true,
+    ruleSupport: true,
+    description: 'iOS 名作移植至 macOS 的诚意之作。深度调优 M 系列芯片内存开销，开箱即用，支持一键拉取机场配置与插件扩展。',
+    highlights: ['M 系列原生调优', '极简无负担交互', '插件生态丰富'],
+    guideSlug: 'loon-mac-guide',
+    iconBg: 'bg-lime-50',
+    iconColor: 'text-lime-700',
+    iconType: 'wave',
+  },
+];
+
+const badgeColorClasses = {
+  emerald: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+  brand: 'bg-blue-50 text-blue-800 border-blue-200',
+  amber: 'bg-amber-50 text-amber-800 border-amber-200',
+  purple: 'bg-purple-50 text-purple-800 border-purple-200',
+  rose: 'bg-rose-50 text-rose-800 border-rose-200',
+  sky: 'bg-sky-50 text-sky-800 border-sky-200',
+};
+
+const jsonLdData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: '2026 全平台客户端配置与使用教程库 | Clash、小火箭、Sing-box、Surge 保姆级指南',
+  description: '覆盖 Windows、macOS、iOS、Android 四大主流操作系统的科学上网客户端下载、配置、分流与 TUN 模式开启全景教程库。',
+  url: 'https://jichangshezhang.com/clients/',
+  publisher: {
+    '@type': 'Organization',
+    name: '机场社长 实验室',
+    url: 'https://jichangshezhang.com',
+  },
+};
+---
+
+<BaseLayout
+  title="2026 翻墙客户端配置教程大全 | Windows / Mac / iOS / Android 小火箭、Clash、Sing-box、Surge 保姆级指南"
+  description="全网最权威的跨平台科学上网客户端新手配置与下载教程库：涵盖 Windows 10/11、macOS (M芯片)、iOS 苹果、Android 安卓系统，包含 Clash Verge Rev、小火箭 (Shadowrocket)、Sing-box、Surge、v2rayNG 一键导入订阅、规则分流与 TUN 虚拟网卡开启全指南。"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumbs -->
+    <Breadcrumbs items={[{ label: '全部专题', href: '/' }, { label: '客户端教程' }]} />
+
+    <!-- Hero Header -->
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+        💻 跨平台客户端配置 · 零基础保姆级上手
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        2026 全平台科学上网客户端配置与使用教程库
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+        原 Clash for Windows (CFW) 停更后该选什么？社长带你系统测评主流操作系统（Windows / macOS / iOS / Android）新一代开源与商业客户端，从下载安装、订阅一键导入到 TUN 模式开启全流程搞定。
+      </p>
+
+      <!-- 社长 30 秒选型速答 (TL;DR) -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1.5 flex items-center gap-1.5">
+          <span>💡</span> <span>社长 30 秒全平台客户端选型速答：</span>
+        </strong>
+        <div class="space-y-1 text-ink-body text-xs sm:text-sm">
+          <p>• <strong>Windows 平台</strong>：首选 <strong>Clash Verge Rev</strong>（Mihomo 内核，内存仅 30MB，原生 TUN 网卡接管全流量）；老牌稳妥可选 <strong>v2rayN</strong>。</p>
+          <p>• <strong>macOS 平台</strong>：首推 <strong>Clash Verge Rev (Mac版)</strong>（Apple Silicon M系列原生适配零发热）；专业开发者与高阶网关优选 <strong>Surge Mac</strong>。</p>
+          <p>• <strong>iOS 苹果端</strong>：首选 <strong>Shadowrocket (小火箭)</strong>（美区 App Store $2.99 买断，省电保活极佳）；极客可选 <strong>Sing-box</strong>（免费）或 <strong>Stash</strong>（兼容 Clash 规则）。</p>
+          <p>• <strong>Android 安卓/鸿蒙</strong>：小白首选 <strong>v2rayNG</strong>（分应用代理与极简体验）；Clash 爱好者首选 <strong>Clash Meta for Android (CMFA)</strong>。</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Affiliate Disclosure Banner -->
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- ======================================================== -->
+    <!-- 四大操作系统核心配置避坑矩阵 (4 大平台重点须知卡片) -->
+    <!-- ======================================================== -->
+    <section class="my-10 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-ink-heading tracking-tight flex items-center gap-2">
+            <span>🛡️</span> <span>四大操作系统核心避坑与配置要点</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">
+            在动手配置前，请先掌握你所用操作系统特有的网络权限与后台机制，避免 90% 的连不上或频繁断连问题。
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- 1. iOS 要点 -->
+        <div class="bg-white border border-surface-border rounded-xl p-4 shadow-sm hover:border-brand-300 transition-all">
+          <div class="flex items-center gap-2 mb-2 font-bold text-ink-heading text-sm">
+            <span class="w-6 h-6 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center font-mono text-xs">iOS</span>
+            <span>苹果 iPhone / iPad</span>
+          </div>
+          <ul class="text-xs text-ink-body space-y-1.5 leading-relaxed">
+            <li>• <strong>美区 Apple ID</strong>：必须通过外区商店下载正版，严禁在系统设置 iCloud 登录。</li>
+            <li>• <strong>本地 VPN 授权</strong>：首次开启必须点击“允许”并输入锁屏密码。</li>
+            <li>• <strong>路由务必选【配置】</strong>：国内应用直连不耗流量，切勿误选全局。</li>
+            <li>• <strong>时钟同步</strong>：系统时间偏差超 30 秒将导致所有节点握手超时。</li>
+          </ul>
+        </div>
+
+        <!-- 2. Windows 要点 -->
+        <div class="bg-white border border-surface-border rounded-xl p-4 shadow-sm hover:border-brand-300 transition-all">
+          <div class="flex items-center gap-2 mb-2 font-bold text-ink-heading text-sm">
+            <span class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center font-mono text-xs">Win</span>
+            <span>Windows 10 / 11</span>
+          </div>
+          <ul class="text-xs text-ink-body space-y-1.5 leading-relaxed">
+            <li>• <strong>Mihomo 内核首选</strong>：支持 VLESS-Reality 与 Hysteria 2 全协议。</li>
+            <li>• <strong>开启 TUN 模式</strong>：让外服游戏、终端命令行与 Telegram 透明走专线。</li>
+            <li>• <strong>开机自启与静默托盘</strong>：开启自启时建议勾选“静默启动”不弹窗。</li>
+            <li>• <strong>安全软件加白</strong>：国产杀软若误杀 mihomo.exe 请添加目录白名单。</li>
+          </ul>
+        </div>
+
+        <!-- 3. macOS 要点 -->
+        <div class="bg-white border border-surface-border rounded-xl p-4 shadow-sm hover:border-brand-300 transition-all">
+          <div class="flex items-center gap-2 mb-2 font-bold text-ink-heading text-sm">
+            <span class="w-6 h-6 rounded-md bg-sky-50 text-sky-600 flex items-center justify-center font-mono text-xs">Mac</span>
+            <span>macOS (Intel/M系列)</span>
+          </div>
+          <ul class="text-xs text-ink-body space-y-1.5 leading-relaxed">
+            <li>• <strong>芯片架构匹配</strong>：M系列芯片务必下载 `aarch64` 版，低功耗零发热。</li>
+            <li>• <strong>特权帮助程序</strong>：首次运行授予 Helper Tool 权限以写入虚拟网卡。</li>
+            <li>• <strong>增强模式体验</strong>：Surge / Verge 增强模式彻底解决 Safari 代理泄漏。</li>
+            <li>• <strong>未验证开发者解决</strong>：设置 ➔ 隐私与安全性中点击“仍要打开”。</li>
+          </ul>
+        </div>
+
+        <!-- 4. Android 要点 -->
+        <div class="bg-white border border-surface-border rounded-xl p-4 shadow-sm hover:border-brand-300 transition-all">
+          <div class="flex items-center gap-2 mb-2 font-bold text-ink-heading text-sm">
+            <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center font-mono text-xs">And</span>
+            <span>Android / 鸿蒙系统</span>
+          </div>
+          <ul class="text-xs text-ink-body space-y-1.5 leading-relaxed">
+            <li>• <strong>系统电池无限制</strong>：关闭系统激进省电优化，防止息屏杀后台断连。</li>
+            <li>• <strong>分应用代理 (核心)</strong>：勾选需要翻墙的 App，国内网银软件绝对直连。</li>
+            <li>• <strong>绕过大陆模式</strong>：默认选择 Bypass mainland 地址，流量利用率最高。</li>
+            <li>• <strong>单 VPN 限制</strong>：安卓底层同一时间仅支持一个活动 VPN 接口。</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 客户端交互筛选 Tabs 与 卡片全景矩阵 -->
+    <!-- ======================================================== -->
+    <section class="my-12" id="client-matrix">
+      
+      <!-- Filter Tabs Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-ink-heading tracking-tight flex items-center gap-2">
+            <span>📚</span> <span>全平台客户端教程库</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">
+            点击切换上方系统平台，快速筛选对应设备的最适配工具
+          </p>
+        </div>
+
+        <!-- Platform Tabs -->
+        <div class="inline-flex p-1 rounded-xl bg-surface-subtle border border-surface-border self-start sm:self-auto gap-1 text-xs font-semibold" id="platform-tabs" role="tablist">
+          <button
+            type="button"
+            class="platform-tab active px-3.5 py-1.5 rounded-lg transition-all text-white bg-brand-600 shadow-sm"
+            data-target="all"
+          >
+            全部客户端 ({clientList.length})
+          </button>
+          <button
+            type="button"
+            class="platform-tab px-3.5 py-1.5 rounded-lg transition-all text-ink-muted hover:text-ink-heading hover:bg-white"
+            data-target="windows"
+          >
+            🪟 Windows ({clientList.filter(c => c.platforms.includes('windows')).length})
+          </button>
+          <button
+            type="button"
+            class="platform-tab px-3.5 py-1.5 rounded-lg transition-all text-ink-muted hover:text-ink-heading hover:bg-white"
+            data-target="macos"
+          >
+            🍏 macOS ({clientList.filter(c => c.platforms.includes('macos')).length})
+          </button>
+          <button
+            type="button"
+            class="platform-tab px-3.5 py-1.5 rounded-lg transition-all text-ink-muted hover:text-ink-heading hover:bg-white"
+            data-target="ios"
+          >
+            📱 iOS ({clientList.filter(c => c.platforms.includes('ios')).length})
+          </button>
+          <button
+            type="button"
+            class="platform-tab px-3.5 py-1.5 rounded-lg transition-all text-ink-muted hover:text-ink-heading hover:bg-white"
+            data-target="android"
+          >
+            🤖 Android ({clientList.filter(c => c.platforms.includes('android')).length})
+          </button>
+        </div>
+      </div>
+
+      <!-- Client Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8" id="client-cards-container">
+        {clientList.map((client) => {
+          const badgeClass = badgeColorClasses[client.badgeColor] || 'bg-brand-50 text-brand-800 border-brand-200';
+          return (
+            <article
+              class="client-card bg-white border border-surface-border hover:border-brand-400 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between group"
+              data-platforms={client.platforms.join(' ')}
+            >
+              <div class="space-y-4">
+                
+                <!-- Top Row: Icon + Name + Rating -->
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-surface-border/80 shadow-2xs ${client.iconBg} ${client.iconColor}`}>
+                      {client.iconType === 'clash' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      )}
+                      {client.iconType === 'rocket' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                      )}
+                      {client.iconType === 'singbox' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      )}
+                      {client.iconType === 'v2ray' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                      {client.iconType === 'surge' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      )}
+                      {client.iconType === 'stash' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                        </svg>
+                      )}
+                      {client.iconType === 'wave' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                        </svg>
+                      )}
+                      {client.iconType === 'qx' && (
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 class="text-base sm:text-lg font-black text-ink-heading group-hover:text-brand-600 transition-colors">
+                        <a href={`/guides/${client.guideSlug}`}>
+                          {client.name}
+                        </a>
+                      </h3>
+                      <div class="flex items-center gap-1.5 text-xs font-mono text-ink-muted">
+                        <span class="text-amber-500 font-bold">★ {client.rating.toFixed(1)}</span>
+                        <span>·</span>
+                        <span class="text-ink-muted">{client.pricing}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span class={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border shrink-0 whitespace-nowrap ${badgeClass}`}>
+                    {client.badge}
+                  </span>
+                </div>
+
+                <!-- Subtitle / Tagline -->
+                <p class="text-xs text-ink-body font-medium leading-relaxed">
+                  {client.subtitle}
+                </p>
+
+                <!-- Platform Tags -->
+                <div class="flex items-center gap-1.5 flex-wrap text-xs">
+                  {client.platformLabels.map((platform) => (
+                    <span class="px-2 py-0.5 rounded-md bg-surface-subtle text-ink-heading border border-surface-border text-[11px] font-mono">
+                      {platform}
+                    </span>
+                  ))}
+                  <span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200 text-[11px] font-mono ml-auto">
+                    预计 {client.readingTime}
+                  </span>
+                </div>
+
+                <!-- Specs Box -->
+                <div class="bg-surface-subtle p-3 rounded-xl border border-surface-border text-xs space-y-1.5">
+                  <div class="flex justify-between items-center">
+                    <span class="text-ink-muted">运行内核:</span>
+                    <span class="font-mono font-bold text-ink-heading">{client.kernel}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-ink-muted">TUN 虚拟网卡:</span>
+                    <span class="font-mono font-bold text-emerald-600">
+                      {client.tunSupport ? '✓ 原生支持 (全接管)' : '✕ 需第三方支持'}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-ink-muted">规则智能分流:</span>
+                    <span class="font-mono font-bold text-brand-600">
+                      {client.ruleSupport ? '✓ 智能分流 (国内直连)' : '✕ 基础代理'}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Key Highlights (3 bullets) -->
+                <ul class="space-y-1 text-xs text-ink-muted pt-1">
+                  {client.highlights.map((h) => (
+                    <li class="flex items-center gap-1.5">
+                      <span class="text-emerald-500 font-bold shrink-0">✓</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Card Footer: Updated Date & View Guide CTA -->
+              <div class="pt-4 mt-5 border-t border-surface-border flex items-center justify-between text-xs">
+                <span class="text-ink-muted font-mono text-[11px]">
+                  更新：{client.updatedDate}
+                </span>
+                <a
+                  href={`/guides/${client.guideSlug}`}
+                  class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-surface-subtle hover:bg-brand-600 hover:text-white text-brand-700 font-bold text-xs border border-surface-border hover:border-transparent transition-all shadow-2xs group-hover:translate-x-0.5"
+                >
+                  查看图文配置 ➔
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 跨平台客户端横向对比全景表 (高价值决策矩阵) -->
+    <!-- ======================================================== -->
+    <section class="my-16 bg-white border border-surface-border rounded-2xl p-6 sm:p-8 shadow-card overflow-hidden">
+      <div class="max-w-3xl mb-6">
+        <div class="text-xs font-bold text-brand-700 uppercase tracking-wider font-mono mb-1">
+          TECHNICAL COMPARISON MATRIX
+        </div>
+        <h2 class="text-2xl font-black text-ink-heading tracking-tight">
+          2026 主流科学上网客户端核心技术参数横向对比
+        </h2>
+        <p class="text-xs sm:text-sm text-ink-muted mt-2">
+          针对协议兼容性、TUN 网卡全流量接管、规则灵活度与学习门槛进行多维评估，帮你在 1 分钟内锁定最适合自己设备的工具。
+        </p>
+      </div>
+
+      <div class="overflow-x-auto -mx-6 sm:mx-0">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[700px]">
+          <thead>
+            <tr class="bg-surface-subtle border-y border-surface-border text-ink-muted text-xs font-mono">
+              <th class="p-3.5 font-bold">客户端名称</th>
+              <th class="p-3.5 font-bold">主流适用平台</th>
+              <th class="p-3.5 font-bold">协议支持度</th>
+              <th class="p-3.5 font-bold">TUN 模式</th>
+              <th class="p-3.5 font-bold">分流规则</th>
+              <th class="p-3.5 font-bold">授权资费</th>
+              <th class="p-3.5 font-bold">推荐指数</th>
+              <th class="p-3.5 text-right font-bold">详细指南</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border font-sans">
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                <span>Clash Verge Rev</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">Windows / macOS</td>
+              <td class="p-3.5 text-emerald-700 font-semibold font-mono">全协议 (VLESS/Hy2)</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 原生一键开启</td>
+              <td class="p-3.5 text-ink-body">规则+策略组分流</td>
+              <td class="p-3.5 font-bold text-emerald-600">开源免费</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★★ 5.0</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/clash-verge-rev-guide" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-600"></span>
+                <span>Shadowrocket (小火箭)</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">iOS (iPhone/iPad)</td>
+              <td class="p-3.5 text-emerald-700 font-semibold font-mono">全协议 (SS/VLESS/Hy2)</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 原生 VPN 接口</td>
+              <td class="p-3.5 text-ink-body">配置模式智能分流</td>
+              <td class="p-3.5 font-bold text-ink-heading">$2.99 买断</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★★ 5.0</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/shadowrocket-ios-tutorial" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span>v2rayNG</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">Android / 鸿蒙</td>
+              <td class="p-3.5 text-emerald-700 font-semibold font-mono">Xray 全协议生态</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 原生 VPN 接口</td>
+              <td class="p-3.5 text-ink-body">绕过大陆 + 分应用</td>
+              <td class="p-3.5 font-bold text-emerald-600">开源免费</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★★ 5.0</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/v2rayng-android-tutorial" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+                <span>Sing-box</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">Win / Mac / iOS / Android</td>
+              <td class="p-3.5 text-emerald-700 font-semibold font-mono">前沿协议 (Hy2/TUIC/SS22)</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 内核级 TUN 虚拟网卡</td>
+              <td class="p-3.5 text-ink-body">二进制规则集 SRS</td>
+              <td class="p-3.5 font-bold text-emerald-600">开源免费</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★☆ 4.9</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/sing-box-tutorial" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                <span>Surge Mac</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">macOS</td>
+              <td class="p-3.5 text-ink-heading font-mono">SS / Trojan / Snell</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 业界顶尖增强模式</td>
+              <td class="p-3.5 text-ink-body">专业级规则与抓包分析</td>
+              <td class="p-3.5 font-bold text-amber-700">商业授权</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★☆ 4.9</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/surge-mac-guide" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+            <tr class="hover:bg-brand-50/40 transition-colors">
+              <td class="p-3.5 font-bold text-ink-heading flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+                <span>Clash Meta Android (CMFA)</span>
+              </td>
+              <td class="p-3.5 font-mono text-xs">Android / 鸿蒙</td>
+              <td class="p-3.5 text-emerald-700 font-semibold font-mono">Mihomo 全协议</td>
+              <td class="p-3.5 text-emerald-700 font-bold">✓ 原生 VPN 接口</td>
+              <td class="p-3.5 text-ink-body">Clash 规则 + 访问控制</td>
+              <td class="p-3.5 font-bold text-emerald-600">开源免费</td>
+              <td class="p-3.5 font-mono font-bold text-amber-500">★★★★☆ 4.9</td>
+              <td class="p-3.5 text-right">
+                <a href="/guides/clash-meta-android-guide" class="text-brand-600 font-bold hover:underline">实操教程 ➔</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 客户端核心选型与专线机场搭配建议 Callout Banner -->
+    <!-- ======================================================== -->
+    <div class="my-12 p-6 sm:p-8 rounded-3xl bg-surface-subtle border border-brand-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="space-y-2 text-center md:text-left">
+        <div class="text-xs font-bold text-brand-700 uppercase tracking-wider font-mono">
+          GOOD HARDWARE NEEDS GREAT LINES
+        </div>
+        <h3 class="text-xl sm:text-2xl font-black text-ink-heading">
+          工欲善其事，必先利其器：选对好客户端，更要配好物理专线
+        </h3>
+        <p class="text-xs sm:text-sm text-ink-muted max-w-2xl leading-relaxed">
+          再优秀的客户端（如 Clash Verge Rev、小火箭或 Sing-box），底层依然依赖高质量的专线节点。普通公网中转晚高峰丢包频发，唯有真正的 <strong>IPLC / IEPL 纯物理内网专线</strong> 才能保障 8K 满速与 0 丢包。
+        </p>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <a
+          href="/recommend"
+          class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+        >
+          查看 2026 专线推荐榜 ➔
+        </a>
+        <a
+          href="/cheap"
+          class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-ink-heading font-bold text-xs border border-surface-border transition-all"
+        >
+          高性价比专区
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <JsonLd schema={jsonLdData} />
+</BaseLayout>
+
+<script is:inline>
+  // Pure vanilla instant tab switching for high performance & offline compatibility
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabButtons = document.querySelectorAll('.platform-tab');
+    const cards = document.querySelectorAll('.client-card');
+
+    function applyPlatformFilter(target) {
+      tabButtons.forEach((btn) => {
+        if (btn.getAttribute('data-target') === target) {
+          btn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+          btn.classList.remove('text-ink-muted', 'hover:bg-white');
+        } else {
+          btn.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+          btn.classList.add('text-ink-muted', 'hover:bg-white');
+        }
+      });
+
+      cards.forEach((card) => {
+        const platforms = card.getAttribute('data-platforms') || '';
+        if (target === 'all' || platforms.includes(target)) {
+          card.style.display = 'flex';
+          card.style.opacity = '1';
+        } else {
+          card.style.display = 'none';
+          card.style.opacity = '0';
+        }
+      });
+    }
+
+    // Attach click listeners to tabs
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        applyPlatformFilter(target);
+        if (target !== 'all') {
+          history.replaceState(null, '', `#${target}`);
+        } else {
+          history.replaceState(null, '', window.location.pathname);
+        }
+      });
+    });
+
+    // Check URL hash on load (e.g. #windows, #macos, #ios, #android)
+    const hash = window.location.hash.replace('#', '').toLowerCase();
+    if (['windows', 'macos', 'ios', 'android'].includes(hash)) {
+      applyPlatformFilter(hash);
+    }
+  });
+</script>

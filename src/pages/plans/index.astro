@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+
+const airports = await getCollection('airports');
+airports.sort((a, b) => a.data.priceMonthly - b.data.priceMonthly);
+
+// 三大计费模式横向拆解
+const pricingModels = [
+  {
+    name: '常规周期月付 (Monthly)',
+    tag: '社长最力荐',
+    tagColor: 'emerald',
+    target: '新手初次尝鲜、敏感期防跑路、多机场组合备用',
+    pros: '资金占用极低（仅需几元至十几元），随时换车毫无压力，跑路风险 0。',
+    cons: '单月单价略高于长期年付，需每月按时续费或设置自动扣款。',
+    recommendPrice: '¥7 ~ ¥20 /月',
+  },
+  {
+    name: '长期年付优惠 (Yearly)',
+    tag: '折上折最省钱',
+    tagColor: 'brand',
+    target: '已被市场验证 3 年以上的老牌稳定大厂、主力工作/生产力梯子',
+    pros: '自带官方 8 折到 7 折让利，叠加社长专属合作码后年均节省超 35%。',
+    cons: '初始投入相对较高，严禁在成立不满半年的不知名新开小作坊使用。',
+    recommendPrice: '¥60 ~ ¥180 /年',
+  },
+  {
+    name: '按量付费 / 不限时 (Pay-as-you-go)',
+    tag: '轻度与备用首选',
+    tagColor: 'amber',
+    target: '仅收发 Gmail、偶尔查学术论文、为主力专线突发故障做第二应急通道',
+    pros: '用多少扣多少，流量永久不过期清零，充值 20 元可用一年。',
+    cons: '单 G 成本相对略高，不适合每天观看 YouTube 4K/8K 视频。',
+    recommendPrice: '¥0.2 ~ ¥0.5 /GB',
+  },
+];
+
+// 资费避坑 FAQ
+const planFaqs = [
+  {
+    q: '为什么社长始终强调新手第一次买机场坚决要选月付？',
+    a: '机场属于高频波动的灰色网络服务，受机房物理线路维护、上游带宽涨价及网络政策影响极大。即使某家机场在某些测评中表现优异，也可能由于你本地运营商（电信/联通/移动）的本地调度差异而产生体验偏差。新手首次上车坚持月付（几元至十几元），在真实经历过晚高峰 20:00~23:00 与敏感期考验并满意后，再考虑长期年付。',
+  },
+  {
+    q: '很多机场宣称“9.9 元年付无限流量”，这种便宜套餐能买吗？',
+    a: '坚决不能买，99% 是跑路资金盘。根据 2026 年国际专线机房真实物理成本，正规企业级 IPLC/IEPL 跨境海底光缆带宽采购成本高达每 Gbps 几万元人民币。9.9 元年付连机房最基础的电力与 IP 租金都不够支付，商家纯靠后期超售几千人公用 100M 小水管，或者在圈够几万元注册费后直接关群删库跑路。',
+  },
+  {
+    q: '什么是节点“倍率（Multiplier）”？算资费时怎么避免被坑？',
+    a: '节点倍率是机场计费扣量系数。连接 1.0x 节点，看 1GB 视频实际扣 1GB 配额；如果机场将某些高速专线设为 3.0x 或 5.0x 倍率，你看 1GB 视频后台会扣除 3GB~5GB 流量，导致标称 100GB 的套餐实际只能用 20GB。购买套餐前务必检查节点列表，正规专线主力节点普遍维持在 1.0x 标准倍率。',
+  },
+  {
+    q: '一般个人日常使用，一个月买多少流量的套餐最合适？',
+    a: '纯日常查资料、看网页、Telegram 聊天及偶尔 ChatGPT 对话，50GB~100GB/月绰绰有余；如果每天习惯在手机/电脑上观看 YouTube 1080P 或 Netflix 追剧 1~2 小时，建议购买 150GB~300GB 套餐；如果有多台设备（手机、iPad、PC、电视）共享或高频观看 4K HDR 视频，建议选择 500GB 以上的大流量包。',
+  },
+];
+
+const planFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: planFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="2026 翻墙机场套餐对比与价格资费表 | 月付、年付与按量计费横评"
+  description="全网主流 IPLC/IEPL 专线机场套餐价格全景图：横向对比轻量月付、大流量年付折减率及按量不限时单 G 成本，助你避开虚标套餐，选出性价比最高的专线。"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '全部专题', href: '/' }, { label: '套餐横向对比' }]} />
+
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+        📊 资费与套餐对比 · 透明无套路
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        2026 翻墙机场套餐与资费横向对比
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+        月付 ¥7 到 ¥30 究竟差在哪里？社长为你拆解各家机场的起步月费、年付优惠幅度以及单 G 带宽实际成本，帮你拒绝价格刺客。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1">💡 资费预算速选（社长精算建议）：</strong>
+        追求极致性价比与稳定兼顾的用户，建议直接选择 <strong>闪电鼠</strong>（IEPL+内网专线，月付 ¥8 起，专属优惠码【sd88】）或 <strong>大佬云</strong> 与 <strong>榴莲云</strong>（¥8/月起，IEPL物理专线，SLA 保障极佳）；极限低价首选 <strong>光年梯</strong>（¥7/月起）；大带宽电竞需求首推 <strong>神行加速</strong>（¥15/月起）。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- ======================================================== -->
+    <!-- 模块一：三大计费模式深度拆解 -->
+    <!-- ======================================================== -->
+    <section class="my-10">
+      <div class="mb-6 pb-3 border-b border-surface-border">
+        <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+          <span>💳</span> <span>三大主流计费模式优劣与选型指南</span>
+        </h2>
+        <p class="text-xs text-ink-muted mt-1">选对计费周期，既能防范跑路风险，又能将每 G 流量成本压缩到最低</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {pricingModels.map((m) => (
+          <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border font-mono ${
+                  m.tagColor === 'emerald'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : m.tagColor === 'brand'
+                    ? 'bg-brand-50 text-brand-700 border-brand-200'
+                    : 'bg-amber-50 text-amber-800 border-amber-200'
+                }`}>
+                  {m.tag}
+                </span>
+                <span class="text-xs font-mono font-bold text-ink-heading">{m.recommendPrice}</span>
+              </div>
+
+              <h3 class="text-lg font-bold text-ink-heading">
+                {m.name}
+              </h3>
+
+              <div class="text-xs text-ink-muted">
+                <strong>适用人群：</strong>{m.target}
+              </div>
+
+              <div class="p-3 bg-surface-subtle rounded-xl border border-surface-border text-xs space-y-1.5 leading-relaxed">
+                <p><strong class="text-emerald-700">✓ 优势：</strong>{m.pros}</p>
+                <p><strong class="text-rose-600">✗ 注意：</strong>{m.cons}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 模块二：11 大精选专线机场资费横评大表 -->
+    <!-- ======================================================== -->
+    <section class="my-14">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>📋</span> <span>2026 年度 11 大专线机场资费全景横评表</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">按起步月付由低到高排列，点击优惠码可一键复制享受专属减免</p>
+        </div>
+        <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-muted border border-surface-border self-start sm:self-auto">
+          共 {airports.length} 家
+        </span>
+      </div>
+
+      <div class="bg-white border border-surface-border rounded-2xl overflow-hidden shadow-card">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-surface-subtle text-ink-heading border-b border-surface-border font-semibold">
+                <th class="p-4">服务商名称</th>
+                <th class="p-4">线路类型</th>
+                <th class="p-4">起步月付</th>
+                <th class="p-4">年付特惠</th>
+                <th class="p-4">专属折扣码</th>
+                <th class="p-4">退款与保障</th>
+                <th class="p-4 text-right">上车入口</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-border font-mono text-ink-body">
+              {airports.map((a) => (
+                <tr class="hover:bg-surface-subtle/50 transition-colors">
+                  <td class="p-4 font-sans font-bold text-ink-heading">
+                    <a href={`/airports/${a.slug}`} class="hover:text-brand-600">
+                      {a.data.name}
+                    </a>
+                  </td>
+                  <td class="p-4 font-sans text-xs">{a.data.lineType}</td>
+                  <td class="p-4 font-black text-brand-600">¥{a.data.priceMonthly}/月</td>
+                  <td class="p-4 text-emerald-700">{a.data.priceYearly ? `¥${a.data.priceYearly}/年` : '按量/月计'}</td>
+                  <td class="p-4">
+                    {a.data.couponCode ? (
+                      <button
+                        type="button"
+                        data-copy-coupon={a.data.couponCode}
+                        class="px-2 py-0.5 rounded bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-mono font-bold transition-all"
+                        title="点击复制优惠码"
+                      >
+                        {a.data.couponCode}
+                      </button>
+                    ) : (
+                      <span class="text-ink-muted text-xs font-sans">直购特惠</span>
+                    )}
+                  </td>
+                  <td class="p-4 font-sans text-xs text-ink-muted">{a.data.refundPolicy}</td>
+                  <td class="p-4 text-right">
+                    <a
+                      href={`/go/${a.data.affiliateSlug}`}
+                      target="_blank"
+                      rel="nofollow sponsored noopener noreferrer"
+                      class="inline-block px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-sans font-bold text-xs shadow-sm transition-all"
+                    >
+                      开通 ➔
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep Guide Callout -->
+    <div class="my-10 p-6 rounded-2xl bg-surface-subtle border border-brand-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="space-y-1 text-center sm:text-left">
+        <h3 class="text-base font-bold text-ink-heading">
+          🎟️ 想查看全网独家大额优惠券与年付省钱攻略？
+        </h3>
+        <p class="text-xs text-ink-muted">
+          阅读社长深度专题：《2026 优质机场大额独家优惠码汇总与年付省钱购买攻略》
+        </p>
+      </div>
+      <a
+        href="/guides/exclusive-airport-coupons-yearly-discount-guide"
+        class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all shrink-0"
+      >
+        阅读省钱攻略 ➔
+      </a>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 模块三：资费与套餐常见问答 (FAQ) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="plan-faq-section">
+      <div class="mb-6 pb-3 border-b border-surface-border">
+        <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+          <span>❓</span> <span>套餐选购与资费避坑常见问题</span>
+        </h2>
+        <p class="text-xs text-ink-muted mt-1">为什么严禁年付不知名小机场、倍率陷阱与用量评估</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {planFaqs.map((faq, idx) => (
+          <details class="group bg-white border border-surface-border hover:border-brand-300 rounded-2xl p-5 shadow-sm transition-all duration-200 [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-start justify-between gap-3 cursor-pointer select-none">
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-md bg-brand-50 text-brand-700 font-mono font-black text-xs flex items-center justify-center shrink-0 border border-brand-200 mt-0.5">
+                  Q{idx + 1}
+                </span>
+                <h3 class="text-sm font-bold text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+                  {faq.q}
+                </h3>
+              </div>
+              <svg
+                class="w-5 h-5 text-ink-muted group-hover:text-brand-600 transition-transform duration-200 shrink-0 group-open:rotate-180 mt-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="pt-3 mt-3 border-t border-surface-border text-xs sm:text-sm text-ink-body leading-relaxed pl-8">
+              <p>{faq.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(planFaqSchema)} />
+</BaseLayout>

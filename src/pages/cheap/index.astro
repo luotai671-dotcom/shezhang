@@ -1,0 +1,321 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import VerificationBadge from '../../components/VerificationBadge.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import PageSidebar from '../../components/PageSidebar.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { getCollection } from 'astro:content';
+import { generateItemListSchema, generateFaqSchema } from '../../utils/seo';
+
+const airports = await getCollection('airports');
+
+// 性价比专区定制排序：
+// 第一名：大佬云
+// 第二名：神行加速
+// 第三名：云界线
+// 第四名：闪电鼠
+// 第五名：榴莲云
+// 第六名：环球梯
+// 第七名：光年梯
+// 其他按顺序排位
+const cheapCustomOrder = [
+  'dalaoyun',     // #1 大佬云
+  'shenxing',     // #2 神行加速
+  'yunjiexian',   // #3 云界线
+  'shandianshu',  // #4 闪电鼠
+  'liulianyun',   // #5 榴莲云
+  'huanqiuti',    // #6 环球梯
+  'guangnianti',  // #7 光年梯
+  'guangshuyun',  // #8 光速云
+  'sujie',        // #9 速界
+  'jilianyun',    // #10 极连云
+  'edgenova',     // #11 边缘节点
+];
+
+const cheapAirports = [...airports].sort((a, b) => {
+  const indexA = cheapCustomOrder.indexOf(a.slug);
+  const indexB = cheapCustomOrder.indexOf(b.slug);
+  return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
+});
+
+const sidebarSections = [
+  { id: 'section-calc', number: '1', title: '不限时流量包算力模型', badge: '精算' },
+  { id: 'section-list', number: '2', title: '精选平价专线服务商清单', badge: '11大品牌' },
+  { id: 'section-faq', number: '3', title: '平价专线常见避坑问答' },
+];
+
+const faqs = [
+  {
+    question: "市面上 5 元/月的‘万人挤’廉价便宜梯子为什么不能买？",
+    answer: "5 元以内的超低价便宜梯子几乎 100% 采用廉价单线公网直连或合租 VPS，这种机场没有物理专线成本投入。晚高峰（20:00-23:00）国际骨干网拥堵时，丢包率往往飙升至 30% 以上，YouTube 连 480P 都会频繁卡顿转圈；而且运营方随时面临高昂的封锁换 IP 成本，跑路概率高达 80% 以上。"
+  },
+  {
+    question: "什么是不限时按量付费（Pay-as-you-go）？适合哪些人群？",
+    answer: "按量付费是指一次性购买一定额度的流量包（例如 100GB 或 300GB），流量不过期直到消耗完毕。这非常适合平时上网频率较低、仅用于偶尔查资料、发邮件或作为第二防失联备用通道的用户，彻底避免了每月白交月租浪费几百 G 流量的痛点。"
+  },
+  {
+    question: "10-15 元/月的性价比机场能玩外服游戏与看 4K 视频吗？",
+    answer: "可以。例如社长实测的闪电鼠与大佬云，采用优质 IEPL 物理专线与内网中继，支持 VLESS 协议，到香港延迟仅 28ms，起步仅需 ¥8/月，不仅能 8K 秒开，还能完美解锁 ChatGPT 4o 与 Netflix。"
+  }
+];
+
+const itemListSchema = generateItemListSchema(
+  cheapAirports.map((a, idx) => ({
+    name: a.data.name,
+    slug: a.slug,
+    rankOrder: idx + 1,
+    tagline: a.data.tagline,
+    rating: a.data.rating,
+  }))
+);
+const faqSchema = generateFaqSchema(faqs);
+---
+
+<BaseLayout
+  title="2026性价比机场推荐与实测 | 10元平价便宜梯子与按量不限时精选 - 机场社长"
+  description="机场社长实验室权威实测：精选 2026 便宜好用的高性价比机场与平价便宜梯子。涵盖 10-15 元/月平价 IEPL 专线、按量付费不限时流量包横向机场测评，晚高峰稳定秒开 4K，拒绝跑路野鸡云。"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '💰 性价比机场' }]} />
+
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-3">
+        💰 平价好用专区 · 每一分钱都花在刀刃上
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-ink-heading tracking-tight">
+        2026 高性价比机场推荐与便宜梯子精选
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        谁说专线一定贵？社长实测挖掘 10-15 元/月真专线性价比机场，彻底告别月租浪费与劣质公网断流，为学生党与备用党精打细算。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium">
+        <strong class="text-brand-700 font-bold block mb-1">💡 便宜梯子如何避坑？社长 30 秒选型建议：</strong>
+        2026年在平价专线与性价比梯子选购中，首推 <strong>大佬云</strong>（¥8/月起，老牌企业级IEPL物理专线，全节点原生解锁）、<strong>神行加速</strong>（¥15/月，大流量高并发IEPL专线）与 <strong>云界线</strong>（¥15/月，晚高峰千兆满跑）；品质进阶可选 <strong>闪电鼠</strong> 与 <strong>榴莲云</strong>；极致平价门槛可选 <strong>环球梯</strong>（¥8/月）与 <strong>光年梯</strong>（起步仅 ¥7/月）。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Mobile Table of Contents -->
+    <div class="lg:hidden bg-surface-subtle border border-surface-border rounded-2xl p-4 my-6">
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-xs text-ink-heading list-none">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span>📑 本页导览目录导航 (分 3 大板块)</span>
+          </span>
+          <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-sm">▾</span>
+        </summary>
+        <div class="grid grid-cols-1 gap-1.5 pt-3 mt-2 border-t border-surface-border text-xs">
+          {sidebarSections.map((sec) => (
+            <a
+              href={`#${sec.id}`}
+              class="p-2.5 rounded-xl bg-white border border-surface-border hover:border-brand-300 text-ink-heading font-medium flex items-center justify-between transition-colors"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-emerald-50 text-emerald-800 font-mono font-bold text-[10px] flex items-center justify-center border border-emerald-200">
+                  {sec.number}
+                </span>
+                <span>{sec.title}</span>
+              </div>
+              {sec.badge && (
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono">
+                  {sec.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    <!-- Two Column Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+      
+      <!-- Main Content Area -->
+      <main class="lg:col-span-8 xl:col-span-9 space-y-14 min-w-0">
+
+        <!-- 01 Pricing Calculator for No-expiry Packages -->
+        <section id="section-calc" class="scroll-mt-24 bg-white border border-surface-border rounded-2xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center justify-between pb-4 border-b border-surface-border mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-ink-heading flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-800 font-mono font-bold text-xs flex items-center justify-center border border-emerald-200">01</span>
+                <span>不限时流量包精算模型 (Pay-As-You-Go)</span>
+              </h2>
+              <p class="text-xs text-ink-muted mt-0.5">
+                单次购买永久有效，无月租压力，买一次稳稳备用一整年
+              </p>
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              永不过期
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center font-mono">
+            <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+              <span class="text-xs font-sans text-ink-muted block mb-1">轻度备用包</span>
+              <span class="text-2xl font-black text-ink-heading">100 GB</span>
+              <div class="text-xs text-brand-700 mt-2 font-bold font-mono">折合单月 ¥2.3 起</div>
+              <span class="text-[11px] font-sans text-ink-muted block mt-1">适合偶尔 Google 学术与 Telegram 查讯</span>
+            </div>
+            <div class="p-4 rounded-xl bg-surface-subtle border border-brand-200">
+              <span class="text-xs font-sans text-emerald-700 font-bold block mb-1">★ 社长力荐实用包</span>
+              <span class="text-2xl font-black text-brand-600">300 GB</span>
+              <div class="text-xs text-brand-700 mt-2 font-bold font-mono">折合单月 ¥4.8 起</div>
+              <span class="text-[11px] font-sans text-ink-muted block mt-1">满足日常 YouTube 1080P 与 ChatGPT 对话</span>
+            </div>
+            <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+              <span class="text-xs font-sans text-ink-muted block mb-1">大容量极客包</span>
+              <span class="text-2xl font-black text-ink-heading">1000 GB</span>
+              <div class="text-xs text-brand-700 mt-2 font-bold font-mono">单 G 成本仅 ¥0.08</div>
+              <span class="text-[11px] font-sans text-ink-muted block mt-1">多设备工作室共享与 4K 追剧不限期</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 Cheap Airport List -->
+        <section id="section-list" class="scroll-mt-24 space-y-6">
+          <div class="border-b border-surface-border pb-4">
+            <h2 class="text-xl font-bold text-ink-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-800 font-mono font-bold text-xs flex items-center justify-center border border-emerald-200">02</span>
+              <span>精选平价专线服务商清单</span>
+            </h2>
+            <p class="text-xs text-ink-muted mt-1">
+              月付低于 ¥20 或配备高性价比不限时流量包的优质专线
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            {cheapAirports.map((airport, index) => {
+              const d = airport.data;
+              return (
+                <div class="bg-white border border-surface-border hover:border-brand-400 rounded-2xl p-6 transition-all shadow-card hover:shadow-card-hover flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                  <div class="space-y-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <!-- Rank Number Badge -->
+                      <span class={`font-mono text-xs font-black px-2.5 py-0.5 rounded-md ${
+                        index === 0
+                          ? 'bg-amber-400 text-slate-950 shadow-sm'
+                          : index === 1
+                          ? 'bg-slate-200 text-slate-800 border border-slate-300 shadow-sm'
+                          : index === 2
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300 shadow-sm'
+                          : 'bg-surface-subtle text-ink-muted border border-surface-border'
+                      }`}>
+                        #{index + 1}
+                      </span>
+                      <span class="text-lg font-black text-ink-heading">
+                        <a href={`/airports/${airport.slug}`} class="hover:text-brand-600 transition-colors">
+                          {d.name}
+                        </a>
+                      </span>
+                      <span class="text-xs px-2 py-0.5 rounded bg-surface-subtle text-ink-body border border-surface-border font-mono">
+                        {d.lineType}
+                      </span>
+                      <VerificationBadge status={d.dataVerificationStatus || 'independent_tested'} />
+                      <span class="text-xs px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+                        {d.badge || '平价精选'}
+                      </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-ink-body">
+                      {d.tagline}
+                    </p>
+                    <div class="flex items-center gap-3 text-xs text-ink-muted font-mono pt-1">
+                      <span class="text-brand-600 font-bold">测速: {d.metrics.peakSpeedMbps}M</span>
+                      <span>·</span>
+                      <span class="text-emerald-700">延迟: {d.metrics.pingMs}ms</span>
+                      <span>·</span>
+                      <span class="text-ink-heading">丢包: {d.metrics.packetLoss}</span>
+                      <span>·</span>
+                      <span class="text-emerald-700 font-bold">Scam: {d.metrics.scamalyticsScore ?? 0}分</span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col sm:flex-row md:flex-col items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-surface-border">
+                    <div class="text-right">
+                      <span class="text-xs text-ink-muted">超值月付:</span>
+                      <span class="text-2xl font-black text-ink-heading font-mono ml-1">{d.currency}{d.priceMonthly}</span>
+                      <span class="text-xs text-ink-muted">/月起</span>
+                      {d.couponCode && (
+                        <div class="text-[11px] text-brand-700 font-mono font-bold">
+                          码: {d.couponCode}
+                        </div>
+                      )}
+                    </div>
+                    <a
+                      href={`/go/${d.affiliateSlug}`}
+                      target="_blank"
+                      rel="nofollow sponsored noopener noreferrer"
+                      class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+                    >
+                      直达平价通道 ➔
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- 03 FAQ Accordion for Cheap VPN -->
+        <section id="section-faq" class="scroll-mt-24 space-y-4">
+          <div class="border-b border-surface-border pb-4">
+            <h2 class="text-xl font-bold text-ink-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-800 font-mono font-bold text-xs flex items-center justify-center border border-emerald-200">03</span>
+              <span>平价专线常见避坑问答</span>
+            </h2>
+            <p class="text-xs text-ink-muted mt-1">
+              关于低价机场稳定性与防跑路的核心自检原则
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            {faqs.map((faq, i) => (
+              <details class="group bg-white border border-surface-border rounded-2xl p-5 shadow-card [&_summary::-webkit-details-marker]:hidden">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer font-bold text-ink-heading hover:text-brand-600 text-sm select-none">
+                  <span class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-surface-subtle flex items-center justify-center text-xs font-mono font-bold text-brand-600">
+                      {i + 1}
+                    </span>
+                    <span>{faq.question}</span>
+                  </span>
+                  <svg class="w-4 h-4 text-ink-muted group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="mt-3 pt-3 border-t border-surface-border text-xs sm:text-sm text-ink-body leading-relaxed7 pl-7">
+                  {faq.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sticky Sidebar -->
+      <div class="hidden lg:block lg:col-span-4 xl:col-span-3 sticky top-24">
+        <PageSidebar
+          title="平价专线导览"
+          sections={sidebarSections}
+          featuredAirport={{
+            name: '大佬云',
+            tagline: '老牌企业级 IEPL 专线，全节点原生解锁，超低延迟办公首选',
+            price: 8,
+            coupon: 'dly88',
+            slug: 'dalaoyun',
+            speed: '930 Mbps'
+          }}
+        />
+      </div>
+
+    </div>
+
+  </div>
+
+  <JsonLd schema={[itemListSchema, faqSchema]} />
+</BaseLayout>

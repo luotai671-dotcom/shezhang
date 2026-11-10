@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+
+const airports = await getCollection('airports');
+airports.sort((a, b) => a.data.rankOrder - b.data.rankOrder);
+
+const coupons = airports.map((a) => ({
+  name: a.data.name,
+  slug: a.data.affiliateSlug,
+  code: a.data.couponCode || '官方直降通道',
+  hasCode: Boolean(a.data.couponCode),
+  discount: a.data.discountRate || '特惠立减',
+  validUntil: '2026-12-31',
+  lineType: a.data.lineType,
+  tagline: a.data.tagline,
+}));
+---
+
+<BaseLayout
+  title="2026 翻墙机场独家大额优惠码汇总 | 7折/8折最新折扣券每日更新"
+  description="机场社长官方专属福利通道：汇总 2026 最新各大 IPLC/IEPL 专线机场独家折扣券代码。一键复制最高立省 30%（低至 7 折），支持支付宝、微信与 USDT 付款。"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '全部专题', href: '/' }, { label: '机场优惠码' }]} />
+
+    <header class="my-8 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold mb-3">
+        🎟️ 独家合作券码中心 · 官方直接补贴
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        2026 翻墙机场独家大额优惠券汇总
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        结算时输入社长专属合作代码，享受折上折优惠。所有代码均已通过 2026 年 11 月可用性验证，点击即可一键复制。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium">
+        <strong class="text-brand-700 font-bold block mb-1">💡 独家优惠码使用提示（社长直发）：</strong>
+        2026年度独家折扣码首推 <strong>闪电鼠</strong>【<code>sd88</code>】（专属 88 折）、<strong>大佬云</strong>【<code>dly88</code>】（88 折）、<strong>榴莲云</strong>【<code>ll88</code>】（88 折）、<strong>神行加速</strong>【<code>sx0077</code>】与 <strong>云界线</strong>【<code>yjx888</code>】。所有券码在结账页面输入即可自动扣减，并享受退款合规保障。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+      {coupons.map((c) => (
+        <div class="bg-white border-2 border-brand-200 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-brand-700 font-bold border border-blue-200 font-mono">
+                {c.discount} 独家券
+              </span>
+              <span class="text-[11px] text-emerald-700 font-mono font-medium">✓ 2026 验证有效</span>
+            </div>
+
+            <h3 class="text-xl font-bold text-ink-heading">
+              {c.name}
+            </h3>
+
+            <p class="text-xs text-ink-body">
+              {c.tagline}
+            </p>
+
+            <!-- Coupon Display Box -->
+            <div class="p-3.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-ink-muted block">{c.hasCode ? '优惠券代码 (Coupon Code):' : '优惠说明 (Offer):'}</span>
+                <code class="text-base font-black text-brand-600 font-mono tracking-wider">{c.code}</code>
+              </div>
+              {c.hasCode ? (
+                <button
+                  type="button"
+                  data-copy-coupon={c.code}
+                  class="px-3.5 py-1.5 rounded-lg bg-white border border-brand-200 hover:border-brand-500 text-brand-700 font-bold text-xs shadow-sm transition-all"
+                >
+                  复制券码
+                </button>
+              ) : (
+                <a
+                  href={`/go/${c.slug}`}
+                  target="_blank"
+                  rel="nofollow sponsored noopener noreferrer"
+                  class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+                >
+                  直接享受 ➔
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div class="pt-4 mt-4 border-t border-surface-border flex items-center justify-between text-xs">
+            <span class="text-ink-muted font-mono">有效期至: {c.validUntil}</span>
+            <a
+              href={`/go/${c.slug}`}
+              target="_blank"
+              rel="nofollow sponsored noopener noreferrer"
+              class="font-bold text-brand-600 hover:underline inline-flex items-center gap-1"
+            >
+              前往官网使用 ➔
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- 3-Step Redemption Guide -->
+    <section class="my-12 p-6 sm:p-8 rounded-2xl bg-white border border-surface-border shadow-xs">
+      <div class="max-w-2xl">
+        <span class="text-xs font-mono font-bold text-brand-600 uppercase tracking-wider">Redemption Guide</span>
+        <h2 class="text-xl sm:text-2xl font-black text-ink-heading mt-1 mb-3">
+          💡 机场独家优惠券三步快速使用指南
+        </h2>
+        <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">
+          许多新手在结账时容易遗漏优惠码输入框，导致无法享受社长专属返现与立减，请按照以下标准化流程操作：
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+          <div class="w-8 h-8 rounded-lg bg-brand-600 text-white font-mono font-black text-sm flex items-center justify-center mb-3">
+            01
+          </div>
+          <h3 class="text-sm font-bold text-ink-heading mb-1">复制本站专属代码</h3>
+          <p class="text-xs text-ink-body leading-relaxed">
+            点击上方卡片中的「复制券码」按钮（如闪电鼠 <code>sd88</code>、大佬云 <code>dly88</code>），代码将自动暂存到剪贴板。
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+          <div class="w-8 h-8 rounded-lg bg-brand-600 text-white font-mono font-black text-sm flex items-center justify-center mb-3">
+            02
+          </div>
+          <h3 class="text-sm font-bold text-ink-heading mb-1">直达官网选购套餐</h3>
+          <p class="text-xs text-ink-body leading-relaxed">
+            点击卡片右下角「前往官网使用」，进入官方镜像站完成注册。建议优先选择「月付」或「季付」套餐降低试错成本。
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+          <div class="w-8 h-8 rounded-lg bg-brand-600 text-white font-mono font-black text-sm flex items-center justify-center mb-3">
+            03
+          </div>
+          <h3 class="text-sm font-bold text-ink-heading mb-1">结算粘贴即享折扣</h3>
+          <p class="text-xs text-ink-body leading-relaxed">
+            在订单结账页面找到「验证码 / 优惠码（Promo Code）」输入框，粘贴代码并点击「验证」，系统将立即自动扣除相应优惠金额。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategy: Monthly vs Yearly vs Promo -->
+    <section class="my-12 p-6 sm:p-8 rounded-2xl bg-amber-50/60 border border-amber-200">
+      <div class="flex items-start gap-4">
+        <div class="text-3xl shrink-0">⚠️</div>
+        <div class="space-y-2">
+          <h3 class="text-base sm:text-lg font-bold text-amber-950">
+            社长忠告：切勿为了所谓的“折上折”盲目重金购买数年付
+          </h3>
+          <p class="text-xs sm:text-sm text-amber-900 leading-relaxed">
+            部分不良服务商经常推出“买两年送两年”甚至“99元永久”的大额优惠券，此类基本上是即将跑路的资金盘套现陷阱。本站合作的闪电鼠、大佬云等品牌均为自费测速超 180 天的稳定老牌商家，但我们依然强烈建议您：<strong>即便使用优惠码，首次上车也请首选月付或季付！</strong>满意度足够高且确认线路晚高峰千兆不降速后，再考虑通过半年付或年付获取更低单月均摊成本。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coupons FAQ Section -->
+    <section class="my-12" id="coupon-faq">
+      <div class="mb-6">
+        <span class="text-xs font-mono font-bold text-brand-600 uppercase tracking-wider">FAQ</span>
+        <h2 class="text-xl sm:text-2xl font-black text-ink-heading mt-1">
+          ❓ 机场优惠码与折扣常见问题解答
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        <details class="group bg-white border border-surface-border rounded-xl p-4 shadow-2xs">
+          <summary class="font-bold text-sm text-ink-heading cursor-pointer list-none flex justify-between items-center">
+            <span>优惠码输入后提示“无效”或“已过期”怎么办？</span>
+            <span class="text-brand-600 text-xs group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-3 text-xs sm:text-sm text-ink-body border-t border-surface-border pt-3 leading-relaxed">
+            请首先检查复制时前后是否多出了空格字符；其次确认您购买的周期是否符合优惠券使用门槛（部分高比例折扣券仅支持季付/半年付/年付周期，月付无法使用）；若确认无误仍提示失效，可能是该商家的月度补贴配额已满，可随时在官方频道反馈，我们将第一时间协调补充新配额。
+          </div>
+        </details>
+
+        <details class="group bg-white border border-surface-border rounded-xl p-4 shadow-2xs">
+          <summary class="font-bold text-sm text-ink-heading cursor-pointer list-none flex justify-between items-center">
+            <span>为什么有些机场没有代码也能直接优惠？</span>
+            <span class="text-brand-600 text-xs group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-3 text-xs sm:text-sm text-ink-body border-t border-surface-border pt-3 leading-relaxed">
+            诸如光速云、光年梯等商家采用了“直通补贴通道”机制，只要通过本站专属渠道链接注册并创建订单，后台系统会自动识别专属来源并直接在原价基础上做直降立减，无需您手动复制和输入代码。
+          </div>
+        </details>
+
+        <details class="group bg-white border border-surface-border rounded-xl p-4 shadow-2xs">
+          <summary class="font-bold text-sm text-ink-heading cursor-pointer list-none flex justify-between items-center">
+            <span>使用优惠码购买后，续费时还能继续享受原折扣吗？</span>
+            <span class="text-brand-600 text-xs group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-3 text-xs sm:text-sm text-ink-body border-t border-surface-border pt-3 leading-relaxed">
+            不同机场规则不同：闪电鼠【<code>sd88</code>】与大佬云【<code>dly88</code>】属于“循环折扣券”，在续费账单生成时依然自动生效；部分节假日特惠（如双十一、黑五专享）则属于首单一次性折扣。建议在购买时仔细查看结算页面的“是否循环优惠”说明。
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+

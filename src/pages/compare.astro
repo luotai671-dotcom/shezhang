@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import VerificationBadge from '../components/VerificationBadge.astro';
+import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+
+const airports = await getCollection('airports');
+airports.sort((a, b) => a.data.rankOrder - b.data.rankOrder);
+---
+
+<BaseLayout
+  title="2026 顶级翻墙机场多维度参数横向对比 | 11大主流专线核心指标大PK - 机场社长"
+  description="一图看懂 2026 年 11 大主流专线机场的核心差异：线路类型、晚高峰千兆测速、真实延迟、Scamalytics纯净度、ChatGPT 原生解锁率与月付价格横评，助你 1 分钟找到最适合自己的梯子。"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '11 大旗舰专线横向对比' }]} />
+
+    <header class="my-8 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-4">
+        ⚖️ 选购决策矩阵 · 杜绝信息差
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-ink-heading tracking-tight">
+        2026 顶级专线机场多维度参数横评
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        面对琳琅满目的机场，不知道该选哪一家？社长实验室将各家核心物理指标拉齐对比，一眼看清谁最适合你的使用场景。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium">
+        <strong class="text-brand-700 font-bold block mb-1">💡 选型横评速看（社长实测对比结论）：</strong>
+        横向对比 2026 年度 11 大主流专线：综合网络指标第一名为 <strong>闪电鼠</strong>（IEPL+内网专线，980Mbps 满跑，晚高峰 0 丢包，起步仅需 ¥8/月）；次席稳定专线推荐 <strong>大佬云</strong> 与 <strong>榴莲云</strong>（¥8/月起，支持 VLESS 协议全绿解锁）；追求极限平价高性价比首选 <strong>光年梯</strong>（¥7/月起）与 <strong>环球梯</strong>（¥8/月起）。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Comparison Table Container (Vercel / Stripe Docs Clean Matrix) -->
+    <div class="my-8 overflow-x-auto bg-white border border-surface-border rounded-2xl shadow-card">
+      <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <thead>
+          <tr class="bg-surface-subtle text-ink-heading border-b border-surface-border">
+            <th class="p-4 sm:p-5 font-bold sticky left-0 bg-surface-subtle z-20 min-w-[140px]">
+              评测维度
+            </th>
+            {airports.map((a) => (
+              <th class="p-4 sm:p-5 font-bold min-w-[180px] text-center border-l border-surface-border">
+                <a href={`/airports/${a.slug}`} class="text-ink-heading hover:text-brand-600 text-sm sm:text-base block">
+                  {a.data.name}
+                </a>
+                <span class="text-[11px] font-normal text-ink-muted block mt-1 font-mono">
+                  #{a.data.rankOrder} {a.data.badge || ''}
+                </span>
+                <div class="mt-1">
+                  <VerificationBadge status={a.data.dataVerificationStatus || 'independent_tested'} size="sm" />
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-surface-border text-ink-body">
+          
+          <!-- Row 1: Line Type -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              物理线路类型
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-semibold text-brand-700">
+                {a.data.lineType}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 2: Monthly Price (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50 bg-surface-subtle/30">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              起步月付价格
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border">
+                <span class="text-lg font-black text-ink-heading font-mono">{a.data.currency}{a.data.priceMonthly}</span>
+                <span class="text-xs text-ink-muted">/月</span>
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 3: Peak Speed (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              晚高峰实测下行
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-mono font-bold text-brand-600">
+                {a.data.metrics.peakSpeedMbps} Mbps
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 4: Latency (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50 bg-surface-subtle/30">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              平均光纤延迟
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-mono font-bold text-emerald-700">
+                {a.data.metrics.pingMs} ms
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 5: Packet Loss (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              连续30天丢包率
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-mono font-bold text-ink-heading">
+                {a.data.metrics.packetLoss}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 6: Scamalytics IP Fraud Score (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50 bg-surface-subtle/30">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              Scamalytics 纯净度
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-mono font-bold text-emerald-700">
+                {a.data.metrics.scamalyticsScore ?? 0} 分 (低风控)
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 7: AI & ChatGPT Unlock -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              ChatGPT / Claude 解锁
+            </td>
+            {airports.map(() => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border text-emerald-700 font-semibold">
+                ✓ 100% 原生住宅解锁
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 8: Streaming Quality (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50 bg-surface-subtle/30">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              最高流媒体画质
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border font-bold text-amber-800 font-mono">
+                {a.data.metrics.maxStreamingQuality}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 9: Protocols (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              核心前沿协议
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border text-xs font-mono">
+                {a.data.protocols.slice(0, 2).join(' / ')}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 10: Best For -->
+          <tr class="hover:bg-surface-subtle/50 bg-surface-subtle/30">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              社长推荐人群
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border text-xs text-ink-body">
+                {a.data.suitableFor[0]}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 11: Coupon Code (font-mono) -->
+          <tr class="hover:bg-surface-subtle/50">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-white z-10">
+              独家优惠券
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border">
+                {a.data.couponCode ? (
+                  <button
+                    type="button"
+                    data-copy-coupon={a.data.couponCode}
+                    class="px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 border border-brand-200 font-mono text-xs font-bold hover:border-brand-500 shadow-sm"
+                  >
+                    {a.data.couponCode} ({a.data.discountRate || '特惠'})
+                  </button>
+                ) : (
+                  <span class="text-ink-muted">直购特惠</span>
+                )}
+              </td>
+            ))}
+          </tr>
+
+          <!-- Row 12: Action Button -->
+          <tr class="bg-surface-subtle">
+            <td class="p-4 sm:p-5 font-semibold text-ink-heading sticky left-0 bg-surface-subtle z-10">
+              直达体验通道
+            </td>
+            {airports.map((a) => (
+              <td class="p-4 sm:p-5 text-center border-l border-surface-border">
+                <a
+                  href={`/go/${a.data.affiliateSlug}`}
+                  target="_blank"
+                  rel="nofollow sponsored noopener noreferrer"
+                  class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+                >
+                  直达官网上车 ➔
+                </a>
+              </td>
+            ))}
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</BaseLayout>

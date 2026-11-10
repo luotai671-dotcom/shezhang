@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const guides = await getCollection('guides');
+guides.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+---
+
+<BaseLayout
+  title="新手进阶教程与科学上网知识库 | 客户端配置、IPLC专线科普与防封指南"
+  description="机场社长知识库：提供 2026 最新 Clash Verge Rev、Sing-box、小火箭图文导入教程，IPLC/IEPL 专线底层原理解析，以及 ChatGPT/Claude 原生住宅防封号指南。"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '新手进阶教程与知识库' }]} />
+
+    <header class="my-8 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-4">
+        📚 社长原创知识库 · 零基础到进阶
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-ink-heading tracking-tight">
+        新手配置教程与专线技术科普
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        告别繁琐的配置文件与报错代码。社长手把手教你导入节点、开启 TUN 虚拟网卡、绕过防火墙封锁与保护账号安全。
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
+      {guides.map((guide) => (
+        <article class="bg-white border border-surface-border hover:border-brand-400 rounded-2xl p-6 flex flex-col justify-between transition-all shadow-card hover:shadow-card-hover group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs text-ink-muted">
+              <span class="px-2.5 py-0.5 rounded-full bg-surface-subtle text-brand-700 border border-surface-border font-medium">
+                {guide.data.category === 'client' ? '客户端配置' : guide.data.category === 'protocol' ? '底层科普' : '避坑排障'}
+              </span>
+              <span class="font-mono">{guide.data.readingTime}</span>
+            </div>
+
+            <h2 class="text-lg font-bold text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+              <a href={`/guides/${guide.slug}`}>
+                {guide.data.title}
+              </a>
+            </h2>
+
+            <p class="text-xs sm:text-sm text-ink-body line-clamp-3 leading-relaxed7">
+              {guide.data.description}
+            </p>
+          </div>
+
+          <div class="pt-6 mt-6 border-t border-surface-border flex items-center justify-between text-xs">
+            <span class="text-ink-muted font-mono">{guide.data.publishDate}</span>
+            <a href={`/guides/${guide.slug}`} class="text-brand-600 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              阅读全文 ➔
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+  </div>
+</BaseLayout>

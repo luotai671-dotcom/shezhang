@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 - 页面未找到"
+  description="抱歉，您访问的页面不存在或已被移除。您可以前往首页查看 2026 最新精选专线机场与评测报告。"
+  noindex={true}
+>
+  <div class="max-w-3xl mx-auto px-4 py-20 text-center space-y-6">
+    <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-50 border border-blue-200 text-brand-600 text-3xl font-black font-mono shadow-sm">
+      404
+    </div>
+    
+    <h1 class="text-3xl sm:text-4xl font-black text-ink-heading">
+      抱歉，该页面未找到或已迁移
+    </h1>
+    
+    <p class="text-sm sm:text-base text-ink-body max-w-md mx-auto leading-relaxed">
+      您访问的链接可能已经更新或失效。建议返回首页或查看最新的 2026 年度翻墙机场排行榜。
+    </p>
+
+    <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="/"
+        class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition-all"
+      >
+        返回博客首页 ➔
+      </a>
+      <a
+        href="/rankings"
+        class="px-6 py-2.5 rounded-xl bg-white border border-surface-border hover:border-slate-300 text-ink-heading font-semibold text-sm transition-all shadow-sm"
+      >
+        查看 2026 专线排行榜
+      </a>
+    </div>
+
+    <!-- Quick Help Links -->
+    <div class="mt-12 pt-8 border-t border-surface-border text-xs text-ink-muted">
+      <span>热门直达：</span>
+      <a href="/airports/shandianshu" class="text-brand-600 hover:underline mx-2">闪电鼠 (综合榜首)</a>
+      <span class="text-slate-300">·</span>
+      <a href="/compare" class="text-brand-600 hover:underline mx-2">专线横向对比</a>
+      <span class="text-slate-300">·</span>
+      <a href="/guides/clash-verge-rev-guide" class="text-brand-600 hover:underline mx-2">Clash Verge 配置教程</a>
+    </div>
+  </div>
+</BaseLayout>
+

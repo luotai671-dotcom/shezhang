@@ -1,0 +1,154 @@
+---
+---
+
+<div class="bg-white border border-surface-border rounded-2xl p-4 sm:p-5 mb-8 shadow-card">
+  <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+    
+    <!-- Category Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none" id="category-tabs">
+      <button
+        type="button"
+        data-filter="all"
+        class="filter-tab active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap bg-brand-600 text-white shadow-sm"
+      >
+        全部专线 (6)
+      </button>
+      <button
+        type="button"
+        data-filter="flagship"
+        class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap bg-surface-subtle text-ink-body hover:text-ink-heading hover:bg-slate-100 border border-surface-border"
+      >
+        🏆 顶级旗舰 (IPLC)
+      </button>
+      <button
+        type="button"
+        data-filter="gaming"
+        class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap bg-surface-subtle text-ink-body hover:text-ink-heading hover:bg-slate-100 border border-surface-border font-mono"
+      >
+        ⚡ 游戏低延迟 (&lt;25ms)
+      </button>
+      <button
+        type="button"
+        data-filter="payasyougo"
+        class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap bg-surface-subtle text-ink-body hover:text-ink-heading hover:bg-slate-100 border border-surface-border"
+      >
+        ⏱️ 不限时按量
+      </button>
+      <button
+        type="button"
+        data-filter="business"
+        class="filter-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap bg-surface-subtle text-ink-body hover:text-ink-heading hover:bg-slate-100 border border-surface-border"
+      >
+        🌍 80+国原生/出海
+      </button>
+    </div>
+
+    <!-- Sorting & Search Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Search Input -->
+      <div class="relative flex-1 sm:w-48">
+        <input
+          type="text"
+          id="airport-search"
+          placeholder="筛选专线/协议/价格..."
+          class="w-full pl-9 pr-3 py-2 rounded-xl bg-surface-subtle border border-surface-border focus:border-brand-600 focus:bg-white focus:outline-none text-xs text-ink-heading placeholder:text-ink-faint transition-colors"
+        />
+        <svg class="w-4 h-4 text-ink-muted absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <select
+        id="airport-sort"
+        class="px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs text-ink-heading focus:border-brand-600 focus:outline-none cursor-pointer"
+      >
+        <option value="default">综合排名优先</option>
+        <option value="speed-desc">晚高峰测速最高</option>
+        <option value="price-asc">月付价格从低到高</option>
+        <option value="rating-desc">评测星级最高</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setupFiltering() {
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = Array.from(document.querySelectorAll('.airport-card')) as HTMLElement[];
+    const container = document.getElementById('airport-cards-container');
+    const sortSelect = document.getElementById('airport-sort') as HTMLSelectElement | null;
+    const searchInput = document.getElementById('airport-search') as HTMLInputElement | null;
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+    let currentSort = 'default';
+
+    function updateView() {
+      if (!container) return;
+
+      cards.forEach((card) => {
+        const category = card.getAttribute('data-category');
+        const text = card.textContent?.toLowerCase() || '';
+
+        const matchesCategory = currentFilter === 'all' || category === currentFilter;
+        const matchesSearch = !currentSearch || text.includes(currentSearch.toLowerCase());
+
+        if (matchesCategory && matchesSearch) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Sort visible cards
+      const visibleCards = cards.filter((c) => c.style.display !== 'none');
+      visibleCards.sort((a, b) => {
+        if (currentSort === 'speed-desc') {
+          return Number(b.getAttribute('data-speed')) - Number(a.getAttribute('data-speed'));
+        }
+        if (currentSort === 'price-asc') {
+          return Number(a.getAttribute('data-price')) - Number(b.getAttribute('data-price'));
+        }
+        if (currentSort === 'rating-desc') {
+          return Number(b.getAttribute('data-rating')) - Number(a.getAttribute('data-rating'));
+        }
+        return 0; // Keep DOM order (default ranking)
+      });
+
+      visibleCards.forEach((c) => container.appendChild(c));
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('active', 'bg-brand-600', 'text-white', 'shadow-sm');
+          t.classList.add('bg-surface-subtle', 'text-ink-body', 'border', 'border-surface-border');
+        });
+        tab.classList.add('active', 'bg-brand-600', 'text-white', 'shadow-sm');
+        tab.classList.remove('bg-surface-subtle', 'text-ink-body', 'border-surface-border');
+
+        currentFilter = tab.getAttribute('data-filter') || 'all';
+        updateView();
+      });
+    });
+
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        currentSort = (e.target as HTMLSelectElement).value;
+        updateView();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = (e.target as HTMLInputElement).value;
+        updateView();
+      });
+    }
+  }
+
+  setupFiltering();
+  document.addEventListener('astro:page-load', setupFiltering);
+</script>

@@ -1,0 +1,184 @@
+---
+import { SITE_CONFIG } from '../utils/seo';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-surface-subtle border-t border-surface-border text-ink-muted text-sm mt-24">
+  <!-- Top Telemetry & Trust Ribbon -->
+  <div class="border-b border-surface-border/80 bg-white/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="font-mono text-emerald-800 font-bold">7×24h 探针在线监控</span>
+        <span class="text-slate-300">|</span>
+        <span class="text-ink-heading">晚高峰 20:00~23:00 真实下行采样 · 拒绝虚假宣传</span>
+      </div>
+      <div class="flex items-center gap-2.5 sm:gap-4 flex-wrap text-ink-muted font-medium">
+        <span class="inline-flex items-center gap-1 text-emerald-700">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          100% 自费实测
+        </span>
+        <span class="text-slate-300">·</span>
+        <span class="inline-flex items-center gap-1 text-brand-700">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          只推物理内网专线
+        </span>
+        <span class="text-slate-300">·</span>
+        <span class="inline-flex items-center gap-1 text-amber-800">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          坚持月付防跑路
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Footer Navigation Matrix (12-Column Grid) -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+      
+      <!-- Col 1: Brand & Mission (4 cols on lg) -->
+      <div class="lg:col-span-4 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-brand-700 p-0.5 shadow-sm">
+            <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+              <svg class="w-5 h-5 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <span class="text-lg font-black text-ink-heading tracking-tight block">
+              机场社长 · 实测实验室
+            </span>
+            <span class="text-[11px] text-ink-muted font-mono">
+              2026 高速 IPLC 专线实测中心
+            </span>
+          </div>
+        </div>
+        
+        <p class="text-xs sm:text-sm text-ink-body leading-relaxed pr-2">
+          用过上百家机场，自费踩坑交过不少学费。实验室部署多地 7×24 小时真实物理探针，只评测具备企业级 IPLC/IEPL 物理专线的高可用服务商。真实披露晚高峰丢包与速率，带你避开虚标跑路小工坊。
+        </p>
+
+        <!-- Social & RSS Buttons -->
+        <div class="flex items-center gap-3 pt-1 flex-wrap">
+          <a
+            href="https://t.me/shandianjiaoliu"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-surface-border text-ink-body hover:text-brand-600 hover:border-brand-300 transition-all text-xs font-medium shadow-2xs hover:shadow-xs"
+          >
+            <svg class="w-4 h-4 text-sky-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.92 9.07c-.14.65-.53.81-1.07.51l-2.95-2.18-1.42 1.37c-.16.16-.29.29-.6.29l.21-3.02 5.5-4.97c.24-.21-.05-.33-.37-.12l-6.8 4.28-2.93-.92c-.64-.2-.65-.64.13-.95l11.46-4.42c.53-.2 1 .13.89.96z"/>
+            </svg>
+            Telegram 测速频道
+          </a>
+          <a
+            href="/rss.xml"
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-surface-border text-ink-body hover:text-amber-600 hover:border-amber-300 transition-all text-xs font-medium shadow-2xs hover:shadow-xs"
+          >
+            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z" />
+            </svg>
+            RSS 订阅
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Hot Airports (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-ink-heading font-mono flex items-center gap-1.5">
+          <span>🏆</span> 热门专线推荐
+        </h3>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/airports/shandianshu" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>闪电鼠</span><span class="text-[10px] text-emerald-700 font-mono">榜首·¥8</span></a></li>
+          <li><a href="/airports/dalaoyun" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>大佬云</span><span class="text-[10px] text-ink-muted font-mono">6年老牌·¥8</span></a></li>
+          <li><a href="/airports/liulianyun" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>榴莲云</span><span class="text-[10px] text-ink-muted font-mono">影音首选·¥8</span></a></li>
+          <li><a href="/airports/shenxing" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>神行加速</span><span class="text-[10px] text-ink-muted font-mono">游戏专线·¥15</span></a></li>
+          <li><a href="/airports/yunjiexian" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>云界线</span><span class="text-[10px] text-ink-muted font-mono">抗封均衡·¥15</span></a></li>
+          <li><a href="/airports/huanqiuti" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>环球梯</span><span class="text-[10px] text-ink-muted font-mono">平价大包·¥8</span></a></li>
+          <li><a href="/airports/guangnianti" class="text-ink-body hover:text-brand-600 transition-colors flex items-center justify-between"><span>光年梯</span><span class="text-[10px] text-amber-800 font-mono">尝鲜·¥7</span></a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Client Tutorials (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-ink-heading font-mono flex items-center gap-1.5">
+          <span>💻</span> 客户端保姆教程
+        </h3>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/guides/clash-verge-rev-guide" class="text-ink-body hover:text-brand-600 transition-colors">Clash Verge Rev (Win/Mac)</a></li>
+          <li><a href="/guides/shadowrocket-ios-tutorial" class="text-ink-body hover:text-brand-600 transition-colors">Shadowrocket 小火箭 (iOS)</a></li>
+          <li><a href="/guides/v2rayng-android-tutorial" class="text-ink-body hover:text-brand-600 transition-colors">v2rayNG (安卓/鸿蒙)</a></li>
+          <li><a href="/guides/sing-box-tutorial" class="text-ink-body hover:text-brand-600 transition-colors">Sing-box 全平台配置</a></li>
+          <li><a href="/guides/stash-ios-guide" class="text-ink-body hover:text-brand-600 transition-colors">Stash 苹果全功能</a></li>
+          <li><a href="/clients" class="text-brand-600 hover:text-brand-700 font-bold transition-colors inline-flex items-center gap-1">进入客户端教程库 ➔</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Topic Silos & Guides (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-ink-heading font-mono flex items-center gap-1.5">
+          <span>📚</span> 核心专题与科普
+        </h3>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/wiki" class="text-ink-body hover:text-brand-600 transition-colors">专线百科技术科普</a></li>
+          <li><a href="/troubleshooting" class="text-ink-body hover:text-brand-600 transition-colors">网络排障与防封指南</a></li>
+          <li><a href="/ai" class="text-ink-body hover:text-brand-600 transition-colors">ChatGPT/Claude 住宅专线</a></li>
+          <li><a href="/streaming" class="text-ink-body hover:text-brand-600 transition-colors">Netflix 4K/8K 流媒体</a></li>
+          <li><a href="/cheap" class="text-ink-body hover:text-brand-600 transition-colors">平价高性价比机场榜</a></li>
+          <li><a href="/coupons" class="text-ink-body hover:text-brand-600 transition-colors">独家大额优惠码汇总</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 5: Compliance & E-E-A-T (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-ink-heading font-mono flex items-center gap-1.5">
+          <span>🛡️</span> 评测公约与免责
+        </h3>
+        <p class="text-xs text-ink-body leading-relaxed">
+          本站严格遵循客观公正原则。部分链接含专属推广分成，佣金用于支付机房探针与带宽成本，绝不影响测速真实性。
+        </p>
+        <div class="pt-1 space-y-1.5">
+          <span class="inline-flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg font-medium whitespace-nowrap">
+            <svg class="w-3 h-3 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            遵循 Google E-E-A-T 质量规范
+          </span>
+          <span class="inline-flex items-center gap-1 text-[11px] text-brand-800 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg font-medium whitespace-nowrap">
+            🔒 采用端到端加密与零日志策略
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Bar: Legal, Sitemap & Back to Top -->
+    <div class="border-t border-surface-border mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-muted">
+      <div class="text-center sm:text-left">
+        <span>© {currentYear} {SITE_CONFIG.name} (jichangshezhang.com). All rights reserved.</span>
+        <span class="hidden md:inline text-slate-300 mx-2">|</span>
+        <span class="hidden md:inline">客观、中立、自费的 2026 翻墙机场与物理专线评测指南</span>
+      </div>
+      <div class="flex items-center gap-4 sm:gap-6 font-mono text-[11px] flex-wrap justify-center">
+        <a href="/sitemap-index.xml" class="hover:text-ink-heading transition-colors">Sitemap.xml</a>
+        <a href="/robots.txt" class="hover:text-ink-heading transition-colors">Robots.txt</a>
+        <a href="/llms.txt" class="hover:text-ink-heading transition-colors">llms.txt (AI)</a>
+        <a href="#top" class="hover:text-brand-600 font-sans font-medium transition-colors inline-flex items-center gap-1">
+          返回顶部 ↑
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

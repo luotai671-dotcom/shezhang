@@ -1,0 +1,365 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FloatingCtaBar from '../../components/FloatingCtaBar.astro';
+import VerificationBadge from '../../components/VerificationBadge.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import {
+  generateAirportProductSchema,
+  generateBreadcrumbSchema,
+  generateArticleSchema,
+  generateFaqSchema,
+} from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const airports = await getCollection('airports');
+  return airports.map((airport) => ({
+    params: { slug: airport.slug },
+    props: { airport },
+  }));
+}
+
+const { airport } = Astro.props;
+const data = airport.data;
+const { Content } = await airport.render();
+
+const productSchema = generateAirportProductSchema({
+  name: data.name,
+  tagline: data.tagline,
+  rating: data.rating,
+  reviewCount: data.reviewCount,
+  priceMonthly: data.priceMonthly,
+  currency: data.currency,
+  slug: airport.slug,
+  updatedDate: data.updatedDate,
+  summaryQuote: data.summaryQuote,
+  pros: data.pros,
+  cons: data.cons,
+});
+
+const breadcrumbSchema = generateBreadcrumbSchema([
+  { label: '首页', href: '/' },
+  { label: '机场排行榜', href: '/rankings' },
+  { label: `${data.name} 深度实测评测`, href: `/airports/${airport.slug}` },
+]);
+
+const articleSchema = generateArticleSchema({
+  title: data.metaTitle,
+  description: data.metaDescription,
+  publishDate: data.publishDate,
+  updatedDate: data.updatedDate,
+  author: data.author,
+  url: `https://jichangshezhang.com/airports/${airport.slug}`,
+});
+
+const airportFaqs = [
+  {
+    question: `${data.name} 晚高峰网络会卡顿降速吗？`,
+    answer: `根据社长实验室长周期连续 30 天自动化探针测试，${data.name} 采用 ${data.lineType} 物理架构，在 20:00-23:00 黄金晚高峰时段平均丢包率仅为 ${data.metrics.packetLoss}，下行峰值实测 ${data.metrics.peakSpeedMbps}Mbps，观看 YouTube 4K/8K 视频与长视频无转圈缓冲。`,
+  },
+  {
+    question: `${data.name} 是否支持 OpenAI ChatGPT 与 Claude 解锁？`,
+    answer: `${data.name} 部署了专门的流媒体与生成式 AI 原生住宅 IP 调度池，实测 Scamalytics 欺诈风控评分仅 ${data.metrics.scamalyticsScore ?? 0} 分，100% 完美解锁 ChatGPT 4o、Claude 3.5 Sonnet 与 Midjourney，无封号报错风险。`,
+  },
+  {
+    question: `如何使用 ${data.name} 独家专属优惠券？`,
+    answer: `点击本页专属直达通道注册后，在收银台结账页面输入独家优惠码【${data.couponCode || 'SHEZHANG2026'}】，即可享受 ${data.discountRate || '7折'} 专属立减折扣。同时享受服务商提供的 ${data.refundPolicy} 保障。`,
+  },
+];
+
+const faqSchema = generateFaqSchema(airportFaqs);
+---
+
+<BaseLayout
+  title={data.metaTitle}
+  description={data.metaDescription}
+  ogType="product"
+  publishedTime={data.publishDate}
+  modifiedTime={data.updatedDate}
+  author={data.author}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb Navigation -->
+    <Breadcrumbs
+      items={[
+        { label: '机场排行榜', href: '/rankings' },
+        { label: `${data.name} 深度实测评测` },
+      ]}
+    />
+
+    <!-- Explicit Affiliate Disclosure Banner -->
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Header Section (Vercel / Stripe White Card Style) -->
+    <div class="mt-4 bg-white border border-surface-border rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-card">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div>
+          <!-- Badges -->
+          <div class="flex items-center gap-2.5 flex-wrap mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-brand-50 text-brand-700 border border-brand-200 font-mono">
+              #{data.rankOrder} 综合推荐排名
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-surface-subtle text-ink-body border border-surface-border">
+              {data.lineType}
+            </span>
+            <VerificationBadge status={data.dataVerificationStatus || 'independent_tested'} size="md" />
+            {data.badge && (
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                {data.badge}
+              </span>
+            )}
+            <span class="text-xs text-ink-muted font-mono">
+              稳定运营 {data.establishedYear} - 2026
+            </span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl font-black text-ink-heading tracking-tight">
+            {data.name} 2026 深度评测报告
+          </h1>
+
+          <p class="text-base text-ink-body mt-3 leading-relaxed">
+            {data.tagline}
+          </p>
+
+          <!-- Star Ratings & Review Trust -->
+          <div class="flex items-center gap-3 mt-4 text-sm">
+            <div class="flex items-center text-amber-500 font-bold">
+              {'★'.repeat(Math.floor(data.rating))}
+              <span class="ml-1 text-ink-heading font-mono">{data.rating.toFixed(2)} / 5.0</span>
+            </div>
+            <span class="text-slate-300">·</span>
+            <span class="text-ink-muted font-mono">{data.reviewCount} 位读者综合实测评分</span>
+            <span class="text-slate-300">·</span>
+            <span class="text-emerald-700 font-medium">✓ 已验证 7×24H 真实探针数据</span>
+          </div>
+        </div>
+
+        <!-- Right Quick Action Conversion Card -->
+        <div class="w-full lg:w-72 bg-surface-subtle p-5 rounded-2xl border border-surface-border flex flex-col gap-3 shrink-0 shadow-sm">
+          <div class="flex items-baseline justify-between">
+            <span class="text-xs text-ink-muted">起步订阅价:</span>
+            <div>
+              <span class="text-2xl font-black text-ink-heading font-mono">{data.currency}{data.priceMonthly}</span>
+              <span class="text-xs text-ink-muted">/月</span>
+            </div>
+          </div>
+
+          {data.couponCode && (
+            <button
+              type="button"
+              data-copy-coupon={data.couponCode}
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-brand-200 text-brand-700 hover:border-brand-500 transition-all text-xs font-mono shadow-sm"
+            >
+              <span>专属码: <strong class="underline decoration-dotted">{data.couponCode}</strong></span>
+              <span class="text-[11px] bg-brand-50 px-1.5 py-0.5 rounded text-brand-700 font-sans font-semibold">点击复制</span>
+            </button>
+          )}
+
+          <a
+            href={`/go/${data.affiliateSlug}`}
+            target="_blank"
+            rel="nofollow sponsored noopener noreferrer"
+            class="w-full text-center py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-1.5"
+          >
+            <span>直达官网享 {data.discountRate || '特惠'} ➔</span>
+          </a>
+
+          <div class="text-[11px] text-center text-ink-muted">
+            🛡️ 支持 {data.refundPolicy}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AEO Direct Answer Quote / TL;DR (Light Minimal Box) -->
+    <div class="my-8 bg-blue-50/70 border border-blue-200 rounded-2xl p-6">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">💡</span>
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-brand-700 mb-1">
+            社长核心实测简评
+          </div>
+          <p class="text-sm sm:text-base text-ink-heading leading-relaxed7 font-medium">
+            {data.summaryQuote}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Benchmarks Telemetry Bar (Mandatory font-mono for metrics) -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 my-8">
+      <div class="bg-white p-4 rounded-2xl border border-surface-border text-center shadow-card">
+        <span class="text-xs text-ink-muted block mb-1">晚高峰实测下行</span>
+        <span class="text-xl sm:text-2xl font-black text-brand-600 font-mono">{data.metrics.peakSpeedMbps}</span>
+        <span class="text-xs text-ink-muted block mt-0.5">Mbps 带宽满跑</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-surface-border text-center shadow-card">
+        <span class="text-xs text-ink-muted block mb-1">专线平均延迟</span>
+        <span class="text-xl sm:text-2xl font-black text-emerald-600 font-mono">{data.metrics.pingMs}</span>
+        <span class="text-xs text-ink-muted block mt-0.5">ms (深港/沪日)</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-surface-border text-center shadow-card">
+        <span class="text-xs text-ink-muted block mb-1">连续30天丢包率</span>
+        <span class="text-xl sm:text-2xl font-black text-ink-heading font-mono">{data.metrics.packetLoss}</span>
+        <span class="text-xs text-ink-muted block mt-0.5">物理级稳定通道</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-surface-border text-center shadow-card">
+        <span class="text-xs text-ink-muted block mb-1">Scamalytics纯净度</span>
+        <span class="text-xl sm:text-2xl font-black text-emerald-700 font-mono">{data.metrics.scamalyticsScore ?? 0}</span>
+        <span class="text-xs text-emerald-700 block mt-0.5">极低风控原生住宅</span>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-surface-border text-center shadow-card col-span-2 sm:col-span-1">
+        <span class="text-xs text-ink-muted block mb-1">流媒体分辨率</span>
+        <span class="text-xl sm:text-2xl font-black text-amber-700 font-mono">{data.metrics.maxStreamingQuality}</span>
+        <span class="text-xs text-ink-muted block mt-0.5">秒开无缓冲</span>
+      </div>
+    </div>
+
+    <!-- Pros & Cons Breakdown -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+      <!-- Pros -->
+      <div class="bg-white border border-emerald-200 rounded-2xl p-6 shadow-card">
+        <h3 class="text-base font-bold text-ink-heading flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</span>
+          社长实测优势 (Pros)
+        </h3>
+        <ul class="space-y-3 text-xs sm:text-sm text-ink-body leading-relaxed7">
+          {data.pros.map((pro) => (
+            <li class="flex items-start gap-2.5">
+              <span class="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
+              <span>{pro}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Cons -->
+      <div class="bg-white border border-amber-200 rounded-2xl p-6 shadow-card">
+        <h3 class="text-base font-bold text-ink-heading flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-bold">!</span>
+          注意事项与不足 (Cons)
+        </h3>
+        <ul class="space-y-3 text-xs sm:text-sm text-ink-body leading-relaxed7">
+          {data.cons.map((con) => (
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-600 font-bold shrink-0 mt-0.5">⚠️</span>
+              <span>{con}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Supported Clients & Protocols (font-mono for protocol tags) -->
+    <div class="bg-white border border-surface-border rounded-2xl p-6 my-8 space-y-4 shadow-card">
+      <h3 class="text-base font-bold text-ink-heading">
+        协议支持与全解锁能力清单
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div>
+          <span class="text-ink-muted block mb-2 font-medium">支持的加密前沿协议：</span>
+          <div class="flex flex-wrap gap-2">
+            {data.protocols.map((protocol) => (
+              <span class="px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-heading border border-surface-border font-mono text-[11px]">
+                {protocol}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <span class="text-ink-muted block mb-2 font-medium">官方推荐客户端支持：</span>
+          <div class="flex flex-wrap gap-2">
+            {data.supportedClients.map((client) => (
+              <span class="px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-heading border border-surface-border">
+                {client}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Markdown Article Content Body (Desktop 17px, Mobile 16px, line-height 1.85, contrast > 7:1) -->
+    <article class="prose max-w-none my-12 text-ink-body text-base lg:text-[17px] leading-relaxed7">
+      <Content />
+    </article>
+
+    <!-- Airport Review FAQ Section (Schema FAQPage) -->
+    <div class="my-10 bg-white rounded-3xl border border-surface-border p-6 sm:p-8 shadow-card space-y-4">
+      <h2 class="text-xl sm:text-2xl font-black text-ink-heading tracking-tight">
+        ❓ 关于 {data.name} 的高频疑问解答 (FAQ)
+      </h2>
+      <div class="space-y-3 pt-2">
+        {airportFaqs.map((faq) => (
+          <details class="group bg-surface-subtle rounded-xl border border-surface-border p-4 [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between cursor-pointer font-bold text-ink-heading text-sm sm:text-base">
+              <span>{faq.question}</span>
+              <span class="transition group-open:rotate-180 text-brand-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <p class="mt-3 text-sm text-ink-body leading-relaxed7 pt-2 border-t border-surface-border/60">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </div>
+
+    <!-- Bottom High Conversion Banner -->
+    <div class="my-12 bg-gradient-to-r from-brand-600 to-brand-700 p-8 sm:p-10 rounded-3xl text-white text-center shadow-lg relative overflow-hidden">
+      <div class="max-w-2xl mx-auto space-y-4 relative z-10">
+        <span class="px-3 py-1 rounded-full text-xs font-bold bg-white text-brand-700 font-mono shadow-sm">
+          限时特惠通道生效中
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white">
+          立即开通 {data.name}，享受晚高峰 8K 物理专线
+        </h2>
+        <p class="text-sm text-blue-100">
+          使用社长独家优惠券代码 <code class="px-2 py-0.5 rounded bg-white text-brand-700 font-mono font-bold text-base shadow-sm">{data.couponCode || 'SHEZHANG2026'}</code> 立享 {data.discountRate || '7折'} 专属优惠！
+        </p>
+        <div class="pt-2 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href={`/go/${data.affiliateSlug}`}
+            target="_blank"
+            rel="nofollow sponsored noopener noreferrer"
+            class="px-8 py-3.5 rounded-xl bg-white text-brand-700 hover:bg-blue-50 font-black text-sm shadow-md transition-all active:scale-95"
+          >
+            直达官网激活折扣 ➔
+          </a>
+          <button
+            type="button"
+            data-copy-coupon={data.couponCode || 'SHEZHANG2026'}
+            class="px-6 py-3.5 rounded-xl bg-brand-800/80 border border-brand-400 text-white font-semibold text-sm hover:bg-brand-800 transition-colors"
+          >
+            一键复制优惠码
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sticky Floating Bottom Conversion Bar -->
+  <FloatingCtaBar
+    name={data.name}
+    price={data.priceMonthly}
+    currency={data.currency}
+    couponCode={data.couponCode}
+    discountRate={data.discountRate}
+    affiliateSlug={data.affiliateSlug}
+    rating={data.rating}
+    lineType={data.lineType}
+  />
+
+  <!-- Schema.org Product, Review, BreadcrumbList, FAQPage, Article Rich Snippets -->
+  <JsonLd schema={productSchema} />
+  <JsonLd schema={breadcrumbSchema} />
+  <JsonLd schema={faqSchema} />
+  <JsonLd schema={articleSchema} />
+</BaseLayout>

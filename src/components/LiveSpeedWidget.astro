@@ -1,0 +1,71 @@
+---
+const probeNodes = [
+  { location: '深港 IPLC 物理专线', latency: '18ms', jitter: '0.4ms', loss: '0.00%', status: 'optimal' },
+  { location: '沪日 IPLC 极速专线', latency: '31ms', jitter: '0.8ms', loss: '0.01%', status: 'optimal' },
+  { location: '广新 IEPL 跨境专线', latency: '42ms', jitter: '1.1ms', loss: '0.00%', status: 'optimal' },
+  { location: '美西圣何塞 AI 原生专线', latency: '128ms', jitter: '2.0ms', loss: '0.02%', status: 'optimal' },
+  { location: '欧洲法兰克福 BGP 中继', latency: '145ms', jitter: '2.5ms', loss: '0.05%', status: 'normal' },
+];
+---
+
+<section class="my-16 bg-white border border-surface-border rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-card">
+  <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-surface-border">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        7×24H 骨干网物理专线探针网络
+      </div>
+      <h2 class="text-xl sm:text-2xl font-black text-ink-heading">
+        社长实验室实时测速基准面板
+      </h2>
+      <p class="text-xs sm:text-sm text-ink-muted mt-1">
+        真实监控全国 3 大运营商（电信/联通/移动）晚高峰（20:00 - 23:00）骨干网专线真实测速与丢包数据
+      </p>
+    </div>
+
+    <!-- Live Peak Metric Badge -->
+    <div class="flex items-center gap-4 bg-surface-subtle p-3.5 rounded-xl border border-surface-border self-stretch lg:self-auto justify-around sm:justify-start">
+      <div class="text-center sm:text-left pr-4 border-r border-surface-border">
+        <span class="text-[11px] text-ink-muted block">晚高峰最高突发</span>
+        <span class="text-xl font-black text-brand-600 font-mono">1,024 <span class="text-xs font-normal text-ink-muted">Mbps</span></span>
+      </div>
+      <div class="text-center sm:text-left">
+        <span class="text-[11px] text-ink-muted block">平均专线丢包率</span>
+        <span class="text-xl font-black text-emerald-600 font-mono">0.01%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telemetry Table (Data & parameters strictly in font-mono) -->
+  <div class="mt-6 overflow-x-auto">
+    <table class="w-full text-left text-xs sm:text-sm">
+      <thead>
+        <tr class="text-ink-muted border-b border-surface-border bg-surface-subtle/50">
+          <th class="py-3 px-3 font-semibold">监测物理线路</th>
+          <th class="py-3 px-3 font-semibold">实测光纤延迟</th>
+          <th class="py-3 px-3 font-semibold">网络抖动 (Jitter)</th>
+          <th class="py-3 px-3 font-semibold">丢包率</th>
+          <th class="py-3 px-3 font-semibold text-right">健康状态</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-surface-border font-mono">
+        {probeNodes.map((node) => (
+          <tr class="hover:bg-surface-subtle/60 transition-colors">
+            <td class="py-3.5 px-3 font-sans font-medium text-ink-heading flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              {node.location}
+            </td>
+            <td class="py-3.5 px-3 text-brand-600 font-bold">{node.latency}</td>
+            <td class="py-3.5 px-3 text-ink-body">{node.jitter}</td>
+            <td class="py-3.5 px-3 text-emerald-600 font-semibold">{node.loss}</td>
+            <td class="py-3.5 px-3 text-right">
+              <span class="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                物理通畅
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>

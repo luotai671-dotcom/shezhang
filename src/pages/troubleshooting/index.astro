@@ -1,0 +1,651 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+
+const allGuides = await getCollection('guides');
+
+// 精选 6 篇与排障、防封、专线架构及防坑强相关的深度长文
+const curatedSlugs = [
+  'beginner-anti-scam-airport-guide',
+  'chatgpt-claude-unlock-guide',
+  'iplc-vs-iepl-guide',
+  'hysteria2-tuic-v5-nextgen-protocol-airport-recommendation',
+  'gaming-steam-low-latency-airport-recommendation',
+  'pay-as-you-go-non-expiring-airport-recommendation',
+];
+
+const troubleGuides = curatedSlugs
+  .map((slug) => allGuides.find((g) => g.slug === slug))
+  .filter(Boolean);
+
+// 8 大典型故障速查矩阵
+const symptoms = [
+  {
+    id: 's1',
+    icon: '🔴',
+    title: '节点全部标红超时 (Timeout)',
+    causes: '本地系统时钟误差超 60 秒 / 杀软误杀 mihomo / 订阅过期未更新',
+    action: '校准系统时间为 NTP 自动同步，右键更新订阅，将客户端目录加入杀软白名单。',
+    tag: '时钟与连接',
+  },
+  {
+    id: 's2',
+    icon: '🐢',
+    title: '开启代理后国内网站极慢/打不开',
+    causes: '代理模式被误设为 Global (全局) 导致国内流量绕道海外',
+    action: '将客户端路由模式切换为「Rule (规则分流)」或「Config (配置)」，国内流量走直连。',
+    tag: '路由分流',
+  },
+  {
+    id: 's3',
+    icon: '⚠️',
+    title: '关掉代理后电脑彻底断网无法上网',
+    causes: '客户端异常崩溃导致系统注册表代理开关未自动复位还原',
+    action: '进入 Windows 设置 -> 网络和 Internet -> 代理 -> 手动关闭「使用代理服务器」。',
+    tag: '系统设置',
+  },
+  {
+    id: 's4',
+    icon: '🤖',
+    title: 'ChatGPT / Claude 提示 Access Denied / 1020',
+    causes: '使用的机房数据中心 IP 欺诈度过高，被 OpenAI Cloudflare 批量风控',
+    action: '切换到美/日原生家庭住宅 IP（Residential IP）节点，并开启客户端 TUN 模式。',
+    tag: 'AI防风控',
+  },
+  {
+    id: 's5',
+    icon: '🔄',
+    title: 'Cloudflare 循环验证 (不停点选验证码)',
+    causes: '节点 IP 纯净度低、信誉崩塌，或浏览器 WebRTC 泄漏了真实本地 IP',
+    action: '更换低风险原生住宅节点，在客户端开启 Fake-IP 模式并关闭浏览器 WebRTC。',
+    tag: '人机验证',
+  },
+  {
+    id: 's6',
+    icon: '🎮',
+    title: 'Steam / 外服联机失败 / NAT 类型严格',
+    causes: '仅开启 HTTP 系统代理，UDP 报文未被接管或节点不支持 FullCone',
+    action: '在客户端开启「TUN 虚拟网卡模式」，并选择标有「FullCone / NAT1」的游戏专线。',
+    tag: '游戏联机',
+  },
+  {
+    id: 's7',
+    icon: '🚫',
+    title: 'Clash 提示 Port 7890 Occupied (端口占用)',
+    causes: '历史代理进程残留未彻底杀死，或与其他抓包/网络工具端口冲突',
+    action: '在任务管理器结束 mihomo.exe 进程，或在设置中将 Mixed Port 改为 7892 等空闲端口。',
+    tag: '端口冲突',
+  },
+  {
+    id: 's8',
+    icon: '🛠️',
+    title: 'TUN 虚拟网卡安装失败 / 启动报错',
+    causes: '缺少管理员特权，或系统 Wintun 驱动被第三方卫士拦截',
+    action: '右键以管理员身份运行客户端，点击安装 Service Mode（服务模式）后再启动 TUN。',
+    tag: '网卡驱动',
+  },
+];
+
+// 排障诊断工具箱
+const diagnosticTools = [
+  {
+    name: 'Scamalytics IP 欺诈分查询',
+    desc: '查询当前节点出口 IP 的风控分值（0~100分）。分值低于 10 分为安全，超过 30 分极易触发 ChatGPT / Claude 封号拦截。',
+    url: 'https://scamalytics.com/ip',
+    tag: 'IP纯净度',
+    recommend: 'AI 必备',
+  },
+  {
+    name: 'BrowserLeaks WebRTC 泄漏测试',
+    desc: '检测浏览器是否通过 WebRTC 协议泄漏了你的大陆本地公网与局域网真实真实 IP。',
+    url: 'https://browserleaks.com/webrtc',
+    tag: '隐私防漏',
+    recommend: '防关联',
+  },
+  {
+    name: 'DNSLeakTest 域名解析泄漏测试',
+    desc: '检测访问外网时域名 DNS 解析是否仍由国内运营商（电信/联通/移动）接管，防止被本地 ISP 嗅探。',
+    url: 'https://dnsleaktest.com/',
+    tag: 'DNS安全',
+    recommend: '防劫持',
+  },
+  {
+    name: 'Speedtest 全球节点基准测速',
+    desc: '测量专线节点的真实物理延迟、抖动（Jitter）与单线程下行极限带宽。',
+    url: 'https://www.speedtest.net/',
+    tag: '带宽性能',
+    recommend: '4K测速',
+  },
+];
+
+// 12 个高频排障常见问题 (每题约 130~160 字)
+const troubleFaqs = [
+  {
+    id: 1,
+    q: '为什么关掉代理软件之后，电脑完全无法上网了？',
+    a: '这是由于客户端在异常退出或强制关机时，未能自动向系统发送注销指令，导致 Windows 注册表中的「系统代理（Proxy Enable）」依然保持锁定开启状态。解决办法极其简单：打开 Windows 设置 -> 网络和 Internet -> 代理，手动将「使用代理服务器」开关关闭，网页即可秒级恢复正常上网。',
+    tag: '断网急救',
+  },
+  {
+    id: 2,
+    q: '节点列表全部超时标红且提示“Timeout”，最快该怎么排查？',
+    a: '节点全红 90% 源自三点核心诱因：第一是系统时钟偏差，打开系统日期和时间设置开启“立即同步”；第二是客户端订阅节点已失效，在配置列表右键点击“更新订阅（Update）”同步最新机房节点；第三是电脑管家或杀毒软件拦截了底层内核，需在安全软件中将代理软件安装目录添加至信任白名单。',
+    tag: '全红超时',
+  },
+  {
+    id: 3,
+    q: '为什么开启系统代理后，微信、淘宝国内应用变得极度卡顿？',
+    a: '根本原因在于客户端路由模式误设成了「Global（全局模式）」，导致原本走国内直连的微信、百度请求全量绕道海外再折返。解决方案：在客户端界面将代理模式切换为「Rule（规则分流）」或「Config（配置模式）」，国内大陆域名与 IP 会走本地直连，仅海外受限网址走专线节点，既不影响国内网速又省流量。',
+    tag: '分流配置',
+  },
+  {
+    id: 4,
+    q: 'ChatGPT 一直报错“Access Denied 1020”，是我的账号被封了吗？',
+    a: '并非账号被封，而是该报错代表 OpenAI 的 Cloudflare WAF 防火墙拦截了你当前节点的出口机房 IP。由于公网机房 IP（如 AWS、甲骨文）黑产滥用严重，OpenAI 对其设严苛风控。解决方法：更换具备本土真实家庭宽带属性的「原生住宅 IP 专线」，配合浏览器无痕窗口并清除历史 Cookie 后重新访问即可直接解封。',
+    tag: 'AI防封',
+  },
+  {
+    id: 5,
+    q: '什么是 TUN 模式？为什么有些软件（如 Git、终端、外服游戏）开代理不起作用？',
+    a: '系统默认代理只支持遵循 HTTP 协议的标准浏览器。很多外服游戏客户端、Docker 容器、Git 命令行终端并不遵循系统代理设置。开启客户端的「TUN 虚拟网卡模式」后，系统会在底层虚拟一张专用网卡接管整机所有的 TCP 与 UDP 网络报文，实现 100% 全透明物理加速，彻底解决特定应用不走代理的痛点。',
+    tag: 'TUN模式',
+  },
+  {
+    id: 6,
+    q: 'Clash 提示“Port 7890 occupied”端口占用无法启动怎么办？',
+    a: '该提示代表系统已有其他软件占用了 7890 代理端口。两步排查：第一，打开任务管理器，检查并结束历史未关闭的 mihomo.exe 或 clash-core 进程；第二，若端口被其他软件占用，可在客户端设置中找到「Mixed Port（混合端口）」选项，将 7890 修改为 7892 或其他未占用的四位数端口，点击重启即可正常运行。',
+    tag: '端口冲突',
+  },
+  {
+    id: 7,
+    q: '怎么判断自己当前的节点是不是容易被封号的万人骑机房 IP？',
+    a: '打开专业 IP 评估平台 Scamalytics（scamalytics.com/ip），输入或查看当前节点出口 IP。若类型显示为 Data Center（数据中心），欺诈风险分（Fraud Score）超过 20 分，即代表为机房 IP，极易触发验证码或封号；若类型显示为 ISP / Residential（家庭住宅）且分值低于 5 分，则属于极度纯净的高信誉节点。',
+    tag: 'IP纯净度',
+  },
+  {
+    id: 8,
+    q: '为什么访问国外网站老是频繁弹出 Cloudflare 人机验证死循环？',
+    a: 'Cloudflare 循环验证通常源于两个因素：一是当前节点的出口 IP 被黑产过度污染，被各大安全联盟拉入高危信誉池；二是浏览器开启了 WebRTC 导致大陆本地公网 IP 意外泄漏。解决方法：切换到原生住宅 IP 节点，并在客户端开启 Fake-IP 模式以及在浏览器扩展中关闭 WebRTC，验证死循环将彻底消失。',
+    tag: '人机验证',
+  },
+  {
+    id: 9,
+    q: '苹果手机小火箭（Shadowrocket）经常后台断流该怎么设置？',
+    a: 'iOS 后台保活机制严格。三步优化策略：首先进入手机「设置」->「通用」->「后台 App 刷新」，确保 Shadowrocket 处于开启状态；其次在小火箭「设置」->「延迟测试方法」中改为 CONNECT 并在全局路由保持「配置」模式；最后避免长时间开启低电量省电模式，低电量下系统会强制休眠第三方 VPN 进程。',
+    tag: '苹果保活',
+  },
+  {
+    id: 10,
+    q: '安卓手机与鸿蒙系统使用代理软件经常被系统杀后台怎么办？',
+    a: '安卓系统省电策略极其激进。解决步骤：1. 在手机系统设置「电池」->「应用耗电管理」中找到 v2rayNG 或 Clash，将策略由“智能限制”改为“无限制 / 允许完全后台活动”；2. 在手机多任务卡片预览界面，长按或下拉代理客户端应用卡片，点击“锁定”小图标；3. 开启系统的「开机自启」权限。',
+    tag: '安卓防杀',
+  },
+  {
+    id: 11,
+    q: '玩外服游戏时，NAT 类型显示 Strict (严格/NAT3) 如何解决？',
+    a: 'NAT 3 会导致游戏无法 P2P 联机与组队开麦。彻底根治方案：在代理客户端（如 Clash Verge Rev）中开启「TUN 模式」，并确保在设置中勾选开启了「UDP 转发（UDP Enable）」；节点方面，必须选择支持 FullCone NAT1（全锥形）的高速专线，游戏内的网络类型即可秒变 Open（开放）或 Moderate（中等）。',
+    tag: '游戏NAT',
+  },
+  {
+    id: 12,
+    q: '怎么测试自己的代理网络是否存在 DNS 污染或真实 IP 泄漏？',
+    a: '连接代理后，访问专业泄漏检测平台 dnsleaktest.com 进行 Standard Test。如果测试结果列表中出现中国电信、联通、移动等国内 ISP 的 DNS 服务器，说明存在 DNS 泄漏！彻底解决办法是在代理软件中开启「Fake-IP 模式」并将远程 DNS 设定为 DoH（如 https://1.1.1.1/dns-query），让域名解析全程走专线内网。',
+    tag: '防DNS泄漏',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: troubleFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="科学上网网络排障与防封全科指南 | 节点全红超时、DNS泄漏与 Cloudflare 人机验证彻底根治"
+  description="机场社长技术排障全科手册：全面覆盖节点全红超时、关代理无法上网、TUN 虚拟网卡安装失败、ChatGPT 1020 报错及 DNS 泄漏等 12 大典型网络故障的保姆级根治方案。"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '全部专题', href: '/' }, { label: '网络排障与防封' }]} />
+
+    <!-- Hero Header -->
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold mb-3">
+        🛠️ 技术排障与网络防封实战中心 · 2026 全面重构版
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        科学上网网络排障与防封全科指南
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+        节点突然连不上？打开 Google 报错？遇到问题别慌，社长为你汇总涵盖 Windows、macOS、iOS、Android 全平台的 100% 根治修复方案。
+      </p>
+
+      <!-- Stat Badges -->
+      <div class="flex items-center justify-center gap-3 sm:gap-6 flex-wrap mt-6 text-xs text-ink-muted">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-subtle border border-surface-border">
+          <span class="w-2 h-2 rounded-full bg-rose-500"></span> 8 大典型故障速查
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-subtle border border-surface-border">
+          <span class="w-2 h-2 rounded-full bg-brand-500"></span> 6 套底层排错手册
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-subtle border border-surface-border">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 4 款在线自测工具
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-subtle border border-surface-border">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span> 12 问结构化 FAQ
+        </span>
+      </div>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1">💡 节点全红连不上？社长 1 分钟自检核心速答：</strong>
+        节点出现全红 Timeout 超时，90% 的原因集中于三点：1. 电脑系统本地时间与真实 NTP 网络时间误差超过 60 秒触发加密握手拒绝；2. 客户端 System Proxy 开关未打开或 TUN 虚拟网卡未授权；3. 客户端未同步最新节点列表，需右键执行“更新订阅”。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- ======================================================== -->
+    <!-- 模块一：8 大典型故障现象速查矩阵 (Symptom-based Grid) -->
+    <!-- ======================================================== -->
+    <section class="my-10" id="symptom-matrix">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>⚡</span> <span>常见故障现象 10 秒对号入座</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">根据你遇到的报错症状，直接获取对应的成因拆解与修复方案</p>
+        </div>
+        <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-muted border border-surface-border self-start sm:self-auto">
+          8 大高频症状
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {symptoms.map((s) => (
+          <div class="bg-white border border-surface-border hover:border-brand-300 rounded-2xl p-5 shadow-sm hover:shadow-card transition-all flex flex-col justify-between space-y-3">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xl">{s.icon}</span>
+                <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-surface-subtle text-brand-700 border border-surface-border">
+                  {s.tag}
+                </span>
+              </div>
+              <h3 class="text-sm font-bold text-ink-heading leading-snug">
+                {s.title}
+              </h3>
+              <p class="text-[11px] text-ink-muted mt-2 leading-relaxed">
+                <strong class="text-rose-600 font-semibold">成因：</strong>{s.causes}
+              </p>
+            </div>
+            <div class="pt-3 border-t border-surface-border text-xs text-ink-body bg-surface-subtle/50 -mx-5 -mb-5 p-4 rounded-b-2xl">
+              <strong class="text-brand-700 block font-bold mb-1 text-[11px]">🎯 极速解法：</strong>
+              <p class="text-[11px] leading-relaxed text-ink-body">{s.action}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 模块二：六大底层排障实操与根治手册 (Step-by-Step Manual) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="deep-dive-solutions">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>📖</span> <span>六大核心排障实操与彻底根治手册</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">手把手教你配置 NTP 时钟、TUN 服务模式驱动、DoH 防污染与注册表复位</p>
+        </div>
+        <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-muted border border-surface-border self-start sm:self-auto">
+          保姆级图文指南
+        </span>
+      </div>
+
+      <div class="space-y-6">
+        <!-- 方案 1 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 font-black text-sm flex items-center justify-center shrink-0 border border-rose-200">
+              01
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                系统时钟 NTP 强制校准（彻底解决 90% 的节点超时标红）
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                现代加密代理协议（如 VMess、VLESS、Trojan、Shadowsocks）在 TLS 握手阶段强制验证客户端与服务端时间戳。若本地电脑时钟相差超过 <strong>60 秒</strong>，服务端会将其判定为“黑客重放攻击”并直接拒绝连接。
+              </p>
+              <div class="bg-slate-900 text-slate-100 p-3 rounded-xl font-mono text-xs overflow-x-auto my-2">
+                <span class="text-slate-400"># Windows 管理员 PowerShell 一键强制同步真实时间：</span><br />
+                w32tm /resync /force
+              </div>
+              <p class="text-xs text-ink-muted">
+                💡 普通操作：进入 Windows「设置」->「时间和语言」->「日期和时间」，确保开启「自动设置时间」，并点击「立即同步」。macOS 用户可在系统设置的日期与时间中勾选“自动设置日期与时间”。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 方案 2 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 font-black text-sm flex items-center justify-center shrink-0 border border-brand-200">
+              02
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                TUN 虚拟网卡安装与服务模式启用（解决应用不走代理与游戏掉线）
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                系统的“系统代理（System Proxy）”仅对遵循 HTTP 规范的浏览器生效。Steam、Discord 语音、Git 终端、Uplay 必须依靠底层虚拟网卡接管。
+              </p>
+              <ul class="list-disc list-inside text-xs sm:text-sm text-ink-body space-y-1.5 pl-1">
+                <li><strong>步骤一：</strong>关闭代理软件，鼠标右键点击软件桌面图标，选择「以管理员身份运行」。</li>
+                <li><strong>步骤二：</strong>在客户端设置（Settings）中找到「Service Mode（服务模式）」或「虚拟网卡驱动」，点击右侧的「Manage -> Install」完成授权。</li>
+                <li><strong>步骤三：</strong>安装完成后，将主界面上的「TUN Mode（TUN 模式）」开关打开。此时整机包括局域网、终端与游戏的 TCP/UDP 流量将 100% 透明加速。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 方案 3 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-black text-sm flex items-center justify-center shrink-0 border border-emerald-200">
+              03
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                根治 DNS 污染与 DNS 泄漏（防止 ISP 运营商劫持与网页劫持）
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                DNS 泄漏会导致你访问境外网站的所有域名均被国内运营商机房获知并记录日志。要达到 100% 防护，需在客户端开启 <strong>Fake-IP 模式</strong> 与加密的 <strong>DoH (DNS-over-HTTPS)</strong>。
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2 text-xs">
+                <div class="p-3 rounded-xl bg-surface-subtle border border-surface-border">
+                  <strong class="text-ink-heading block mb-1">推荐国外安全 DoH 节点：</strong>
+                  <code class="text-brand-700 font-mono">https://1.1.1.1/dns-query</code><br />
+                  <code class="text-brand-700 font-mono">https://8.8.8.8/dns-query</code>
+                </div>
+                <div class="p-3 rounded-xl bg-surface-subtle border border-surface-border">
+                  <strong class="text-ink-heading block mb-1">推荐国内高速直连 DNS：</strong>
+                  <code class="text-ink-body font-mono">223.5.5.5 (阿里 DNS)</code><br />
+                  <code class="text-ink-body font-mono">119.29.29.29 (腾讯 DNSPod)</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 方案 4 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 font-black text-sm flex items-center justify-center shrink-0 border border-amber-200">
+              04
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                退出代理后断网修复（清理注册表残留与端口死锁）
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                很多人在关机或强制杀死代理进程后，发现电脑“无法连接互联网，DNS 解析失败”。这是因为 Windows 系统代理注册表项未被正常置 0，流量依然被强行导向已经关闭的 127.0.0.1:7890 端口。
+              </p>
+              <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                <strong>🛠️ 一秒复位方案：</strong>按下 <kbd class="px-1.5 py-0.5 rounded bg-white border border-amber-300 font-mono">Win + I</kbd> 打开设置 -> 点击「网络和 Internet」-> 选择「代理」-> 在“手动设置代理”下方，将「使用代理服务器」开关手动切换为 <strong>关 (Off)</strong>，刷新网页即可瞬间复活。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 方案 5 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 font-black text-sm flex items-center justify-center shrink-0 border border-purple-200">
+              05
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                ChatGPT 与 Claude 防封号避坑指南（纯净原生住宅 IP 判定）
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                OpenAI 对使用廉价机房 IP、万人骑共享节点以及频繁切换跨国 IP 的账号实施批量降权与封号。稳定使用 AI 必须满足三大金律：
+              </p>
+              <ul class="list-disc list-inside text-xs sm:text-sm text-ink-body space-y-1.5 pl-1">
+                <li><strong>选用真原生住宅 IP：</strong>使用如闪电鼠、大佬云的美国家庭宽带专线节点，Scamalytics 风险分必须 &lt; 5 分。</li>
+                <li><strong>固定使用同一区域：</strong>严禁短时间内从美国节点瞬间切换为日本或香港节点，触发异地登录风控。</li>
+                <li><strong>开启浏览器无痕/防指纹模式：</strong>避免大陆本地 Cookie 与历史缓存遗留被 OpenAI 追踪指纹。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 方案 6 -->
+        <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-sm hover:shadow-card transition-all">
+          <div class="flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 font-black text-sm flex items-center justify-center shrink-0 border border-sky-200">
+              06
+            </span>
+            <div class="space-y-2 flex-grow">
+              <h3 class="text-base font-bold text-ink-heading">
+                杀毒软件与防火墙防误杀配置规范
+              </h3>
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+                Windows Defender、火绒安全或 360 经常将开源内核 <code>mihomo.exe</code>、<code>xray.exe</code> 误判定为风险程序并直接静默隔离删档，导致客户端启动报错或节点全红。
+              </p>
+              <p class="text-xs text-ink-muted">
+                <strong>规范设置：</strong>打开 Windows 安全中心 ->「病毒和威胁防护」->「“病毒和威胁防护”设置」->「添加或删除排除项」-> 将代理客户端的整个安装文件夹添加至排除白名单，即可永绝后患。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 模块三：在线网络排障与纯净度测试工具箱 (Toolbox) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="diagnostic-toolbox">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>🧰</span> <span>在线网络诊断与纯净度自测工具箱</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">社长实验室常用权威在线测试站，一键自测当前节点的风控级别与网络健康度</p>
+        </div>
+        <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-muted border border-surface-border self-start sm:self-auto">
+          免费在线检测
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {diagnosticTools.map((t) => (
+          <div class="bg-white border border-surface-border hover:border-brand-300 rounded-2xl p-5 shadow-sm hover:shadow-card transition-all flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-[10px] font-mono font-bold">
+                  {t.tag}
+                </span>
+                <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {t.recommend}
+                </span>
+              </div>
+              <h3 class="text-sm font-bold text-ink-heading">
+                {t.name}
+              </h3>
+              <p class="text-xs text-ink-body leading-relaxed">
+                {t.desc}
+              </p>
+            </div>
+            <div class="pt-4 mt-3 border-t border-surface-border flex items-center justify-between text-xs">
+              <span class="text-ink-muted font-mono text-[11px] truncate max-w-[200px]">
+                {t.url.replace('https://', '')}
+              </span>
+              <a
+                href={t.url}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                class="px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-brand-50 text-brand-700 border border-surface-border font-bold text-xs transition-colors flex items-center gap-1"
+              >
+                立即前往检测 ➔
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 模块四：深度排障与关联专题文章矩阵 (Curated Guides) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="curated-guides">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>📚</span> <span>深度排障与出海避坑长文全览</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">涵盖跑路特征识别、AI住宅IP防封、专线架构科普与外服游戏实战</p>
+        </div>
+        <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-surface-subtle text-ink-muted border border-surface-border self-start sm:self-auto">
+          精选 6 篇必读
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {troubleGuides.map((g) => {
+          if (!g) return null;
+          return (
+            <article class="bg-white border border-surface-border hover:border-brand-400 rounded-2xl p-6 shadow-sm hover:shadow-card transition-all flex flex-col justify-between group">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="px-2 py-0.5 rounded-full bg-surface-subtle text-brand-700 font-bold border border-surface-border text-[11px]">
+                    深度专题
+                  </span>
+                  <span class="font-mono text-ink-muted text-[11px]">阅读 {g.data.readingTime}</span>
+                </div>
+
+                <h3 class="text-base font-bold text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+                  <a href={`/guides/${g.slug}`}>
+                    {g.data.title}
+                  </a>
+                </h3>
+
+                <p class="text-xs text-ink-body line-clamp-2 leading-relaxed">
+                  {g.data.description}
+                </p>
+              </div>
+
+              <div class="pt-4 mt-4 border-t border-surface-border flex items-center justify-between text-xs">
+                <span class="text-ink-muted font-mono text-[11px]">
+                  更新：{g.data.updatedDate || g.data.publishDate}
+                </span>
+                <a
+                  href={`/guides/${g.slug}`}
+                  class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all group-hover:translate-x-0.5"
+                >
+                  阅读方案 ➔
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Bottom Fast Navigation -->
+    <div class="my-12 p-6 rounded-2xl bg-surface-subtle border border-brand-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="space-y-1 text-center sm:text-left">
+        <h3 class="text-base font-bold text-ink-heading">
+          💻 正在寻找客户端配置保姆级教程？
+        </h3>
+        <p class="text-xs text-ink-muted">
+          查看 Windows / Mac / iOS / Android 全平台客户端教程库，手把手教你配置 Clash、小火箭与 Sing-box。
+        </p>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <a
+          href="/clients"
+          class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+        >
+          客户端教程库 ➔
+        </a>
+        <a
+          href="/recommend"
+          class="px-4 py-2.5 rounded-xl bg-white hover:bg-surface-subtle text-ink-heading border border-surface-border font-bold text-xs shadow-sm transition-all"
+        >
+          查看年度专线推荐
+        </a>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 模块五：网络排障高频常见问答 (FAQ 12 问 Accordion) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="trouble-faq-section">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-surface-border">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold mb-2">
+            💡 疑难速查 · 核心解答
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-heading flex items-center gap-2">
+            <span>❓</span> <span>科学上网网络排障高频问答 (FAQ 12 问)</span>
+          </h2>
+          <p class="text-xs text-ink-muted mt-1">
+            覆盖电脑断网急救、端口冲突、节点超时、AI防封及游戏NAT优化的权威实战解答
+          </p>
+        </div>
+        <span class="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-surface-subtle text-ink-heading border border-surface-border shrink-0 self-start sm:self-auto">
+          收录 12 问
+        </span>
+      </div>
+
+      <!-- FAQ Accordion Container (2 Columns) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {troubleFaqs.map((faq) => (
+          <details class="group bg-white border border-surface-border hover:border-brand-300 rounded-2xl p-5 shadow-sm transition-all duration-200 [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-start justify-between gap-3 cursor-pointer select-none">
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-md bg-rose-50 text-rose-700 font-mono font-black text-xs flex items-center justify-center shrink-0 border border-rose-200 mt-0.5">
+                  Q{faq.id}
+                </span>
+                <div>
+                  <h3 class="text-sm font-bold text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+                    {faq.q}
+                  </h3>
+                  <span class="inline-block mt-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-surface-subtle text-ink-muted border border-surface-border">
+                    #{faq.tag}
+                  </span>
+                </div>
+              </div>
+              <svg
+                class="w-5 h-5 text-ink-muted group-hover:text-brand-600 transition-transform duration-200 shrink-0 group-open:rotate-180 mt-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="pt-3 mt-3 border-t border-surface-border text-xs sm:text-sm text-ink-body leading-relaxed pl-8">
+              <p>{faq.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Schema.org FAQPage Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</BaseLayout>

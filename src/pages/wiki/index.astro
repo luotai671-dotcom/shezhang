@@ -1,0 +1,464 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+
+const allGuides = await getCollection('guides');
+
+// Defined 10 core SEO topic cluster articles in exact sequence
+const targetSlugs = [
+  'iplc-vs-iepl-guide',
+  'chatgpt-claude-unlock-guide',
+  'streaming-netflix-4k-8k-airport-recommendation',
+  'cheap-budget-airport-recommendation',
+  'cross-border-ecommerce-tiktok-airport-recommendation',
+  'pay-as-you-go-non-expiring-airport-recommendation',
+  'hysteria2-tuic-v5-nextgen-protocol-airport-recommendation',
+  'gaming-steam-low-latency-airport-recommendation',
+  'beginner-anti-scam-airport-guide',
+  'exclusive-airport-coupons-yearly-discount-guide',
+];
+
+const topicArticles = targetSlugs.map((slug, idx) => {
+  const guide = allGuides.find((g) => g.slug === slug);
+  if (guide) return { ...guide, serialNo: idx + 1 };
+  return null;
+}).filter(Boolean);
+
+const glossary = [
+  { term: 'IPLC (国际私有租用线路)', def: 'International Private Leased Circuit，跨境两端通过物理点对点海底光缆内网直通，完全不过国家防火墙 (GFW) 检查，晚高峰无拥堵。' },
+  { term: 'IEPL (国际以太网专线)', def: 'International Ethernet Private Line，以太网架构的点对点专线，具备极高带宽弹性与极低物理抖动，是 2026 年高端机场骨干主流。' },
+  { term: 'BGP (边界网关协议中继)', def: '通过国内电信/联通/移动多线机房智能选路中转，再经公网出口到达境外，成本相对低廉，但晚高峰受国际公网骨干网拥堵影响。' },
+  { term: 'Hysteria 2 协议', def: '基于 UDP QUIC 重构的极速抗丢包加速协议，即便在 20% 弱网丢包环境下依然能凭借拥塞控制跑满千兆带宽。' },
+  { term: 'UDP FullCone (NAT 1)', def: '全锥型 NAT 网络类型，外服游戏（Switch、PS5、Xbox、Steam 联机）无需端口转发即可实现极速直连组队语音。' },
+  { term: '原生住宅 IP (Residential IP)', def: '由海外本土家庭宽带运营商（如 AT&T、Verizon、HKT）直接分配的 IP，纯净度极高，100% 免疫 ChatGPT 与流媒体封控。' },
+];
+
+const categoryPills: Record<string, string> = {
+  'iplc-vs-iepl-guide': '专线架构科普',
+  'chatgpt-claude-unlock-guide': 'AI生产力防封',
+  'streaming-netflix-4k-8k-airport-recommendation': '4K/8K流媒体',
+  'cheap-budget-airport-recommendation': '平价高性价比',
+  'cross-border-ecommerce-tiktok-airport-recommendation': '跨境出海电商',
+  'pay-as-you-go-non-expiring-airport-recommendation': '不限时按量',
+  'hysteria2-tuic-v5-nextgen-protocol-airport-recommendation': '前沿抗封协议',
+  'gaming-steam-low-latency-airport-recommendation': '外服电竞加速',
+  'beginner-anti-scam-airport-guide': '新手防坑鉴毒',
+  'exclusive-airport-coupons-yearly-discount-guide': '独家大额优惠',
+};
+
+// ========================================================
+// 30 个高热搜、高权重「机场推荐」长尾 FAQ 矩阵 (每题约 150 字)
+// ========================================================
+interface FAQItem {
+  id: number;
+  q: string;
+  a: string;
+  tag: string;
+}
+
+const airportFaqs: FAQItem[] = [
+  {
+    id: 1,
+    tag: '选型标准',
+    q: '2026年稳定好用的翻墙机场推荐标准是什么？',
+    a: '2026年评判稳定好用机场推荐的核心指标有三点：首先是物理线路，必须优先选择不过防火墙审查的 IPLC 或 IEPL 纯内网专线；其次是晚高峰表现，20:00至23:00千兆带宽实测下行需稳定在 800Mbps 以上且丢包率低于 0.05%；最后是看服务商运营历史，建议选择连续运营 3 年以上、支持按月付费且具备双路机房容灾的老牌口碑梯子。',
+  },
+  {
+    id: 2,
+    tag: '专线优势',
+    q: '为什么在机场推荐中始终强调必须选 IPLC 专线？',
+    a: 'IPLC 属于国际私有租用线路，其跨境通信跑在点对点物理海底光缆中，全程完全不经过国家防火墙（GFW）的国际出口深度包检测（DPI）。与传统公网 BGP 中继相比，专线在敏感时期与晚高峰具备绝对的不断流优势，延迟物理锁定，因此在高端专线机场推荐中始终被列为首选架构。',
+  },
+  {
+    id: 3,
+    tag: '高性价比',
+    q: '预算有限的学生党有什么便宜好用的性价比机场推荐？',
+    a: '针对学生党的高性价比机场推荐，重点考察单月门槛与真实抗封能力。首推折后仅 ¥4.8/月起的大佬云与 ¥8/月的闪电鼠，两者均提供真 IEPL 专线且不限速；若追求极限平价，可选择起步仅 7 元的光年梯或 8 元超大流量的环球梯。务必坚持按月付费，避开几块钱一年却严重超售的跑路盘。',
+  },
+  {
+    id: 4,
+    tag: 'AI工具',
+    q: '经常使用 ChatGPT 和 Claude 应该选什么样的 AI 专用机场？',
+    a: '针对大模型生产力的 AI 工具机场推荐，必须满足「原生家庭住宅 IP（Residential IP）」与「Scamalytics 欺诈风控分低于 5 分」两项硬指标。普通公网机房 IP（如 AWS）会被 OpenAI 批量拦截并导致封号。推荐使用具备美日住宅专线的闪电鼠或大佬云，并在客户端开启 TUN 模式防 DNS 泄露。',
+  },
+  {
+    id: 5,
+    tag: '流媒体追剧',
+    q: '看 Netflix 4K 和 YouTube 8K 怎么挑选流媒体解锁机场？',
+    a: '流媒体机场推荐的核心在于「本土原生流媒体版权解锁」与「单线程持续下行带宽」。只有原生广播 IP 才能完整解锁 Netflix 非自制剧、Disney+ 与 TikTok；同时单线程下行带宽需大于 100Mbps 且零丢包，才能防止 4K HDR 频繁降码率至 480P。实测首推闪电鼠与榴莲云，8K 秒开无缓冲。',
+  },
+  {
+    id: 6,
+    tag: '晚高峰抗拥堵',
+    q: '为什么很多便宜机场白天正常，一到晚上八点就严重卡顿？',
+    a: '廉价机场普遍采用普通公网 BGP 隧道中转或直连线路，需要与数以亿计的民用宽带挤占极其狭窄的国际出口。每天 20:00~23:00 晚高峰，公网出口拥堵导致丢包率飙升至 20% 以上，TCP 拥塞算法强制减速；而真 IPLC 专线由于走独立私有光缆，晚高峰完全不受公网拥堵影响。',
+  },
+  {
+    id: 7,
+    tag: '不限时按量',
+    q: '按量付费的不限时流量机场推荐适合哪些人群？',
+    a: '不限时按量计费机场推荐最适合轻度用户与应急备用人群。其特点是流量用多少扣多少、永不按月清零作废。比如偶尔查收 Google 邮件、外贸收发订单，充值 20~30 元购买 100GB 流量足以顺畅使用一整年。同时它也是主力专线机场突发故障时的最佳第二备用通道。',
+  },
+  {
+    id: 8,
+    tag: '外服电竞',
+    q: '玩 Steam、Valorant 与 Apex 等外服游戏该怎么选低延迟游戏机场？',
+    a: '游戏加速机场推荐需具备两个核心网络属性：一是物理延迟与抖动极低（深港专线延迟通常在 20~30ms 内，Jitter < 1ms）；二是节点支持 FullCone NAT1（全锥形网络）。配合客户端开启 TUN 虚拟网卡模式，可实现 P2P 联机无阻、组队秒进并流畅开麦，体验完全媲美商业游戏加速器。',
+  },
+  {
+    id: 9,
+    tag: '外贸跨境',
+    q: '跨境电商与 TikTok 运营出海专线机场怎么选才不会被限流？',
+    a: '针对外贸与 TikTok 运营的专用机场推荐，严禁使用公网漂移的万人骑机房 IP。必须挑选具备本土运营商分配的固定静态原生 IP（ISP 属性），结合指纹防关联浏览器实现“一店一号一静态 IP”，同时手机端必须拔出大陆 SIM 卡、同步当地时区并关闭定位，方可保证视频播放量破零与安全出海。',
+  },
+  {
+    id: 10,
+    tag: '新手防坑',
+    q: '2026年新手买机场如何有效识别并防范跑路风险？',
+    a: '新手买机场防跑路的三大铁律：第一，坚决坚持首月按月付款（月付几元至十几元），不给不良商家圈钱机会；第二，审查机场运营历史，优先选择连续稳定运营 3 年以上的老牌口碑大厂；第三，警惕“9.9 元年付无限流量”等违反带宽硬件成本的非正常超低价，这类多为短命资金盘。',
+  },
+  {
+    id: 11,
+    tag: '协议技术',
+    q: '翻墙机场的协议中，Hysteria 2、VLESS 和 Trojan 有什么区别？',
+    a: '传统 VLESS 和 Trojan 基于 TCP 协议，在网络通畅时稳定性与兼容性极佳，适合搭配 IPLC 专线日常使用；而 Hysteria 2（Hy2）基于 UDP QUIC 构建并使用自研 Brutal 拥塞控制，在弱网、移动 5G 信号差或丢包率达 20% 的恶劣环境下，依然能强行塞满物理带宽，是差旅抗丢包神器。',
+  },
+  {
+    id: 12,
+    tag: 'Windows软件',
+    q: 'Windows 10/11 电脑上配合专线机场最好用的客户端是什么？',
+    a: '2026 年 Windows 平台首选推荐开源的 Clash Verge Rev（内置最新 Mihomo 内核，内存占用仅约 30MB，原生支持一键安装虚拟网卡服务开启 TUN 模式全流量接管）；喜欢经典老牌界面的用户推荐 v2rayN（内置 Xray 核心，功能全协议支持度高）；追求极简萌系 UI 的可选 Clash Nyanpasu。',
+  },
+  {
+    id: 13,
+    tag: '苹果客户端',
+    q: '苹果 iPhone 和 iPad 手机科学上网应该选哪个客户端？',
+    a: 'iOS 平台综合综合体验第一推荐购买美区 App Store 的 Shadowrocket（小火箭，售价 $2.99 买断终身），后台保活极其省电且规则分流完善；追求 Clash 配置完全兼容的用户推荐 Stash（$3.99）；追求开源完全免费的用户可在外区商店下载 Sing-box 官方客户端。',
+  },
+  {
+    id: 14,
+    tag: '安卓客户端',
+    q: '安卓手机与华为鸿蒙系统科学上网用什么客户端最稳？',
+    a: '安卓与鸿蒙手机首推开源免费的 v2rayNG，具备极简的导入操作与独步天下的「分应用代理」功能，可精准指定仅海外 App 走代理；习惯 Clash 规则体系的用户推荐 Clash Meta for Android（CMFA，内置 Mihomo 核心）；追求高颜值图表与 Surge 配置兼容的可选 Surfboard。',
+  },
+  {
+    id: 15,
+    tag: '使用避坑',
+    q: '为什么打开代理客户端后，国内微信、淘宝等应用变得很慢？',
+    a: '这是因为客户端全局路由误设成了「全局模式（Global）」，导致访问国内百度、微信的请求也绕道海外再折返。解决方案：在客户端中将代理模式切换为「规则分流（Rule）」或「配置（Config）」，国内流量走直连，海外流量走专线，既提速又节省套餐流量。',
+  },
+  {
+    id: 16,
+    tag: 'IP纯净度',
+    q: '什么是原生住宅 IP？它与普通机房 IP 究竟有什么不同？',
+    a: '原生住宅 IP（Residential IP）是由海外本土电信运营商（如美国 AT&T、英国 BT、香港 HKT）直接分配给当地居民家庭宽带的真实 IP；而机房 IP 属于服务器数据中心（如 AWS、阿里云）。由于黑产与爬虫多部署在机房，AI 平台与流媒体对机房 IP 实施了严厉风控拦截，住宅 IP 则信誉极高。',
+  },
+  {
+    id: 17,
+    tag: '排错教程',
+    q: '购买了机场订阅后，节点全部标红超时（Timeout）怎么排查？',
+    a: '节点全红 90% 集中于三点原因：1. 本地系统时钟误差超 30 秒，导致 TLS 加密握手被拒绝，去系统设置开启“自动同步时间”即可；2. 客户端配置未同步机房最新 IP，右键执行“更新订阅”；3. 电脑安全软件误杀 mihomo.exe，需在杀软中将代理软件目录加入白名单。',
+  },
+  {
+    id: 18,
+    tag: '省钱攻略',
+    q: '购买专线机场选择年付划算还是月付划算？',
+    a: '新手首次接触任何新机场，前 1~2 个月强烈建议按月付款，在经历过晚高峰与敏感期实测满意后再考虑升级；对于运营多年、口碑坚挺的老牌成熟品牌，在年付自带 8 折官方折扣的基础上，叠加博主专属大额优惠码可享受“折上折”，折算单月仅需 ¥4.8~¥8，非常划算。',
+  },
+  {
+    id: 19,
+    tag: '售后保障',
+    q: '机场支持退款吗？如果不满意通常有怎样的售后保障？',
+    a: '正规老牌物理专线机场普遍提供健全的售后政策，通常支持购买后 24 小时或 72 小时内，在流量使用未超阈值前提下发起无理由工单退款（扣除通道手续费）。遇到节点异常或订阅不会导入，可直接在后台提交工单获取技术客服远程协助。',
+  },
+  {
+    id: 20,
+    tag: '设备并发',
+    q: '专线机场一个账号可以同时在几台设备上登录使用？',
+    a: '绝大多数正规专线套餐支持 3~5 台设备同时在线连接，满足个人手机、平板、笔记本和家庭台式机同时出海加速。但需注意切勿将专属订阅链接公开分享至各大社交平台或群聊，若触发异地超额 IP 并发或异常撞库，系统自动化安全防风控机制会直接触发临时停用以保护网络安全。',
+  },
+  {
+    id: 21,
+    tag: 'TUN模式',
+    q: '什么是 TUN 虚拟网卡模式？打游戏或用命令行为什么必须开？',
+    a: 'Windows/macOS 默认的“系统代理”仅遵循标准 HTTP 协议，只能代理浏览器网页，很多外服游戏客户端、Docker 容器与 Git 命令行终端并不遵循该设置。开启客户端的 TUN 模式后，系统会创建一张底层虚拟网卡接管整机全部 TCP/UDP 流量，实现真正的全局透明加速。',
+  },
+  {
+    id: 22,
+    tag: '测速真相',
+    q: '为什么有些机场宣称“不限速”，但实际测速依然只有几十兆？',
+    a: '机场服务商的“不限速”指的是服务端没有在节点后端刻意施加限速规则，但实际速率受到用户本地宽带签约速率、WiFi 路由器性能、当地运营商国际出口拥堵程度以及所选协议的影响。在千兆光纤下连接优质 IEPL 专线，实测单线程跑满 800Mbps~980Mbps 才是真不限速。',
+  },
+  {
+    id: 23,
+    tag: '大屏观影',
+    q: '专线机场支持 Apple TV 和智能电视大屏观影吗？',
+    a: '完全支持。在大屏电视端有三种优雅方案：一是在 Apple TV 上直接下载安装 Stash 或 Surge 客户端并导入专线订阅；二是在软路由（OpenWrt/iStoreOS）上配置 OpenClash 插件进行全屋透明代理；三是在电脑客户端开启“允许局域网连接”并作为电视网关。',
+  },
+  {
+    id: 24,
+    tag: '支付安全',
+    q: '购买机场订阅可以使用微信和支付宝付款吗？安全吗？',
+    a: '正规专线服务商均接入了合规的企业级聚合免签支付网关，支持支付宝与微信手机扫码安全直付，充值完成后自动秒级开通并同步订阅。对于高度注重隐私保护的极客群体与跨境从业者，部分高端专线平台还支持 USDT（TRC20）等加密货币匿名结算通道，全流程资金安全且不留个人敏感痕迹。',
+  },
+  {
+    id: 25,
+    tag: '倍率陷阱',
+    q: '机场节点列表中的“倍率（Multiplier）”是什么意思？',
+    a: '节点倍率是机场计费扣量系数。连接 1.0x 节点上网，实际消耗 1GB 扣除 1GB 余额；连接 0.2x 低倍率节点看 1GB 视频仅扣除 0.2GB，非常适合大文件下载；而部分 3.0x 或 5.0x 的低延迟极速专线，看 1GB 会扣除 3~5GB 流量。日常使用建议认准 1.0x 标准节点。',
+  },
+  {
+    id: 26,
+    tag: '防DNS泄漏',
+    q: '科学上网时遇到 DNS 泄漏和运营商劫持该怎么彻底解决？',
+    a: 'DNS 泄漏会导致国内运营商获知你所访问的海外网站域名。根治方法：在代理客户端（如 Clash Verge 或 Sing-box）中开启「内置 Fake-IP 模式」与安全加密的 DoH（DNS-over-HTTPS）功能，让域名解析全部在海外专线节点内网完成，100% 杜绝 ISP 本地嗅探。',
+  },
+  {
+    id: 27,
+    tag: '华为手机',
+    q: '华为手机被 Google 限制，安装代理客户端能够恢复 GMS 吗？',
+    a: '代理客户端负责网络数据链路的加密与跨境穿透，无法直接为华为设备植入底层的谷歌移动服务（GMS）。但在连接优质出海专线网络后，配合鸿蒙生态主流的出海应用虚拟沙箱（如 GBox、出境易），即可无需刷机在华为手机上完美运行 Google Play 商店、YouTube 与各类海外办公软件。',
+  },
+  {
+    id: 28,
+    tag: '隐私安全',
+    q: '专线机场会保存用户的上网浏览隐私日志吗？',
+    a: '正规的海外运营专线服务商普遍遵循行业通行的「零日志记录（No-Logs Policy）」守则。用户网络请求在物理光纤内部均经过高强度端到端加密封装，专线机房节点服务器普遍采用只读的 RAM 内存无盘系统实时转发，绝不持久化存储任何用户的真实公网访问记录与隐私数据，充分捍卫通信自由。',
+  },
+  {
+    id: 29,
+    tag: '换机迁移',
+    q: '换了新电脑或手机，之前的机场订阅链接还能继续使用吗？',
+    a: '完全可以。机场订阅是一串永久绑定你个人账户权益的云端托管 URL。更换新电脑或手机后，只需在新设备上安装对应的代理客户端（如 Clash Verge 或小火箭），登录机场后台重新复制该链接导入即可，历史购买的流量包配额、到期时间与节点参数将实现毫秒级全量云端同步，无需重复付费。',
+  },
+  {
+    id: 30,
+    tag: '闭眼推荐',
+    q: '2026年长期稳定不翻车的闭眼入专线机场有哪些推荐？',
+    a: '综合社长实验室连续多年跟踪与晚高峰实测探针，2026年公认长期稳定、口碑过硬的梯子首推 闪电鼠（综合榜首，IEPL+内网专线全绿满跑，¥8/月）与 大佬云（老牌 6 年旗舰，原生住宅解封，¥8/月）；追求游戏低延迟首推 神行加速；追求极致高性价比首选 云界线 与 环球梯。',
+  },
+];
+
+// Schema for all 30 FAQs
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: airportFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="专线百科科普与机场推荐知识库 | 10 大核心深度长文专题全览"
+  description="机场社长专线百科与知识库：围绕「机场推荐」打造的 10 大核心 SEO 深度长文专题，涵盖 IPLC/IEPL 专线底层原理解析、ChatGPT/Claude 住宅 IP 防封、4K/8K 奈飞流媒体、外服电竞低延迟与防跑路避坑全景。"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '全部专题', href: '/' }, { label: '专线百科科普' }]} />
+
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+        📖 专线百科科普 · 10 大核心深度长文专题库
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        科学上网与物理专线技术百科
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+        听不懂中转、专线、BGP 和协议？社长用大白话带你拆解计算机网络底层的真实逻辑，深度剖析 10 大核心出海与翻墙实战专题。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1">💡 专线与普通中转有什么区别？社长 30 秒大白话解答：</strong>
+        IPLC 与 IEPL 专线通过跨境物理海底光缆点对点内网互联，数据完全不经过国家防火墙 (GFW) 检查，抗封锁能力与晚高峰稳定性均为行业第一（AAA+）；普通公网中继则通过公网转发，成本低廉但在晚高峰极易遭遇 30% 以上丢包卡顿。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Glossary Grid -->
+    <section class="my-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-ink-heading flex items-center gap-2">
+          <span>🔍</span> <span>核心名词定义通识</span>
+        </h2>
+        <span class="text-xs text-ink-muted">高频技术术语速查</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {glossary.map((g) => (
+          <div class="bg-white border border-surface-border rounded-2xl p-5 shadow-card hover:shadow-card-hover transition-all space-y-2">
+            <h3 class="text-base font-bold text-ink-heading flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+              <span>{g.term}</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-ink-body leading-relaxed">
+              {g.def}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 10 大核心 SEO/GEO 深度长尾专题长文矩阵 (按序全量展示) -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="topic-cluster">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-surface-border">
+        <div>
+          <div class="text-xs font-bold text-brand-700 uppercase tracking-wider font-mono mb-1">
+            TOPIC CLUSTER MATRIX
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-ink-heading tracking-tight flex items-center gap-2">
+            <span>📚</span> <span>围绕「机场推荐」10 大核心深度长尾专题长文全览</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">
+            每篇正文 1500~2000 字密集实测干货，包含 GEO 前置决策表、晚高峰实测数据、配套 FAQ 与结构化 Schema
+          </p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-700 font-bold text-xs border border-brand-200 shrink-0">
+          全量收录 10 篇
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {topicArticles.map((g) => {
+          if (!g) return null;
+          const badgeText = categoryPills[g.slug] || '深度专题';
+          return (
+            <article class="bg-white border border-surface-border hover:border-brand-400 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between group">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-brand-50 text-brand-700 font-mono font-black text-xs flex items-center justify-center border border-brand-200">
+                      #{g.serialNo}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-surface-subtle text-brand-700 border border-surface-border font-bold text-[11px]">
+                      {badgeText}
+                    </span>
+                  </div>
+                  <span class="font-mono text-ink-muted text-xs">阅读 {g.data.readingTime}</span>
+                </div>
+
+                <h3 class="text-base sm:text-lg font-black text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+                  <a href={`/guides/${g.slug}`}>
+                    {g.data.title}
+                  </a>
+                </h3>
+
+                <p class="text-xs sm:text-sm text-ink-body line-clamp-3 leading-relaxed">
+                  {g.data.description}
+                </p>
+
+                <!-- Tags list -->
+                <div class="flex items-center gap-1.5 flex-wrap pt-1 text-xs">
+                  {g.data.tags.slice(0, 3).map((tag: string) => (
+                    <span class="text-[11px] text-ink-muted font-mono bg-surface-subtle px-2 py-0.5 rounded">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div class="pt-4 mt-5 border-t border-surface-border flex items-center justify-between text-xs">
+                <span class="text-ink-muted font-mono text-[11px]">
+                  更新：{g.data.updatedDate}
+                </span>
+                <a
+                  href={`/guides/${g.slug}`}
+                  class="inline-flex items-center gap-1 px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all group-hover:translate-x-0.5"
+                >
+                  阅读全文 ➔
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Bottom Fast Navigation -->
+    <div class="my-12 p-6 rounded-2xl bg-surface-subtle border border-brand-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="space-y-1 text-center sm:text-left">
+        <h3 class="text-base font-bold text-ink-heading">
+          💻 正在寻找客户端配置保姆级教程？
+        </h3>
+        <p class="text-xs text-ink-muted">
+          查看 Windows / Mac / iOS / Android 全平台客户端教程库，手把手教你配置 Clash、小火箭与 Sing-box。
+        </p>
+      </div>
+      <a
+        href="/clients"
+        class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all shrink-0"
+      >
+        进入客户端教程库 ➔
+      </a>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 用户指定位置：加入 30 个高热搜高权重「机场推荐」FAQ 矩阵 -->
+    <!-- ======================================================== -->
+    <section class="my-14" id="airport-faq-section">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-surface-border">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold mb-2">
+            💡 权威实测 · 疑难解答
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-ink-heading tracking-tight flex items-center gap-2">
+            <span>❓</span> <span>2026 翻墙机场推荐与选购高频常见问题 (FAQ 30 问)</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">
+            覆盖专线挑选、AI防封、4K流媒体、学生党性价比、外服电竞及排障鉴毒全维度，每问均经社长自费实测求证。
+          </p>
+        </div>
+        <span class="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-surface-subtle text-ink-heading border border-surface-border shrink-0 self-start sm:self-auto">
+          收录 30 个核心问答
+        </span>
+      </div>
+
+      <!-- FAQ Accordion Container (2 Columns on large screens, 1 on mobile) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="faq-accordion-grid">
+        {airportFaqs.map((faq) => (
+          <details class="group bg-white border border-surface-border hover:border-brand-300 rounded-2xl p-5 shadow-sm transition-all duration-200 [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-start justify-between gap-3 cursor-pointer select-none">
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-md bg-brand-50 text-brand-700 font-mono font-black text-xs flex items-center justify-center shrink-0 border border-brand-200 mt-0.5">
+                  Q{faq.id}
+                </span>
+                <div>
+                  <h3 class="text-sm font-bold text-ink-heading group-hover:text-brand-600 transition-colors leading-snug">
+                    {faq.q}
+                  </h3>
+                  <span class="inline-block mt-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-surface-subtle text-ink-muted border border-surface-border">
+                    #{faq.tag}
+                  </span>
+                </div>
+              </div>
+              <svg
+                class="w-5 h-5 text-ink-muted group-hover:text-brand-600 transition-transform duration-200 shrink-0 group-open:rotate-180 mt-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="pt-3 mt-3 border-t border-surface-border text-xs sm:text-sm text-ink-body leading-relaxed pl-8">
+              <p>{faq.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Schema.org FAQPage Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</BaseLayout>

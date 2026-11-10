@@ -1,0 +1,81 @@
+---
+export interface Props {
+  name: string;
+  slug: string;
+  price: string | number;
+  coupon?: string;
+  discount?: string;
+  speed?: string;
+  ping?: string;
+  tagline?: string;
+}
+
+const {
+  name,
+  slug,
+  price,
+  coupon = 'SHEZHANG2026',
+  discount = '7折',
+  speed = '980 Mbps',
+  ping = '32 ms',
+  tagline = '全内网物理 IPLC 专线，晚高峰 8K 极速秒开',
+} = Astro.props;
+---
+
+<div class="my-8 bg-white border border-surface-border rounded-2xl p-5 sm:p-6 shadow-card hover:shadow-card-hover transition-all not-prose">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <h4 class="text-lg font-bold text-ink-heading">
+          {name}
+        </h4>
+        <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-brand-700 font-bold border border-blue-200 font-mono">
+          社长认证专线
+        </span>
+      </div>
+      <p class="text-xs text-ink-muted">
+        {tagline}
+      </p>
+      <div class="flex items-center gap-3 text-xs text-ink-muted pt-1 font-mono">
+        <span class="text-brand-600 font-bold">下行: {speed}</span>
+        <span>·</span>
+        <span class="text-emerald-700">延迟: {ping}</span>
+      </div>
+    </div>
+
+    <!-- CTA & Price -->
+    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-surface-border">
+      <div class="text-right">
+        <div class="text-[11px] text-ink-muted">起步价</div>
+        <div class="text-lg font-black text-ink-heading font-mono -mt-1">
+          ¥{price}<span class="text-xs font-normal text-ink-muted">/月</span>
+        </div>
+      </div>
+
+      {coupon && (
+        <button
+          type="button"
+          data-copy-coupon={coupon}
+          class="px-3 py-2 rounded-xl bg-brand-50 text-brand-700 border border-brand-200 text-xs font-mono font-bold hover:bg-brand-100 transition-colors shadow-sm"
+          title="点击复制优惠码"
+        >
+          {coupon} ({discount})
+        </button>
+      )}
+
+      <a
+        href={`/go/${slug}`}
+        target="_blank"
+        rel="nofollow sponsored noopener noreferrer"
+        class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1 shrink-0"
+      >
+        <span>前往开通</span>
+        <span>➔</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+

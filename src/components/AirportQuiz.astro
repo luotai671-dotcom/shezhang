@@ -1,0 +1,300 @@
+---
+---
+
+<div class="my-16 bg-white border border-surface-border rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-card" id="smart-quiz">
+  <div class="max-w-3xl mx-auto text-center space-y-3 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold">
+      🎯 智能决策引擎 · 拒绝选择困难
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-black text-ink-heading">
+      3 秒智能选机场向导
+    </h2>
+    <p class="text-xs sm:text-sm text-ink-muted">
+      根据你的核心用途、宽带环境与预算偏好，实时匹配最稳妥的专线服务商
+    </p>
+  </div>
+
+  <div class="max-w-2xl mx-auto space-y-6">
+    
+    <!-- Step 1: Use Case -->
+    <div class="quiz-step" data-step="1">
+      <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-3">
+        步骤 1/3：你的核心使用场景？
+      </label>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quiz-intent">
+        <button
+          type="button"
+          data-value="ai"
+          class="quiz-btn active p-3.5 rounded-xl bg-brand-50/60 border border-brand-600 text-left transition-all hover:border-brand-500 flex items-center gap-3 shadow-sm"
+        >
+          <span class="text-2xl">🤖</span>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-ink-heading">AI 生产力 / 研发</div>
+            <div class="text-[11px] text-ink-muted">ChatGPT 4o, Claude 3.5, Cursor</div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          data-value="streaming"
+          class="quiz-btn p-3.5 rounded-xl bg-surface-subtle border border-surface-border text-left transition-all hover:border-brand-400 flex items-center gap-3"
+        >
+          <span class="text-2xl">🎬</span>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-ink-heading">4K/8K 极致影音</div>
+            <div class="text-[11px] text-ink-muted">Netflix, Disney+, YouTube 满速</div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          data-value="gaming"
+          class="quiz-btn p-3.5 rounded-xl bg-surface-subtle border border-surface-border text-left transition-all hover:border-brand-400 flex items-center gap-3"
+        >
+          <span class="text-2xl">🎮</span>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-ink-heading">外服电竞联机</div>
+            <div class="text-[11px] text-ink-muted font-mono">Steam, APEX, 延迟 &lt; 25ms</div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          data-value="business"
+          class="quiz-btn p-3.5 rounded-xl bg-surface-subtle border border-surface-border text-left transition-all hover:border-brand-400 flex items-center gap-3"
+        >
+          <span class="text-2xl">🌍</span>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-ink-heading">跨境出海 / TikTok</div>
+            <div class="text-[11px] text-ink-muted">80+ 国冷门原生住宅节点</div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          data-value="backup"
+          class="quiz-btn p-3.5 rounded-xl bg-surface-subtle border border-surface-border text-left transition-all hover:border-brand-400 flex items-center gap-3 sm:col-span-2"
+        >
+          <span class="text-2xl">⏱️</span>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-ink-heading">偶尔备用 / 查资料防失联</div>
+            <div class="text-[11px] text-ink-muted">不限时按量扣费，永久不过期</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Budget -->
+    <div class="quiz-step" data-step="2">
+      <label class="block text-xs font-bold text-ink-heading uppercase tracking-wider mb-3">
+        步骤 2/3：你的预算与月费倾向？
+      </label>
+      <div class="grid grid-cols-3 gap-3" id="quiz-budget">
+        <button
+          type="button"
+          data-value="flagship"
+          class="budget-btn active p-3 rounded-xl bg-brand-50/60 border border-brand-600 text-center transition-all shadow-sm"
+        >
+          <div class="text-xs font-bold text-ink-heading">旗舰品质</div>
+          <div class="text-[11px] text-brand-700 font-mono">¥25 - 50/月</div>
+        </button>
+        <button
+          type="button"
+          data-value="budget"
+          class="budget-btn p-3 rounded-xl bg-surface-subtle border border-surface-border text-center transition-all"
+        >
+          <div class="text-xs font-bold text-ink-heading">平价超值</div>
+          <div class="text-[11px] text-ink-muted font-mono">¥15/月左右</div>
+        </button>
+        <button
+          type="button"
+          data-value="payasyougo"
+          class="budget-btn p-3 rounded-xl bg-surface-subtle border border-surface-border text-center transition-all"
+        >
+          <div class="text-xs font-bold text-ink-heading">按量扣费</div>
+          <div class="text-[11px] text-ink-muted">永不过期</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Real-time Matching Result Box -->
+    <div id="quiz-result" class="pt-6 border-t border-surface-border">
+      <div class="bg-surface-subtle border border-brand-200 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <span class="text-[11px] font-bold text-emerald-700 tracking-wider uppercase block font-mono">
+              ✓ 算法精准匹配结果
+            </span>
+            <h3 id="result-name" class="text-xl sm:text-2xl font-black text-ink-heading mt-0.5">
+              闪电鼠 (IEPL+内网专线)
+            </h3>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-ink-muted">起步特惠:</span>
+            <span id="result-price" class="text-2xl font-black text-brand-600 ml-1 font-mono">¥8</span>
+            <span class="text-xs text-ink-muted">/月</span>
+          </div>
+        </div>
+
+        <p id="result-reason" class="text-xs sm:text-sm text-ink-body leading-relaxed bg-white p-3 rounded-xl border border-surface-border">
+          闪电鼠配备 IEPL+内网专线，晚高峰 980Mbps 满带宽，提供美国与香港纯净住宅 IP，完美免验证直连 ChatGPT 4o 与 Netflix 4K。
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div class="flex items-center gap-2 text-xs text-ink-heading">
+            <span>专属优惠码:</span>
+            <code id="result-coupon" class="px-2 py-0.5 rounded bg-brand-50 text-brand-700 font-mono font-bold border border-brand-200">
+              sd88
+            </code>
+            <button
+              type="button"
+              id="result-copy-btn"
+              data-copy-coupon="sd88"
+              class="text-[11px] text-brand-600 hover:text-brand-700 underline font-semibold"
+            >
+              复制
+            </button>
+          </div>
+
+          <a
+            id="result-cta-btn"
+            href="/go/shandianshu"
+            target="_blank"
+            rel="nofollow sponsored noopener noreferrer"
+            class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all text-center"
+          >
+            直达官网激活专属优惠 ➔
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setupQuiz() {
+    const intentBtns = document.querySelectorAll('#quiz-intent .quiz-btn');
+    const budgetBtns = document.querySelectorAll('#quiz-budget .budget-btn');
+
+    const resultName = document.getElementById('result-name');
+    const resultPrice = document.getElementById('result-price');
+    const resultReason = document.getElementById('result-reason');
+    const resultCoupon = document.getElementById('result-coupon');
+    const resultCopyBtn = document.getElementById('result-copy-btn');
+    const resultCtaBtn = document.getElementById('result-cta-btn') as HTMLAnchorElement | null;
+
+    let currentIntent = 'ai';
+    let currentBudget = 'flagship';
+
+    const airportMatrix: Record<string, {
+      name: string;
+      price: string;
+      slug: string;
+      coupon: string;
+      reason: string;
+    }> = {
+      ai: {
+        name: '闪电鼠 (AI 原生住宅专线)',
+        price: '¥8',
+        slug: 'shandianshu',
+        coupon: 'sd88',
+        reason: '专为大模型生产力打造，配备原生住宅 IP，彻底告别 Cloudflare 循环验证与 Claude 3.5 报错。',
+      },
+      streaming: {
+        name: '榴莲云 (流媒体极速专线)',
+        price: '¥8',
+        slug: 'liulianyun',
+        coupon: 'll88',
+        reason: 'IEPL 极速专线，晚高峰千兆满跑，YouTube 8K 秒开，Netflix 4K 全绿全解。',
+      },
+      gaming: {
+        name: '大佬云 (低延迟电竞专线)',
+        price: '¥8',
+        slug: 'dalaoyun',
+        coupon: 'dly88',
+        reason: 'IEPL 专线直连，延迟低至 28ms，支持 VLESS 极速协议，告别跳 ping 掉线。',
+      },
+      business: {
+        name: '神行加速 (企业大带宽专线)',
+        price: '¥15',
+        slug: 'shenxing',
+        coupon: 'sx0077',
+        reason: 'IEPL 专线企业级大带宽，支持多设备高并发，跨境出海与商务办公首选。',
+      },
+      backup: {
+        name: '光年梯 (平价备用专线)',
+        price: '¥7',
+        slug: 'guangnianti',
+        coupon: '官方直通特惠',
+        reason: '起步仅需 ¥7/月，学生党与轻量备用高性价比首选。',
+      },
+      budget_override: {
+        name: '环球梯 (平价专线之王)',
+        price: '¥8',
+        slug: 'huanqiuti',
+        coupon: 'hq66',
+        reason: '月付仅需 ¥8 起即可享受内网专线+IEPL，在同价位段具备降维打击级的超高性价比。',
+      },
+      payasyougo_override: {
+        name: '光年梯 (平价轻量神器)',
+        price: '¥7',
+        slug: 'guangnianti',
+        coupon: '官方直通特惠',
+        reason: '月费仅 ¥7 起，不卡顿断流，专为轻量低频与备用党量身定制。',
+      }
+    };
+
+    function updateResult() {
+      let match = airportMatrix[currentIntent];
+
+      if (currentBudget === 'budget' && currentIntent !== 'gaming') {
+        match = airportMatrix.budget_override;
+      } else if (currentBudget === 'payasyougo' && currentIntent !== 'backup') {
+        match = airportMatrix.payasyougo_override;
+      }
+
+      if (match && resultName && resultPrice && resultReason && resultCoupon && resultCopyBtn && resultCtaBtn) {
+        resultName.textContent = match.name;
+        resultPrice.textContent = match.price;
+        resultReason.textContent = match.reason;
+        resultCoupon.textContent = match.coupon;
+        resultCopyBtn.setAttribute('data-copy-coupon', match.coupon);
+        resultCtaBtn.href = `/go/${match.slug}`;
+      }
+    }
+
+    intentBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        intentBtns.forEach((b) => {
+          b.classList.remove('border-brand-600', 'bg-brand-50/60');
+          b.classList.add('border-surface-border', 'bg-surface-subtle');
+        });
+        btn.classList.add('border-brand-600', 'bg-brand-50/60');
+        btn.classList.remove('border-surface-border', 'bg-surface-subtle');
+        currentIntent = btn.getAttribute('data-value') || 'ai';
+        updateResult();
+      });
+    });
+
+    budgetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        budgetBtns.forEach((b) => {
+          b.classList.remove('border-brand-600', 'bg-brand-50/60');
+          b.classList.add('border-surface-border', 'bg-surface-subtle');
+          b.querySelector('div:last-child')?.classList.remove('text-brand-700');
+          b.querySelector('div:last-child')?.classList.add('text-ink-muted');
+        });
+        btn.classList.add('border-brand-600', 'bg-brand-50/60');
+        btn.classList.remove('border-surface-border', 'bg-surface-subtle');
+        btn.querySelector('div:last-child')?.classList.remove('text-ink-muted');
+        btn.querySelector('div:last-child')?.classList.add('text-brand-700');
+        currentBudget = btn.getAttribute('data-value') || 'flagship';
+        updateResult();
+      });
+    });
+  }
+
+  setupQuiz();
+  document.addEventListener('astro:page-load', setupQuiz);
+</script>

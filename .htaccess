@@ -1,0 +1,107 @@
+# ==============================================================================
+# Apache Configuration for 机场社长 (Static Astro 4.x Production)
+# ==============================================================================
+
+# 1. Enable Rewrite Engine & Clean URLs
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Redirect HTTP to HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Redirect /index.html to /
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.html\ HTTP/
+  RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+
+  # Remove trailing slash if not directory
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} (.+)/$
+  RewriteRule ^ %1 [R=301,L]
+
+  # Safe Affiliate 302 Redirection Mappings
+  RewriteRule ^go/shandianshu/?$ https://chenpin.shandianshuaff.com/#/?code=m28TvPVX [R=302,L]
+  RewriteRule ^go/dalaoyun/?$ https://chenpin01.dalaoyunaff.com/#/?code=GQ6CL6Km [R=302,L]
+  RewriteRule ^go/liulianyun/?$ https://chenpingan.liulianyunaff.com/#/?code=7pdjs9zt [R=302,L]
+  RewriteRule ^go/shenxing/?$ https://chenpingan01.shenxingaff.com/#/?code=RZ48f9wP [R=302,L]
+  RewriteRule ^go/yunjiexian/?$ https://chenpinga.yunjiexianaff.com/#/?code=rTCMGvQT [R=302,L]
+  RewriteRule ^go/huanqiuti/?$ https://chenpingan01.huanqiutiaff.com/#/?code=FGCcYdFo [R=302,L]
+  RewriteRule ^go/jilianyun/?$ https://haozevpn.jlyvipaff.com/#/?code=6h2TMD5b [R=302,L]
+  RewriteRule ^go/guangshuyun/?$ https://hu8jnfv.gsyvipaff.com/#/?code=vELLETdq [R=302,L]
+  RewriteRule ^go/guangnianti/?$ https://gnt001.gntvipaff.cc/#/?code=rN3ybxa7 [R=302,L]
+  RewriteRule ^go/edgenova/?$ https://wep.edgenovaaff.com/#/?code=papME7sh [R=302,L]
+  RewriteRule ^go/sujie/?$ https://pygllc.speedworldaff.cc/#/?code=ll8LjYBJ [R=302,L]
+  RewriteRule ^go/(.+)$ /go.html?id=$1 [R=302,L]
+
+  # Check for HTML file match (clean URL routing)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+)$ $1.html [L]
+</IfModule>
+
+# 2. Modern Compression (Gzip / Deflate)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript application/json
+  AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff font/woff2
+</IfModule>
+
+# 3. Leverage Browser Caching
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+
+  # HTML documents (always revalidate to ensure immediate updates)
+  ExpiresByType text/html "access plus 0 seconds"
+  
+  # Feeds & Sitemaps
+  ExpiresByType application/rss+xml "access plus 1 hour"
+  ExpiresByType application/xml "access plus 1 hour"
+  ExpiresByType text/plain "access plus 1 day"
+
+  # Immutable Hashed Static Assets (_astro/ CSS & JS)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+</IfModule>
+
+# 4. Strict Security & Technical SEO Headers
+<IfModule mod_headers.c>
+  # Prevent MIME-sniffing
+  Header set X-Content-Type-Options "nosniff"
+
+  # Prevent Clickjacking
+  Header set X-Frame-Options "SAMEORIGIN"
+
+  # Referrer Policy
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Permissions Policy
+  Header set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+
+  # Cache-Control headers for static assets
+  <FilesMatch "\.(css|js|woff2|woff)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Disallow search engine indexing on cloaked affiliate redirect paths
+  <FilesMatch "go">
+    Header set X-Robots-Tag "noindex, nofollow, noarchive"
+  </FilesMatch>
+</IfModule>
+
+# 5. Custom 404 Error Document
+ErrorDocument 404 /404.html
+

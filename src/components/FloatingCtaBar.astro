@@ -1,0 +1,122 @@
+---
+export interface Props {
+  name: string;
+  price: number;
+  currency?: string;
+  couponCode?: string;
+  discountRate?: string;
+  affiliateSlug: string;
+  rating: number;
+  lineType: string;
+}
+
+const {
+  name,
+  price,
+  currency = '¥',
+  couponCode,
+  discountRate,
+  affiliateSlug,
+  rating,
+  lineType,
+} = Astro.props;
+---
+
+<!-- Sticky Floating Bottom Conversion Bar (Vercel / Stripe Docs Clean Style) -->
+<div
+  id="floating-cta-bar"
+  class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-surface-border shadow-card-hover transform translate-y-full transition-transform duration-300 pointer-events-none"
+  aria-hidden="true"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+    
+    <!-- Left: Airport Brand & Line Type -->
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-9 h-9 rounded-xl bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center font-bold text-sm shrink-0">
+        ⚡
+      </div>
+      <div class="truncate">
+        <div class="flex items-center gap-2">
+          <span class="text-sm sm:text-base font-bold text-ink-heading truncate">
+            {name}
+          </span>
+          <span class="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full bg-surface-subtle text-ink-muted border border-surface-border font-medium">
+            {lineType}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-ink-muted mt-0.5">
+          <span class="text-amber-500 font-bold font-mono">★ {rating.toFixed(2)}</span>
+          <span class="hidden sm:inline">·</span>
+          <span class="hidden sm:inline text-emerald-700 font-medium">晚高峰千兆 8K 满速保证</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Price + Coupon + Action CTA -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="text-right hidden sm:block">
+        <div class="text-xs text-ink-muted">起步特惠:</div>
+        <div class="text-base font-black text-ink-heading font-mono -mt-0.5">
+          {currency}{price}<span class="text-xs font-normal text-ink-muted">/月</span>
+        </div>
+      </div>
+
+      {couponCode && (
+        <button
+          type="button"
+          data-copy-coupon={couponCode}
+          class="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-mono font-bold transition-all shadow-sm"
+          title="点击复制优惠码"
+        >
+          <span>券: {couponCode}</span>
+          <span class="text-[10px] text-brand-600 font-sans font-normal">({discountRate || '特惠'})</span>
+        </button>
+      )}
+
+      <a
+        href={`/go/${affiliateSlug}`}
+        target="_blank"
+        rel="nofollow sponsored noopener noreferrer"
+        class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
+      >
+        <span>直达官网开通</span>
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setupFloatingCta() {
+    const bar = document.getElementById('floating-cta-bar');
+    if (!bar) return;
+
+    let hasScrolled = false;
+
+    window.addEventListener('scroll', () => {
+      // Reveal after user scrolls past 350px
+      if (window.scrollY > 350) {
+        if (!hasScrolled) {
+          bar.classList.remove('translate-y-full', 'pointer-events-none');
+          bar.classList.add('translate-y-0', 'pointer-events-auto');
+          bar.setAttribute('aria-hidden', 'false');
+          hasScrolled = true;
+        }
+      } else {
+        if (hasScrolled) {
+          bar.classList.add('translate-y-full', 'pointer-events-none');
+          bar.classList.remove('translate-y-0', 'pointer-events-auto');
+          bar.setAttribute('aria-hidden', 'true');
+          hasScrolled = false;
+        }
+      }
+    }, { passive: true });
+  }
+
+  setupFloatingCta();
+  document.addEventListener('astro:page-load', setupFloatingCta);
+</script>
+

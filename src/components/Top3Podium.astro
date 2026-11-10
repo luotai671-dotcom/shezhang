@@ -1,0 +1,153 @@
+---
+const top3 = [
+  {
+    rank: 1,
+    medal: '🥇',
+    title: '年度综合金牌 · 社长首推闭眼入',
+    name: '闪电鼠',
+    slug: 'shandianshu',
+    lineType: 'IEPL+内网专线 (VLESS)',
+    tagline: '2026 年度综合实测第一，IEPL内网光纤直达，晚高峰980Mbps毫无降速，ChatGPT 4o & 8K原生秒开。',
+    price: 8,
+    speed: '980 Mbps',
+    ping: '28 ms',
+    loss: '0.01%',
+    coupon: 'sd88',
+    discount: '88折',
+    badge: '综合综合评分 4.98',
+    color: 'border-amber-400 bg-amber-50/20',
+    headerBadge: 'bg-amber-100 text-amber-800 border-amber-300',
+  },
+  {
+    rank: 2,
+    medal: '🥈',
+    title: '稳定品质银牌 · 高性价比专线',
+    name: '大佬云',
+    slug: 'dalaoyun',
+    lineType: 'IEPL 国际专线 (VLESS)',
+    tagline: '全专线高可用集群，99.99% 在线率，原生住宅 IP 解锁，月付仅需 ¥8 元起。',
+    price: 8,
+    speed: '920 Mbps',
+    ping: '32 ms',
+    loss: '0.02%',
+    coupon: 'dly88',
+    discount: '88折',
+    badge: '稳定性最高 99.99%',
+    color: 'border-slate-300 bg-slate-50/50',
+    headerBadge: 'bg-slate-100 text-slate-800 border-slate-300',
+  },
+  {
+    rank: 3,
+    medal: '🥉',
+    title: '平价口碑铜牌 · 追剧流媒体王',
+    name: '榴莲云',
+    slug: 'liulianyun',
+    lineType: 'IEPL 极速专线 (VLESS)',
+    tagline: '¥8/月超低门槛全专线，Netflix 4K / Disney+ 毫秒级秒开，支持主流客户端一键订阅。',
+    price: 8,
+    speed: '890 Mbps',
+    ping: '30 ms',
+    loss: '0.02%',
+    coupon: 'll88',
+    discount: '88折',
+    badge: '月付 ¥8 平价专线王',
+    color: 'border-amber-600/40 bg-amber-50/20',
+    headerBadge: 'bg-amber-50 text-amber-900 border-amber-200',
+  },
+];
+---
+
+<section class="my-14" id="top-podium">
+  <div class="text-center max-w-3xl mx-auto mb-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold mb-2">
+      👑 综合榜首推荐 · 新手闭眼入
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-black text-ink-heading">
+      2026 年度 Top 3 闭眼入金榜
+    </h2>
+    <p class="text-xs sm:text-sm text-ink-muted mt-1">
+      不想花时间研究复杂参数？这 3 家是目前社长主力自用、晚高峰稳定性最强的专线标杆
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {top3.map((item) => (
+      <div class={`bg-white rounded-2xl border-2 ${item.color} p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between relative`}>
+        
+        <!-- Top Medal & Header -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">{item.medal}</span>
+            <span class={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${item.headerBadge}`}>
+              {item.title}
+            </span>
+          </div>
+
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-2xl font-black text-ink-heading">
+                {item.name}
+              </h3>
+            </div>
+            <div class="text-xs text-brand-700 font-semibold mt-1">
+              {item.lineType}
+            </div>
+            <div class="min-h-[44px] flex items-center mt-2">
+              <p class="text-xs sm:text-sm text-ink-body leading-relaxed line-clamp-2">
+                {item.tagline}
+              </p>
+            </div>
+          </div>
+
+          <!-- Benchmark Metrics in font-mono -->
+          <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-surface-subtle border border-surface-border text-center font-mono">
+            <div>
+              <span class="text-[10px] text-ink-muted block font-sans">晚高峰</span>
+              <span class="text-sm font-black text-brand-600">{item.speed}</span>
+            </div>
+            <div class="border-l border-surface-border">
+              <span class="text-[10px] text-ink-muted block font-sans">延迟</span>
+              <span class="text-sm font-black text-emerald-700">{item.ping}</span>
+            </div>
+            <div class="border-l border-surface-border">
+              <span class="text-[10px] text-ink-muted block font-sans">丢包</span>
+              <span class="text-sm font-black text-ink-heading">{item.loss}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer: Pricing + Direct CTA -->
+        <div class="pt-6 mt-6 border-t border-surface-border space-y-3">
+          <div class="flex items-baseline justify-between">
+            <span class="text-xs text-ink-muted">起步特惠：</span>
+            <div>
+              <span class="text-2xl font-black text-ink-heading font-mono">¥{item.price}</span>
+              <span class="text-xs text-ink-muted">/月起</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              data-copy-coupon={item.coupon}
+              class="w-full flex-1 py-2 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-mono font-bold transition-all text-center"
+              title="点击复制优惠码"
+            >
+              码: {item.coupon} ({item.discount})
+            </button>
+            <a
+              href={`/go/${item.slug}`}
+              target="_blank"
+              rel="nofollow sponsored noopener noreferrer"
+              class="flex-1 py-2 px-3 text-center rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+            >
+              官网上车 ➔
+            </a>
+          </div>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</section>
+

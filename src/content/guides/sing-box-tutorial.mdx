@@ -1,0 +1,111 @@
+---
+title: "2026 全能代理内核 Sing-box 新手保姆级上手与全平台配置教程"
+description: "全面解析新一代通用代理工具 Sing-box 的核心优势，支持 Windows/macOS/iOS/Android 全平台，涵盖 Hysteria 2、TUIC v5、VLESS-Reality 协议适配与原生 TUN 模式配置全指南。"
+category: "client"
+publishDate: "2026-03-20"
+updatedDate: "2026-11-10"
+author: "机场社长"
+readingTime: "8 分钟"
+featured: true
+tags:
+  - "Sing-box"
+  - "全平台"
+  - "Hysteria 2"
+  - "TUIC"
+  - "TUN模式"
+---
+
+在科学上网与跨境网络加速领域，**Sing-box** 作为一款由 Go 语言编写的新一代全功能通用代理平台，凭借极高的吞吐性能、原生的规则路由分流以及对现代抗封锁协议（Hysteria 2、TUIC v5、Shadowsocks 2022、VLESS-Reality）的全量原生支持，迅速成为 2026 年发烧友、架构师与工程师群体的首选网络瑞士军刀。
+
+本文由机场社长亲测整理，严格按照标准化 5 步流程，带你全面掌握 Sing-box 的下载安装、订阅配置、TUN 模式与 AI 流媒体专项规则调优。
+
+---
+
+## 一、客户端简介与下载
+
+> **【直接回答】**Sing-box 是目前全网对现代前沿网络协议兼容性最强、运行时内存占用最低的开源代理核心。无论在 Windows、macOS、Android 还是 iOS 平台，均有官方或社区高质量图形客户端支持，且原生支持内核态 TUN 虚拟网卡接管全流量。
+
+- **适用操作系统**：
+  - **Windows**：Windows 10 / Windows 11 (Sing-box GUI / 社区图形客户端)
+  - **macOS**：macOS 12+（同时支持 Apple Silicon M系列与 Intel 芯片）
+  - **iOS**：iOS 15.0+（可在外区 App Store 免费下载官方 Sing-box 客户端）
+  - **Android**：Android 8.0+（支持 Google Play 或 GitHub APK 安装）
+- **资费说明**：100% 开源免费（GPL-3.0 协议），跨平台全免费。
+- **官方下载渠道**：
+  - GitHub 官方仓库：`https://github.com/SagerNet/sing-box/releases`
+  - iOS 端：使用美区/港区/日区 Apple ID，在 App Store 搜索 `Sing-box VT` 即可直接免费安装。
+  - Android 端：GitHub Releases 下载 `SFA-xxx-universal.apk` 或 Google Play 搜索安装。
+  - Windows/macOS 端：可直接使用带有图形界面的打包版本（Sing-box Windows / GUI），或配合 Clash Verge 等上层启动器使用。
+
+---
+
+## 二、前置准备：获取专线机场订阅链接
+
+Sing-box 使用 JSON 语法或兼容的标准订阅格式。配置前请先获取你的机场专用订阅：
+
+1. 登录本站推荐的物理专线机场（如 [闪电鼠](/airports/shandianshu) 或 [大佬云](/airports/dalaoyun)）后台。
+2. 找到 **【订阅链接】** 区域。
+3. 优先点击 **【复制 Sing-box 订阅链接】**；若机场暂未直接提供 Sing-box 格式，可使用机场后台自带的“订阅转换”功能，或直接复制通用 VLESS / Clash 格式，现代客户端均支持自动智能解析转换。
+
+---
+
+## 三、一步步配置流程（保姆级实操）
+
+### 步骤一：软件安装与初始化
+1. **Windows / Mac**：安装客户端并首次打开，授予必要的网络访问权限。
+2. **移动端 (iOS / Android)**：安装官方 App 并打开，首页呈现极其干净的仪表盘（Dashboard）。
+
+### 步骤二：导入订阅与更新节点
+1. 打开 Sing-box 客户端，切换至底部的 **【Profiles】 (配置管理)** 页面。
+2. 点击右上角的 **【+】** 或 **【New Profile】** 按钮。
+3. 选择 **【Remote Profile】 (远程订阅)**：
+   - **Name (备注)**：填写机场名称（例如：闪电鼠专线）。
+   - **URL**：粘贴刚才复制的 Sing-box 专用订阅链接。
+   - **Auto Update (自动更新)**：设置间隔为 12 小时或 24 小时，保证节点同步。
+4. 点击右上角 **【Save】 (保存)** 并点击 **【Fetch / Update】**，客户端会自动编译二进制规则集并拉取海外物理专线节点。
+
+### 步骤三：代理模式选择（规则分流 / 全局 / 直连）
+Sing-box 的路由调度内核采用高性能规则集（Rule Set）：
+- **【Rule】 (规则分流) —— 强烈建议日常使用**：
+  - 基于 Geosite 与 GeoIP 编译出的高效二进制 `.srs` 规则文件。
+  - 自动将国内微信、钉钉、主流银行、B站流量分配给 `direct`（直连标签）。
+  - 海外 Google、YouTube、GitHub 流量智能分配给 `proxy`（专线代理标签）。
+- **【Global】 (全局)**：整机所有外发连接强制经由选中的单节点转发。
+- **【Direct】 (直连)**：全流量直通，暂停代理。
+
+在 Groups（策略组）中，点击展开 `Node Select`，选中一个延迟优秀的香港（HK）、日本（JP）或新加坡（SG）专线节点。
+
+### 步骤四：开启代理与 TUN 模式（虚拟网卡全接管）
+1. 在主界面 Dashboard 中，找到 **【TUN Mode】 (虚拟网卡模式)** 开关并将其打开。
+2. 点击 **【Connect】 (连接)** 主开关。
+3. **系统权限确认**：
+   - Windows/macOS 会请求管理员特权以创建虚拟 TUN 网卡接口并配置路由表。
+   - iOS/Android 会弹出添加系统 VPN 配置对话框，点击“允许”并输入锁屏密码。
+4. 状态变为已连接（Connected），此时整机不管是浏览器、游戏客户端还是开发终端，均可秒速走专线加速。
+
+---
+
+## 四、AI 工具与流媒体解锁专项设置
+
+Sing-box 拥有全网最强大的出站规则分支匹配能力：
+
+1. **ChatGPT & Claude 智能路由**：
+   - 在规则配置文件中，Sing-box 默认集成了 `geosite:openai` 与 `geosite:anthropic` 规则集。
+   - 在出站规则中，将上述两个集合的 `outbound` 指向配置有原生住宅 IP 的美区或日区专线节点。
+   - 得益于 Sing-box 独特的 DNS 分流架构，可彻底杜绝 OpenAI 的 DNS 污染与定位检测。
+2. **Netflix & Disney+ 流媒体分流**：
+   - 规则集自动匹配 `geosite:netflix`，引导至低延迟专线解锁节点，4K HDR 秒开不掉帧。
+
+---
+
+## 五、常见故障排查 (FAQ)
+
+### Q1：节点出现“handshake timeout”全部标红？
+- **时间同步**：检查设备本地系统时间。Sing-box 所支持的 VLESS-Reality 与 Hysteria 2 对握手时间戳有极高安全校验要求，时差超过 30 秒将导致所有节点拒绝响应。
+- **UDP 阻断**：若使用 Hysteria 2 或 TUIC 协议，部分校园网或公司网络可能对 UDP 进行了 QoS 限速或阻断，此时可在节点列表中切换为 TCP 基础的 Shadowsocks 或 VLESS 专线节点。
+
+### Q2：开启 TUN 模式后，局域网共享或打印机无法连接？
+- 在客户端设置中，找到 TUN 配置项，确认勾选了 **【Strict Route】** 并将局域网内网网段（`192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12`）添加进直连白名单中。
+
+### Q3：DNS 泄漏排错？
+- Sing-box 采用了业界最规范的独立的 DNS 路由树（包含 local DNS 与 remote DNS 两组通道）。只需确保订阅配置中使用了真实的国内公共 DNS（如 223.5.5.5）解析国内域名，远程 DNS（如 8.8.8.8 / 1.1.1.1）解析海外域名，即可做到 100% 杜绝 DNS 泄漏。

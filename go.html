@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <title>安全跳转中... | 机场社长 专属优惠通道</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.5rem;
+      padding: 2.25rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    }
+    .spinner-box {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.5rem;
+    }
+    .spinner {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 4px solid #dbeafe;
+      border-top-color: #2563eb;
+      animation: spin 0.8s linear infinite;
+    }
+    .spinner-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #2563eb;
+      font-family: monospace;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    p {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      color: #1d4ed8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+      margin-bottom: 1rem;
+    }
+    .coupon-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8rem;
+      color: #334155;
+    }
+    .coupon-code {
+      display: inline-block;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.375rem;
+      color: #2563eb;
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-left: 0.25rem;
+    }
+    .manual-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #2563eb;
+      color: #ffffff;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background-color 0.15s ease;
+    }
+    .manual-link:hover {
+      background: #1d4ed8;
+    }
+    .footer-note {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner-box">
+      <div class="spinner"></div>
+      <div class="spinner-label">GO</div>
+    </div>
+    
+    <div class="badge" id="discountBadge">官方直属补贴通道</div>
+    <h1 id="targetName">正在安全跳转中...</h1>
+    <p id="descText">已自动激活机场社长专属合作补贴，正在直达官网注册节点...</p>
+
+    <div class="coupon-box" id="couponContainer" style="display: none;">
+      专属折扣代码：<span class="coupon-code" id="couponCodeText"></span>
+      <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.25rem;">（已自动为您暂存至剪贴板，结账时直接粘贴）</div>
+    </div>
+
+    <a href="./index.html" id="actionBtn" class="manual-link" rel="nofollow sponsored noopener noreferrer">
+      点击立即前往官网 ➔
+    </a>
+
+    <div class="footer-note">
+      🔒 采用 302 安全隧道中转与严格端到端加密保护
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 11 大精选机场 302 映射数据库（保持与 src/utils/affiliate.ts 严格一致）
+      var AFF_DB = {
+        shandianshu: {
+          name: '闪电鼠',
+          url: 'https://chenpin.shandianshuaff.com/#/?code=m28TvPVX',
+          code: 'sd88',
+          discount: '独家 88 折'
+        },
+        dalaoyun: {
+          name: '大佬云',
+          url: 'https://chenpin01.dalaoyunaff.com/#/?code=GQ6CL6Km',
+          code: 'dly88',
+          discount: '独家 88 折'
+        },
+        liulianyun: {
+          name: '榴莲云',
+          url: 'https://chenpingan.liulianyunaff.com/#/?code=7pdjs9zt',
+          code: 'll88',
+          discount: '独家 88 折'
+        },
+        shenxing: {
+          name: '神行加速',
+          url: 'https://chenpingan01.shenxingaff.com/#/?code=RZ48f9wP',
+          code: 'sx0077',
+          discount: '独家 8 折'
+        },
+        yunjiexian: {
+          name: '云界线',
+          url: 'https://chenpinga.yunjiexianaff.com/#/?code=rTCMGvQT',
+          code: 'yjx888',
+          discount: '独家 85 折'
+        },
+        huanqiuti: {
+          name: '环球梯',
+          url: 'https://chenpingan01.huanqiutiaff.com/#/?code=FGCcYdFo',
+          code: 'hq66',
+          discount: '独家 85 折'
+        },
+        jilianyun: {
+          name: '极连云',
+          url: 'https://haozevpn.jlyvipaff.com/#/?code=6h2TMD5b',
+          code: 'jly888',
+          discount: '独家 85 折'
+        },
+        guangshuyun: {
+          name: '光速云',
+          url: 'https://hu8jnfv.gsyvipaff.com/#/?code=vELLETdq',
+          code: '',
+          discount: '官方直降特惠'
+        },
+        guangnianti: {
+          name: '光年梯',
+          url: 'https://gnt001.gntvipaff.cc/#/?code=rN3ybxa7',
+          code: '',
+          discount: '起步仅 ¥7'
+        },
+        edgenova: {
+          name: '边缘节点',
+          url: 'https://wep.edgenovaaff.com/#/?code=papME7sh',
+          code: 'xk808',
+          discount: '独家 8 折'
+        },
+        sujie: {
+          name: '速界',
+          url: 'https://pygllc.speedworldaff.cc/#/?code=ll8LjYBJ',
+          code: 'sujie80',
+          discount: '独家 8 折'
+        }
+      };
+
+      // 解析 URL 参数 (?id=xxx 或 ?to=xxx 或 ?slug=xxx 或 #xxx)
+      var params = new URLSearchParams(window.location.search);
+      var targetId = params.get('id') || params.get('to') || params.get('slug') || window.location.hash.replace('#', '');
+      var item = AFF_DB[targetId];
+
+      var nameEl = document.getElementById('targetName');
+      var badgeEl = document.getElementById('discountBadge');
+      var btnEl = document.getElementById('actionBtn');
+      var couponBox = document.getElementById('couponContainer');
+      var couponText = document.getElementById('couponCodeText');
+
+      if (item && item.url) {
+        document.title = '正在安全前往 ' + item.name + ' 官网... | 机场社长';
+        nameEl.textContent = '正在安全前往【' + item.name + '】官网...';
+        badgeEl.textContent = item.discount || '独家专属通道';
+        btnEl.href = item.url;
+        btnEl.textContent = '立即直达 ' + item.name + ' ➔';
+
+        if (item.code) {
+          couponBox.style.display = 'block';
+          couponText.textContent = item.code;
+          // 尝试自动写入剪贴板
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(item.code);
+            }
+          } catch(e) {}
+        }
+
+        // 立即 302 级重定向 (window.location.replace 防止历史回退死循环)
+        setTimeout(function() {
+          window.location.replace(item.url);
+        }, 120);
+      } else {
+        nameEl.textContent = '未指定目标服务商';
+        document.getElementById('descText').textContent = '链接参数不存在或已下架，正在为您返回博客首页...';
+        btnEl.href = '/';
+        btnEl.textContent = '返回首页 ➔';
+        setTimeout(function() {
+          window.location.replace('/');
+        }, 1500);
+      }
+    })();
+  </script>
+</body>
+</html>
+

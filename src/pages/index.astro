@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import QuickCalculator from '../components/QuickCalculator.astro';
+import Top3Podium from '../components/Top3Podium.astro';
+import SiloHubCards from '../components/SiloHubCards.astro';
+import FilterBar from '../components/FilterBar.astro';
+import AirportCard from '../components/AirportCard.astro';
+import LiveSpeedWidget from '../components/LiveSpeedWidget.astro';
+import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
+import FaqSection from '../components/FaqSection.astro';
+import PageSidebar from '../components/PageSidebar.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import { getCollection } from 'astro:content';
+import { generateItemListSchema } from '../utils/seo';
+
+const airports = await getCollection('airports');
+airports.sort((a, b) => a.data.rankOrder - b.data.rankOrder);
+
+const sidebarSections = [
+  { id: 'top-podium', number: '1', title: 'Top 3 闭眼入旗舰金榜', badge: '必选' },
+  { id: 'calculator', number: '2', title: '智能流量与预算计算器', badge: '工具' },
+  { id: 'silos', number: '3', title: '三大核心专题分类中心' },
+  { id: 'airport-list', number: '4', title: '2026 年度专线全览总榜', badge: '全量' },
+  { id: 'section-iplc-guide', number: '5', title: '物理专线深度技术科普' },
+  { id: 'faq-section', number: '6', title: '核心选型避坑常见问答' },
+];
+
+const itemListSchema = generateItemListSchema(
+  airports.map((a) => ({
+    name: a.data.name,
+    slug: a.slug,
+    rankOrder: a.data.rankOrder,
+    tagline: a.data.tagline,
+    rating: a.data.rating,
+  }))
+);
+---
+
+<BaseLayout
+  title="2026机场推荐与性价比机场测评 | 顶级IPLC专线与便宜梯子实测 - 机场社长"
+  description="机场社长专注 2026 机场推荐与主流翻墙机场测评。涵盖顶级企业级 IPLC/IEPL 国际专线与 10 元性价比机场、便宜梯子实测。晚高峰千兆 8K 测速、ChatGPT与Netflix原生住宅解锁检测，提供独家专属优惠码与选型计算器。"
+>
+  <!-- 1. 高转化首屏 Hero -->
+  <HeroSection />
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Explicit Affiliate Disclosure Banner -->
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Mobile Table of Contents Accordion (Screens < lg) -->
+    <div class="lg:hidden bg-surface-subtle border border-surface-border rounded-2xl p-4 my-6">
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-xs text-ink-heading list-none">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+            <span>📑 首页导览目录 (分 6 大板块)</span>
+          </span>
+          <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-sm">▾</span>
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-3 mt-2 border-t border-surface-border text-xs">
+          {sidebarSections.map((sec) => (
+            <a
+              href={`#${sec.id}`}
+              class="p-2.5 rounded-xl bg-white border border-surface-border hover:border-brand-300 text-ink-heading font-medium flex items-center justify-between transition-colors"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-brand-50 text-brand-700 font-mono font-bold text-[10px] flex items-center justify-center border border-brand-200">
+                  {sec.number}
+                </span>
+                <span class="truncate">{sec.title}</span>
+              </div>
+              {sec.badge && (
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono">
+                  {sec.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- Two-Column Grid: Main Content + Sticky Sidebar -->
+    <!-- ============================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+      
+      <!-- Main Content (8 cols lg, 9 cols xl) -->
+      <main class="lg:col-span-8 xl:col-span-9 space-y-14 min-w-0">
+
+        <!-- 1. Top 3 闭眼入金榜 -->
+        <div id="top-podium" class="scroll-mt-24">
+          <Top3Podium />
+        </div>
+
+        <!-- 2. 快速选型计算器 -->
+        <div id="calculator" class="scroll-mt-24">
+          <QuickCalculator />
+        </div>
+
+        <!-- 3. 三大板块入口卡片 -->
+        <div id="silos" class="scroll-mt-24">
+          <SiloHubCards />
+        </div>
+
+        <!-- 4. 全量精选专线卡片展区 -->
+        <div class="scroll-mt-24" id="airport-list">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <div>
+              <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-50 text-brand-700 text-xs font-semibold mb-2 border border-blue-200">
+                🏆 社长实测收录清单 (共 {airports.length} 家)
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black text-ink-heading tracking-tight">
+                2026 靠谱专线机场全览榜单
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                每家均经过晚高峰真测，不接虚标带宽的跑路野鸡云，按综合稳定性由高到低排列
+              </p>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs text-ink-muted font-medium shrink-0">
+              <span class="flex items-center gap-1.5 text-emerald-700">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                8K 满跑通过
+              </span>
+              <span class="flex items-center gap-1.5 text-brand-700">
+                <svg class="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                ChatGPT 4o 全解
+              </span>
+            </div>
+          </div>
+
+          <!-- Direct Answer Snippet -->
+          <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 rounded-r-xl my-4 text-sm text-ink-heading leading-relaxed font-medium">
+            <strong class="text-brand-700 font-bold block mb-1">💡 懒人直接看结论（社长 30 秒选型速选）：</strong>
+            2026年选购机场推荐首选具备真物理 IPLC/IEPL 专线的服务商。综合实测榜首首选 <strong>闪电鼠</strong>（IEPL+内网专线，晚高峰实测 980Mbps 满跑，起步仅需 ¥8/月）；高性价比稳定专线推荐 <strong>大佬云</strong> 与 <strong>榴莲云</strong>（¥8/月起，全绿解锁 ChatGPT 与流媒体）；平价尝鲜首选 <strong>光年梯</strong>（¥7/月起）与 <strong>环球梯</strong>（¥8/月）。
+          </div>
+
+          <!-- Filter & Sort Tabs -->
+          <FilterBar />
+
+          <!-- Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="airport-cards-container">
+            {airports.map((airport, index) => (
+              <AirportCard airport={airport} index={index} />
+            ))}
+          </div>
+        </div>
+
+        <!-- Live Latency & Speed Benchmark Telemetry -->
+        <LiveSpeedWidget />
+
+        <!-- 5. SEO & AEO Content Block: Why Pure IPLC Matters -->
+        <section id="section-iplc-guide" class="scroll-mt-24 bg-white border border-surface-border rounded-2xl p-6 sm:p-8 shadow-card">
+          <div class="space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold">
+              社长深度科普
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-ink-heading">
+              为什么 2026 年选购机场一定要认准「真 IPLC / IEPL 物理专线」？
+            </h2>
+
+            <!-- Direct Answer Snippet -->
+            <div class="text-left bg-slate-50 border-l-4 border-emerald-600 p-4 rounded-r-xl my-4 text-sm text-ink-heading leading-relaxed font-medium">
+              <strong class="text-emerald-800 font-bold block mb-1">💡 为什么一定要选物理专线？社长 30 秒核心原理解答：</strong>
+              物理专线（IPLC/IEPL）不经过公网出口与 GFW 深度包检测，从物理层保障不过墙与 0 丢包。晚高峰骨干网拥堵时，普通公网梯子丢包率可达 30%，而物理专线丢包率稳定在 0.05% 以内，保障 4K/8K 视频秒开不卡顿。
+            </div>
+
+            <div class="text-ink-body text-sm sm:text-base leading-relaxed7 space-y-4">
+              <p>
+                近两年来，随着国家骨干网国际公网出口（ChinaNet / 163 与 169 骨干网）在晚高峰时段的常态化拥堵，以及 GFW 深度包检测（DPI）算法的频繁迭代，传统的 <strong>直连机场、廉价公网中转与合租 VPS</strong> 已经很难维持稳定访问。
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+                  <div class="text-brand-700 font-bold text-base mb-1">01. 物理层不过墙</div>
+                  <p class="text-xs text-ink-muted leading-relaxed">
+                    IPLC/IEPL 走的是深港、沪日物理海底光缆内网，数据直接在机房内网交换，根本不经过国际公网出口检查。
+                  </p>
+                </div>
+                <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+                  <div class="text-emerald-700 font-bold text-base mb-1">02. 晚高峰零抖动</div>
+                  <p class="text-xs text-ink-muted leading-relaxed">
+                    专线享有独占的 SLA 带宽资源保障，晚高峰千兆宽带依然能轻松跑满 900Mbps+，8K 视频随点随播。
+                  </p>
+                </div>
+                <div class="p-4 rounded-xl bg-surface-subtle border border-surface-border">
+                  <div class="text-sky-700 font-bold text-base mb-1">03. 住宅纯净 IP</div>
+                  <p class="text-xs text-ink-muted leading-relaxed">
+                    配备海外本地原生住宅 IP 节点，彻底杜绝 ChatGPT 报错、Claude 封号以及 Netflix 锁区限制。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. FAQ Accordion with Schema.org FAQPage -->
+        <div id="faq-section" class="scroll-mt-24">
+          <FaqSection />
+        </div>
+
+      </main>
+
+      <!-- ========================================== -->
+      <!-- Desktop Sticky Sidebar (4 cols lg, 3 cols xl) -->
+      <!-- ========================================== -->
+      <div class="hidden lg:block lg:col-span-4 xl:col-span-3 sticky top-24">
+        <PageSidebar
+          title="首页导览大纲"
+          sections={sidebarSections}
+          featuredAirport={{
+            name: '闪电鼠',
+            tagline: '2026 年度霸榜第一，IEPL+内网专线，晚高峰 980M 满跑',
+            price: 8,
+            coupon: 'sd88',
+            slug: 'shandianshu',
+            speed: '980 Mbps'
+          }}
+        />
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Schema.org ItemList for Rich Snippets -->
+  <JsonLd schema={itemListSchema} />
+</BaseLayout>

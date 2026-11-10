@@ -1,0 +1,77 @@
+---
+import JsonLd from './seo/JsonLd.astro';
+import { generateFaqSchema } from '../utils/seo';
+
+export interface Props {
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  title = "2026 翻墙机场与 IPLC 专线常见疑问（社长解答）",
+  subtitle = "针对用户最关心的节点稳定性、晚高峰卡顿、ChatGPT 解锁以及跑路风险提供权威解答",
+} = Astro.props;
+
+const faqs = [
+  {
+    question: "什么是 IPLC / IEPL 专线？为什么比普通中继机场贵？",
+    answer: "IPLC（国际私有租用线路）与 IEPL（以太网专线）属于纯点对点的跨境物理光纤通道，两端服务器在深圳/上海与香港/东京机房直接通过内网互联。最核心的优势在于：数据全程不经过国家公网出口与 GFW 防火墙检测，因此在敏感时期 100% 不会被封锁，在晚高峰（20:00-23:00）骨干网拥堵时段也毫无波动。因为物理光纤成本高昂（通常为 15-25 美元/Mbps/月），所以真专线机场价格普遍在 25-50 元/月，但换来的是坚如磐石的长期稳定性。"
+  },
+  {
+    question: "为什么很多便宜机场经常无法访问 ChatGPT、Claude 与 Netflix？",
+    answer: "OpenAI 与 Netflix 等流媒体服务商采购了全球最先进的 IP 风控反爬数据库。低价廉价机场通常租用廉价云计算数据中心（Datacenter）的共享 IP，一个 IP 上千人同时连接，瞬间就会被标记为高欺诈分（High Fraud Score）并封禁。社长推荐的顶级专线机场（如 闪电鼠、大佬云、榴莲云）均采购了纯净的原生住宅（Residential）家庭宽带 IP 池，并进行了官方 CDN 边缘路由加速，确保 100% 免验证码丝滑直连。"
+  },
+  {
+    question: "如何防范机场跑路风险？社长的选购建议是什么？",
+    answer: "社长总结防跑路三原则：第一，坚决遵循【尽量月付或季付】原则，切忌贪图小便宜在小工坊一次性购买两三年超长套餐；第二，首选运营时间长、拥有稳定物理专线机房与运维团队的头部品牌（如 闪电鼠、大佬云、榴莲云、神行加速）；第三，常备一个平价专线套餐（如 光年梯 或 环球梯，起步仅7-8元）作为备用钥匙，防止单一订阅临时维护时断网。"
+  },
+  {
+    question: "Clash for Windows 停更后，2026 年推荐使用什么代理客户端？",
+    answer: "推荐全面拥抱新一代基于开源 Clash Meta (Mihomo) 内核的客户端：Windows 与 macOS 首选【Clash Verge Rev】，内存占用极小且自带原生虚拟网卡 TUN 模式；全平台进阶发烧友推荐【Sing-box】；iOS / iPhone 用户首选【Shadowrocket (小火箭)】或【Quantumult X】；Android 用户推荐【Clash Meta for Android】或【Flclash】。本站所有推荐机场均提供一键导入上述客户端的订阅格式。"
+  },
+  {
+    question: "什么是 Hysteria 2 与 TUIC 协议？比传统 Shadowsocks 好在哪里？",
+    answer: "Hysteria 2 与 TUIC 是基于现代 UDP QUIC 协议重构的新一代网络加速协议。传统的 TCP 协议在遇到丢包时会强制重传并导致连接降速，而 Hysteria 2 具备极强的主动丢包恢复能力与拥塞控制算法，即便在弱网、高铁、移动 5G 信号不佳或公网丢包高达 20% 的极端恶劣环境下，依然能跑满带宽并保持极低延迟。"
+  }
+];
+
+const faqSchema = generateFaqSchema(faqs);
+---
+
+<section class="my-16" id="faq">
+  <div class="text-center max-w-3xl mx-auto mb-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+      ❓ 新手常见疑问 · 社长直击核心痛点
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-black text-ink-heading">
+      {title}
+    </h2>
+    <p class="text-xs sm:text-sm text-ink-muted mt-2">
+      {subtitle}
+    </p>
+  </div>
+
+  <div class="max-w-4xl mx-auto space-y-4">
+    {faqs.map((faq, index) => (
+      <details class="group bg-white border border-surface-border rounded-2xl p-5 open:border-brand-500 transition-all shadow-card [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between gap-4 cursor-pointer font-bold text-ink-heading hover:text-brand-600 text-base select-none">
+          <span class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-lg bg-surface-subtle flex items-center justify-center text-xs font-black text-brand-600 border border-surface-border shrink-0 font-mono">
+              Q{index + 1}
+            </span>
+            <span>{faq.question}</span>
+          </span>
+          <svg class="w-5 h-5 text-ink-muted group-open:rotate-180 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div class="mt-4 pt-4 border-t border-surface-border text-xs sm:text-sm text-ink-body leading-relaxed7 pl-9">
+          {faq.answer}
+        </div>
+      </details>
+    ))}
+  </div>
+
+  <!-- FAQPage Schema for Search Engines -->
+  <JsonLd schema={faqSchema} />
+</section>

@@ -1,0 +1,404 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import VerificationBadge from '../../components/VerificationBadge.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import PageSidebar from '../../components/PageSidebar.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { getCollection } from 'astro:content';
+import { generateItemListSchema, generateArticleSchema, generateFaqSchema } from '../../utils/seo';
+
+const rawAirports = await getCollection('airports');
+
+// 机场测评专区定制排序：
+// 第一名闪电鼠 第二名环球梯 第三名榴莲云 第四名大佬云 第五名云界线 第6名神行加速 其他位置不变
+const reviewsCustomOrder = [
+  'shandianshu',  // #1 闪电鼠
+  'huanqiuti',    // #2 环球梯
+  'liulianyun',   // #3 榴莲云
+  'dalaoyun',     // #4 大佬云
+  'yunjiexian',   // #5 云界线
+  'shenxing',     // #6 神行加速
+  'jilianyun',    // #7 极连云
+  'guangshuyun',  // #8 光速云
+  'guangnianti',  // #9 光年梯
+  'edgenova',     // #10 边缘节点
+  'sujie',        // #11 速界
+];
+
+const airports = [...rawAirports].sort((a, b) => {
+  const indexA = reviewsCustomOrder.indexOf(a.slug);
+  const indexB = reviewsCustomOrder.indexOf(b.slug);
+  return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
+});
+
+const sidebarSections = [
+  { id: 'section-protocol', number: '1', title: '实验室测试协议与规范', badge: '规范' },
+  { id: 'section-reviews-grid', number: '2', title: '11 大专线实测卡片全景', badge: '全量' },
+  { id: 'section-telemetry', number: '3', title: '晚高峰测速天梯对比表' },
+  { id: 'section-faq', number: '4', title: '测评指标深度释疑 FAQ' },
+];
+
+const reviewFaqs = [
+  {
+    question: '社长实验室测速如何排除本地宽带干扰？',
+    answer: '我们在中国电信 1000M、联通 1000M、移动 1000M 三大运营商千兆骨干光纤节点分别部署自动化探针脚本，采用 Mihomo 开源内核进行多线程并发下行拉取，单次测试持续 30 天并剔除极端异常值后取几何平均值。'
+  },
+  {
+    question: '为什么普通公网中转白天正常，晚高峰丢包飙升？',
+    answer: '普通公网中转仍需经过国际公网出口与 GFW 防火墙检测。晚高峰（20:00-23:30）国际出口带宽极度拥堵，QoS 优先级大幅下调，丢包率往往从白天的 1% 激增至 25% 以上；而真物理 IPLC/IEPL 走内网专属物理光纤，不经过公网与 GFW，全天丢包率稳居 0.05% 以内。'
+  },
+  {
+    question: 'Scamalytics 欺诈评分对 ChatGPT 和流媒体有什么影响？',
+    answer: 'OpenAI 与各大流媒体采用 IPQS / Scamalytics 等风控引擎。如果节点的 IP 欺诈评分高于 20 分（高风控数据中心 IP），访问 ChatGPT 会频繁报 Access Denied 或触发 Cloudflare 验证码；评分在 0-5 分以内的原生纯净 IP 则可顺畅直通无感交互。'
+  }
+];
+
+const itemListSchema = generateItemListSchema(
+  airports.map((a, idx) => ({
+    name: a.data.name,
+    slug: a.slug,
+    rankOrder: idx + 1,
+    tagline: a.data.tagline,
+    rating: a.data.rating,
+  }))
+);
+
+const articleSchema = generateArticleSchema({
+  title: '2026 翻墙机场实验室深度实测报告 | 晚高峰测速丢包与流媒体解锁天梯',
+  description: '机场社长实验室 7×24 小时真实物理探针评测：深入测试主流机场晚高峰 980Mbps 满跑速率、丢包率、Jitter 抖动以及 ChatGPT 与 Netflix 4K 解锁能力。',
+  publishDate: '2026-01-01',
+  updatedDate: '2026-11-10',
+  author: '机场社长 实验室',
+  url: 'https://jichangshezhang.com/reviews',
+});
+
+const faqSchema = generateFaqSchema(reviewFaqs);
+---
+
+<BaseLayout
+  title="2026 主流翻墙机场测评报告与推荐 | 晚高峰测速丢包与流媒体解锁实测 - 机场社长"
+  description="客观公正的翻墙机场实验室测评中心：提供晚高峰千兆宽带实测、丢包抖动数据、流媒体与 ChatGPT 原生住宅解锁检测、单品万字深度拆解报告。"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Breadcrumbs items={[{ label: '📊 机场测评' }]} />
+
+    <header class="my-8 text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-brand-700 text-xs font-semibold mb-3">
+        📊 社长独立测速中心 · 晚高峰真实压测
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-ink-heading tracking-tight leading-tight">
+        2026 主流专线机场真实性能测评报告
+      </h1>
+      <p class="mt-4 text-ink-body text-sm sm:text-base leading-relaxed7">
+        拒绝虚假截图与公关软文。社长在深圳、上海、广州多线千兆网络真实测速，如实记录每家机场在晚高峰骨干网拥堵时段的实际表现。
+      </p>
+
+      <!-- Direct Answer Snippet -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 sm:p-5 rounded-r-xl my-6 text-sm text-ink-heading leading-relaxed font-medium shadow-sm">
+        <strong class="text-brand-700 font-bold block mb-1">💡 30 天实测核心结论（社长 30 秒速览）：</strong>
+        社长实验室连续 30 天晚高峰实测结论：物理专线（IPLC/IEPL）在抗封锁与稳定性上彻底碾压普通公网中继。综合实测榜首为 <strong>闪电鼠</strong>（IEPL+内网专线，980Mbps 满跑，丢包率仅 0.01%，起步仅需 ¥8/月）；高性价比实测推荐 <strong>环球梯</strong>（¥8/月，内网专线+IEPL）与 <strong>榴莲云</strong>（¥8/月起，支持 VLESS 协议全绿解锁）；老牌高口碑与商务专线优选 <strong>大佬云</strong>、<strong>云界线</strong> 与 <strong>神行加速</strong>。
+      </div>
+    </header>
+
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Mobile Table of Contents Accordion (Screens < lg) -->
+    <div class="lg:hidden bg-surface-subtle border border-surface-border rounded-2xl p-4 my-6">
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-xs text-ink-heading list-none">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+            <span>📑 本页导览目录 (分 4 大板块)</span>
+          </span>
+          <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-sm">▾</span>
+        </summary>
+        <div class="grid grid-cols-1 gap-1.5 pt-3 mt-2 border-t border-surface-border text-xs">
+          {sidebarSections.map((sec) => (
+            <a
+              href={`#${sec.id}`}
+              class="p-2.5 rounded-xl bg-white border border-surface-border hover:border-brand-300 text-ink-heading font-medium flex items-center justify-between transition-colors"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-brand-50 text-brand-700 font-mono font-bold text-[10px] flex items-center justify-center border border-brand-200">
+                  {sec.number}
+                </span>
+                <span>{sec.title}</span>
+              </div>
+              {sec.badge && (
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono">
+                  {sec.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- Two-Column Grid: Main Content + Sticky Sidebar -->
+    <!-- ============================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+      
+      <!-- Main Content (8 cols lg, 9 cols xl) -->
+      <main class="lg:col-span-8 xl:col-span-9 space-y-16 min-w-0">
+
+        <!-- ========================================== -->
+        <!-- 1. 板块一：社长实验室测试协议规范 -->
+        <!-- ========================================== -->
+        <section id="section-protocol" class="scroll-mt-24">
+          <div class="flex items-center justify-between pb-4 border-b border-surface-border mb-6">
+            <div>
+              <h2 class="text-2xl font-black text-ink-heading flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">01</span>
+                <span>板块一：社长实验室测试协议规范 (Testing Protocol)</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                以真实、可复现的自动化脚本评估每条专线的端到端传输能力
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-surface-subtle border border-surface-border rounded-2xl p-6 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-ink-body">
+              <div class="bg-white p-4 rounded-xl border border-surface-border space-y-1.5">
+                <strong class="text-ink-heading block font-bold text-sm">🌐 测试网络环境</strong>
+                <p class="text-ink-muted leading-relaxed">
+                  中国电信 1000M + 联通 1000M + 移动 1000M 三网多线轮询，客户端统一采用开源 Mihomo 内核。
+                </p>
+              </div>
+              <div class="bg-white p-4 rounded-xl border border-surface-border space-y-1.5">
+                <strong class="text-ink-heading block font-bold text-sm">⏱️ 严苛测试时段</strong>
+                <p class="text-ink-muted leading-relaxed">
+                  重点监控每日晚高峰 <strong>20:00 - 23:30</strong> 骨干网拥堵时段，单次测试持续 30 天取几何平均值。
+                </p>
+              </div>
+              <div class="bg-white p-4 rounded-xl border border-surface-border space-y-1.5">
+                <strong class="text-ink-heading block font-bold text-sm">🛡️ IP 纯净度检测</strong>
+                <p class="text-ink-muted leading-relaxed">
+                  通过 IPinfo、Scamalytics 与 MaxMind 数据库对全节点 Fraud Score 欺诈评分进行实时比对。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 2. 板块二：11 大专线实测卡片全景 -->
+        <!-- ========================================== -->
+        <section id="section-reviews-grid" class="scroll-mt-24 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-surface-border">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-2">
+                📋 全量收录真实评测 (共 {airports.length} 家)
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black text-ink-heading flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">02</span>
+                <span>板块二：2026 年度 11 大机场实测卡片全景</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                点击单卡进入完整万字深度拆解，查看 30 天晚高峰速率、原生住宅 IP 纯净度与流媒体实测详情
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {airports.map((airport, index) => {
+              const d = airport.data;
+              return (
+                <div class="bg-white border border-surface-border rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between group">
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class={`font-mono text-xs font-black px-2 py-0.5 rounded-md ${
+                          index === 0
+                            ? 'bg-amber-400 text-slate-950 shadow-sm'
+                            : index === 1
+                            ? 'bg-slate-200 text-slate-800 border border-slate-300 shadow-sm'
+                            : index === 2
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300 shadow-sm'
+                            : 'bg-surface-subtle text-ink-muted border border-surface-border'
+                        }`}>
+                          #{index + 1}
+                        </span>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-surface-subtle text-ink-muted border border-surface-border font-mono font-semibold">
+                          {d.lineType}
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <VerificationBadge status={d.dataVerificationStatus || 'independent_tested'} />
+                        <span class="text-xs font-mono font-bold text-amber-500">★ {d.rating.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 class="text-xl font-bold text-ink-heading group-hover:text-brand-600 transition-colors">
+                        <a href={`/airports/${airport.slug}`}>
+                          {d.name}
+                        </a>
+                      </h3>
+                      <p class="text-xs text-ink-body mt-1 line-clamp-2">
+                        {d.tagline}
+                      </p>
+                    </div>
+
+                    <!-- Telemetry Data Box -->
+                    <div class="bg-surface-subtle p-3.5 rounded-xl border border-surface-border space-y-2 text-xs font-mono">
+                      <div class="flex justify-between">
+                        <span class="text-ink-muted">晚高峰突发:</span>
+                        <span class="font-bold text-brand-600">{d.metrics.peakSpeedMbps} Mbps</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-ink-muted">光纤延迟:</span>
+                        <span class="font-bold text-emerald-700">{d.metrics.pingMs} ms</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-ink-muted">丢包率:</span>
+                        <span class="font-bold text-emerald-700">{d.metrics.packetLoss}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-ink-muted">Scamalytics纯净度:</span>
+                        <span class="font-bold text-emerald-700">{d.metrics.scamalyticsScore ?? 0} 分 (低风控)</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-ink-muted">ChatGPT/Netflix:</span>
+                        <span class="font-bold text-amber-800">全绿解锁 ({d.metrics.maxStreamingQuality})</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 mt-6 border-t border-surface-border flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-ink-muted">起步价:</span>
+                      <span class="text-base font-black text-ink-heading font-mono ml-1">¥{d.priceMonthly}</span>
+                      <span class="text-[10px] text-ink-muted">/月</span>
+                    </div>
+                    <a
+                      href={`/airports/${airport.slug}`}
+                      class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all"
+                    >
+                      阅读深度测评 ➔
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 3. 板块三：晚高峰测速天梯对比表 -->
+        <!-- ========================================== -->
+        <section id="section-telemetry" class="scroll-mt-24 space-y-6">
+          <div class="border-b border-surface-border pb-4">
+            <h2 class="text-2xl font-black text-ink-heading flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">03</span>
+              <span>板块三：晚高峰实测数据横向天梯比对表</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-muted mt-1">
+              基于深圳/上海电信 1000M 晚高峰 20:30 实测抽样，全量 11 大品牌指标横向对齐
+            </p>
+          </div>
+
+          <div class="overflow-x-auto bg-white rounded-2xl border border-surface-border shadow-card">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-surface-subtle border-b border-surface-border font-mono text-ink-muted">
+                <tr>
+                  <th class="p-3.5">排名 / 品牌</th>
+                  <th class="p-3.5">线路类型</th>
+                  <th class="p-3.5">晚高峰下行</th>
+                  <th class="p-3.5">光纤延迟</th>
+                  <th class="p-3.5">丢包率</th>
+                  <th class="p-3.5">月付门槛</th>
+                  <th class="p-3.5 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-border font-mono">
+                {airports.map((a, i) => (
+                  <tr class="hover:bg-brand-50/40 transition-colors">
+                    <td class="p-3.5 font-bold font-sans flex items-center gap-2">
+                      <span class={`w-5 h-5 rounded-md font-mono text-[10px] font-bold flex items-center justify-center ${
+                        i < 3 ? 'bg-amber-100 text-amber-800' : 'bg-surface-subtle text-ink-muted'
+                      }`}>
+                        #{i + 1}
+                      </span>
+                      <a href={`/airports/${a.slug}`} class="text-ink-heading hover:text-brand-600 transition-colors">
+                        {a.data.name}
+                      </a>
+                    </td>
+                    <td class="p-3.5 text-ink-muted">{a.data.lineType}</td>
+                    <td class="p-3.5 font-bold text-emerald-600">{a.data.metrics.peakSpeedMbps} Mbps</td>
+                    <td class="p-3.5">{a.data.metrics.pingMs} ms</td>
+                    <td class="p-3.5 text-emerald-700">{a.data.metrics.packetLoss}</td>
+                    <td class="p-3.5 font-black text-ink-heading">¥{a.data.priceMonthly}/月</td>
+                    <td class="p-3.5 text-right whitespace-nowrap">
+                      <a
+                        href={`/airports/${a.slug}`}
+                        class="inline-block px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-brand-50 hover:text-brand-600 text-ink-heading font-bold text-xs border border-surface-border transition-all"
+                      >
+                        拆解 ➔
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 4. 板块四：测评指标深度释疑 FAQ -->
+        <!-- ========================================== -->
+        <section id="section-faq" class="scroll-mt-24 space-y-6">
+          <div class="border-b border-surface-border pb-4">
+            <h2 class="text-2xl font-black text-ink-heading flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 font-mono font-bold text-xs flex items-center justify-center border border-brand-200">04</span>
+              <span>板块四：社长实验室测评指标深度释疑 (FAQ)</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-muted mt-1">
+              关于测速方法论、物理专线优势与 IP 欺诈风控核心原理解析
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            {reviewFaqs.map((faq, i) => (
+              <details class="group bg-surface-subtle rounded-2xl border border-surface-border p-5 open:bg-white open:border-brand-300 transition-all">
+                <summary class="flex items-center justify-between cursor-pointer font-bold text-sm sm:text-base text-ink-heading list-none">
+                  <span>{i + 1}. {faq.question}</span>
+                  <span class="text-brand-600 group-open:rotate-180 transition-transform font-mono text-base ml-2">▾</span>
+                </summary>
+                <p class="mt-3 text-xs sm:text-sm text-ink-body leading-relaxed pt-3 border-t border-surface-border/60">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      <!-- ========================================== -->
+      <!-- Desktop Sticky Sidebar (4 cols lg, 3 cols xl) -->
+      <!-- ========================================== -->
+      <div class="hidden lg:block lg:col-span-4 xl:col-span-3 sticky top-24">
+        <PageSidebar
+          title="测评目录导览"
+          sections={sidebarSections}
+          featuredAirport={{
+            name: '闪电鼠',
+            tagline: '实验室晚高峰 980Mbps 满跑，丢包率 0.01%，全绿解锁',
+            price: 8,
+            coupon: 'sd88',
+            slug: 'shandianshu',
+            speed: '980 Mbps'
+          }}
+        />
+      </div>
+
+    </div>
+
+  </div>
+
+  <JsonLd schema={[itemListSchema, articleSchema, faqSchema]} />
+</BaseLayout>

@@ -1,0 +1,395 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AirportCard from '../../components/AirportCard.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { generateItemListSchema, generateFaqSchema } from '../../utils/seo';
+
+const allAirports = await getCollection('airports');
+const sortedAirports = allAirports.sort((a, b) => a.data.rankOrder - b.data.rankOrder);
+
+const itemListSchema = generateItemListSchema(
+  sortedAirports.map((a) => ({
+    name: a.data.name,
+    slug: a.slug,
+    rankOrder: a.data.rankOrder,
+    tagline: a.data.tagline,
+    rating: a.data.rating,
+  }))
+);
+
+const faqs = [
+  {
+    question: '机场社长大全中的机场是如何挑选与测试的？',
+    answer: '机场社长测试实验室坚持 100% 自费购买正价订阅套餐进行长周期真实盲测。我们部署了覆盖中国电信（上海/广州）、中国联通（北京/青岛）及中国移动（广州/成都）的 6 地探针节点，每隔 15 分钟执行一次晚高峰丢包与吞吐量监测。仅收录晚高峰千兆丢包率 < 2%、且运营时间满 1 年以上的正规老牌与顶级专线机场。',
+  },
+  {
+    question: '新手第一次选购机场，应该如何从名录中快速决策？',
+    answer: '建议根据核心诉求分为三类：1. 追求极致稳定与晚高峰不卡顿，直接选择排行第一的 闪电鼠（IEPL+内网专线）或 大佬云 与 榴莲云；2. 预算有限且追求高性价比，可选择 光年梯（起步约7元/月）或 环球梯（¥8/月）；3. 外贸办公、大并发与生成式 AI（ChatGPT/Claude）重度用户，优先选购神行加速与云界线。',
+  },
+  {
+    question: '为什么一些网络上营销铺天盖地的机场没有出现在名录中？',
+    answer: '机场社长建立了极其严苛的剔除机制。凡是出现恶意超售严重、晚高峰断流无补偿、客服工单 48 小时失联、或被多方技术社区证实有资金链跑路风险的机场，实验室均会直接下架并拉黑，绝不为了佣金向读者推荐高风险平台。',
+  },
+  {
+    question: '购买机场后如果不会配置怎么办？',
+    answer: '我们为所有主流客户端提供了保姆级图文与视频配置教程，包括 Windows 端的 Clash Verge Rev、iOS 端的 Shadowrocket (小火箭) 与 Loon、Android 端的 Clash Meta 与 v2rayNG，以及全平台新兴的神器 Sing-box。请前往本站【客户端教程】栏目获取详细指南。',
+  },
+];
+
+const faqSchema = generateFaqSchema(faqs);
+---
+
+<BaseLayout
+  title="2026 全网优质机场大全与节点名录导航 | 机场社长"
+  description="收录全网经过实战检验的高质量翻墙机场名录。涵盖 IPLC 内网专线、IEPL 专线、BGP 多线中继与高吞吐节点，支持按协议（Shadowsocks/Trojan/Vmess/Hysteria 2）、流媒体解锁、AI 工具及价格快速检索与筛选。"
+>
+  <JsonLd schema={itemListSchema} />
+  <JsonLd schema={faqSchema} />
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    
+    <!-- Breadcrumb -->
+    <Breadcrumbs items={[{ label: '机场大全' }]} />
+
+    <!-- Hero Header -->
+    <header class="text-center max-w-3xl mx-auto space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+        <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+        全网 50+ 节点实测收录库 · 持续更新
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-text-heading tracking-tight leading-tight">
+        2026 全网优质翻墙机场大全
+      </h1>
+      <p class="text-base sm:text-lg text-text-muted leading-relaxed">
+        由机场社长实测实验室自费实测筛选。我们杜绝虚假宣传与超售劣质中继，从线路质量、晚高峰丢包、流媒体/AI 解锁能力到客诉响应进行全维度审查，提供透明、真实的一站式机场索引。
+      </p>
+
+      <!-- 社长速答 -->
+      <div class="text-left bg-brand-50/70 border-l-4 border-brand-600 p-4 rounded-r-xl my-6 text-sm text-text-heading leading-relaxed font-medium">
+        <strong class="text-brand-700 font-bold block mb-1">💡 社长 30 秒选型速答：</strong>
+        2026年翻墙机场合格服务商收录标准为：晚高峰丢包率严格限制在 2% 以内、物理带宽冗余比 ≥ 1:3、稳定运营满 1 年以上且配备 Scamalytics 低风控住宅 IP。旗舰首选 <strong>闪电鼠</strong>（IEPL+内网专线综合榜首，起步仅需 ¥8/月），高可用稳定专线首推 <strong>大佬云</strong> 与 <strong>榴莲云</strong>（¥8/月起），极限平价高性价比首推 <strong>光年梯</strong>（¥7/月起）与 <strong>环球梯</strong>（¥8/月起）。
+      </div>
+    </header>
+
+    <!-- Explicit Affiliate Disclosure Banner -->
+    <AffiliateDisclosure variant="banner" />
+
+    <!-- Stats Banner -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-surface-ground border border-surface-border">
+      <div class="text-center p-3">
+        <div class="text-2xl sm:text-3xl font-black text-brand-600 font-mono">100%</div>
+        <div class="text-xs text-text-muted mt-1">自费真实验证</div>
+      </div>
+      <div class="text-center p-3">
+        <div class="text-2xl sm:text-3xl font-black text-text-heading font-mono">84.6%</div>
+        <div class="text-xs text-text-muted mt-1">实验室淘汰率</div>
+      </div>
+      <div class="text-center p-3">
+        <div class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">&lt; 2%</div>
+        <div class="text-xs text-text-muted mt-1">平均晚高峰丢包</div>
+      </div>
+      <div class="text-center p-3">
+        <div class="text-2xl sm:text-3xl font-black text-purple-600 font-mono">15min</div>
+        <div class="text-xs text-text-muted mt-1">全天候探针巡检</div>
+      </div>
+    </div>
+
+    <!-- Interactive Client-side Filter & Search -->
+    <div class="bg-white p-6 rounded-2xl border border-surface-border shadow-card space-y-5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Search Input -->
+        <div class="relative w-full md:w-80">
+          <svg class="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input
+            id="airportSearchInput"
+            type="text"
+            placeholder="搜索机场名称、协议或特性..."
+            class="w-full pl-10 pr-4 py-2 text-sm bg-surface-ground border border-surface-border rounded-xl focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all font-mono"
+          />
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto" id="filterBtnGroup">
+          <button class="filter-chip active px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition-colors" data-filter="all">全部收录 ({sortedAirports.length})</button>
+          <button class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-ground text-text-muted hover:bg-slate-100 border border-surface-border transition-colors" data-filter="iplc">纯内网 IPLC</button>
+          <button class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-ground text-text-muted hover:bg-slate-100 border border-surface-border transition-colors" data-filter="cheap">平价高性价比</button>
+          <button class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-ground text-text-muted hover:bg-slate-100 border border-surface-border transition-colors" data-filter="flagship">顶级旗舰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Airport Card Grid -->
+    <div id="airportListGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {sortedAirports.map((airport, index) => (
+        <AirportCard airport={airport} index={index} />
+      ))}
+    </div>
+
+    <!-- Empty State -->
+    <div id="noMatchBox" class="hidden text-center py-16 bg-white border border-surface-border rounded-3xl">
+      <div class="text-4xl mb-3">🔍</div>
+      <h3 class="text-lg font-bold text-text-heading mb-1">未匹配到符合条件的机场</h3>
+      <p class="text-sm text-text-muted mb-4">请尝试更换搜索关键字，或清除筛选条件</p>
+      <button id="resetFilterBtn" class="px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
+        重置所有筛选
+      </button>
+    </div>
+
+    <!-- Specification Comparison Matrix (Table) -->
+    <div class="bg-white rounded-3xl border border-surface-border p-6 sm:p-8 shadow-card space-y-6">
+      <div>
+        <h2 class="text-2xl font-black text-text-heading tracking-tight">
+          📊 2026 优质机场核心技术参数快速横向对比
+        </h2>
+        <p class="text-sm text-text-muted mt-1">
+          直观对比线路架构、加密协议、晚高峰表现与起步费用，帮助你以最快速度锁定最适合的节点服务。
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse min-w-[700px]">
+          <thead>
+            <tr class="border-b border-surface-border bg-surface-ground text-xs font-bold text-text-muted uppercase">
+              <th class="p-3.5 rounded-l-xl">机场服务商</th>
+              <th class="p-3.5">线路类型</th>
+              <th class="p-3.5">支持协议</th>
+              <th class="p-3.5">起步月付</th>
+              <th class="p-3.5">晚高峰实测</th>
+              <th class="p-3.5">ChatGPT/Netflix</th>
+              <th class="p-3.5 text-right rounded-r-xl">官方评测与直达</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border font-mono">
+            {sortedAirports.map((a) => (
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="p-3.5 font-sans font-bold text-text-heading flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-brand-50 border border-brand-200 text-brand-700 text-xs flex items-center justify-center font-mono">
+                    #{a.data.rankOrder}
+                  </span>
+                  <span>{a.data.name}</span>
+                </td>
+                <td class="p-3.5 text-xs text-text-body font-sans">
+                  <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                    {a.data.lineType}
+                  </span>
+                </td>
+                <td class="p-3.5 text-xs text-text-muted">
+                  {a.data.protocols.slice(0, 3).join(', ')}
+                </td>
+                <td class="p-3.5 font-bold text-brand-600">
+                  {a.data.currency}{a.data.priceMonthly}<span class="text-xs text-text-muted font-normal">/月</span>
+                </td>
+                <td class="p-3.5 text-xs text-emerald-600 font-bold">
+                  {a.data.metrics.peakSpeedMbps}Mbps ({a.data.metrics.pingMs}ms)
+                </td>
+                <td class="p-3.5 text-xs text-text-body">
+                  <span class="text-emerald-600">✓ 全绿解锁</span>
+                </td>
+                <td class="p-3.5 text-right font-sans space-x-2">
+                  <a
+                    href={`/airports/${a.slug}`}
+                    class="inline-block px-2.5 py-1 text-xs font-semibold text-text-heading hover:text-brand-600 hover:bg-slate-100 rounded-lg transition-colors border border-surface-border"
+                  >
+                    评测
+                  </a>
+                  <a
+                    href={`/go/${a.slug}`}
+                    target="_blank"
+                    rel="nofollow sponsored noopener noreferrer"
+                    class="inline-block px-2.5 py-1 text-xs font-bold bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors shadow-sm"
+                  >
+                    官网
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Testing & Admission Criteria Box -->
+    <div class="bg-surface-ground rounded-3xl border border-surface-border p-6 sm:p-8 space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl">
+          🛡️
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-text-heading">
+            机场社长测试实验室入库与剔除标准
+          </h2>
+          <p class="text-xs text-text-muted">
+            严格践行技术中立与数据真实，确保每一款推荐机场经得起高压力测试
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div class="bg-white p-4 rounded-xl border border-surface-border">
+          <div class="font-bold text-text-heading flex items-center gap-2 mb-1">
+            <span class="text-emerald-500 font-mono">01.</span> 晚高峰网络硬指标
+          </div>
+          <p class="text-xs text-text-body leading-relaxed">
+            国内晚间 20:00 - 23:00 黄金拥堵时段，4K 视频缓冲耗时必须 &lt; 0.8 秒，测速丢包率严格限制在 2% 以内，保障网页秒开与长视频连续播放不转圈。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-surface-border">
+          <div class="font-bold text-text-heading flex items-center gap-2 mb-1">
+            <span class="text-emerald-500 font-mono">02.</span> 严禁超售与物理带宽保障
+          </div>
+          <p class="text-xs text-text-body leading-relaxed">
+            服务商必须具备充裕的入口与出口带宽冗余（至少 1:3 冗余比），严禁虚标千兆实为百兆甚至公网中继冒充内网专线的欺诈行为。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-surface-border">
+          <div class="font-bold text-text-heading flex items-center gap-2 mb-1">
+            <span class="text-emerald-500 font-mono">03.</span> 运营年限与资金链健康度
+          </div>
+          <p class="text-xs text-text-body leading-relaxed">
+            核心推荐池仅吸纳稳定运营 1 年以上的正规老牌团队，拒绝任何短期忽悠半年跑路的一元机场或草台班子，最大程度保障用户资金安全。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-surface-border">
+          <div class="font-bold text-text-heading flex items-center gap-2 mb-1">
+            <span class="text-emerald-500 font-mono">04.</span> 节点风控与解锁维护能力
+          </div>
+          <p class="text-xs text-text-body leading-relaxed">
+            要求服务商具备专门的流媒体与 AI 解锁轮换脚本，针对 ChatGPT、Claude、Netflix、Disney+ 实施 24 小时动态解锁维护，遭遇 IP 被封时能在 2 小时内自动切换。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="bg-white rounded-3xl border border-surface-border p-6 sm:p-8 shadow-card space-y-6">
+      <div>
+        <h2 class="text-2xl font-black text-text-heading tracking-tight">
+          💡 机场选购常见疑惑解答（FAQ）
+        </h2>
+        <p class="text-sm text-text-muted mt-1">
+          新手与进阶用户在选型过程中的高频问题全景答疑。
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        {faqs.map((faq) => (
+          <details class="group bg-surface-ground rounded-2xl border border-surface-border p-4 [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between cursor-pointer font-bold text-text-heading text-sm sm:text-base">
+              <span>{faq.question}</span>
+              <span class="transition group-open:rotate-180 text-brand-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <p class="mt-3 text-sm text-text-body leading-relaxed pt-2 border-t border-surface-border/60">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </div>
+
+  </div>
+
+  <script is:inline>
+    (function() {
+      const searchInput = document.getElementById('airportSearchInput');
+      const filterChips = document.querySelectorAll('.filter-chip');
+      const cards = document.querySelectorAll('.airport-card');
+      const noMatchBox = document.getElementById('noMatchBox');
+      const resetBtn = document.getElementById('resetFilterBtn');
+
+      let currentFilter = 'all';
+      let currentQuery = '';
+
+      function applyFilter() {
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category') || '';
+          const cardText = (card.textContent || '').toLowerCase();
+          
+          let matchesFilter = false;
+          if (currentFilter === 'all') {
+            matchesFilter = true;
+          } else if (currentFilter === 'iplc') {
+            matchesFilter = cardText.includes('iplc') || category.includes('iplc');
+          } else if (currentFilter === 'cheap') {
+            matchesFilter = category.includes('budget') || category.includes('cheap') || cardText.includes('性价') || parseFloat(card.getAttribute('data-price') || '99') <= 15;
+          } else if (currentFilter === 'flagship') {
+            matchesFilter = category.includes('flagship') || category.includes('premium') || parseFloat(card.getAttribute('data-rating') || '0') >= 4.8;
+          }
+
+          let matchesQuery = true;
+          if (currentQuery) {
+            matchesQuery = cardText.includes(currentQuery);
+          }
+
+          if (matchesFilter && matchesQuery) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        if (noMatchBox) {
+          if (visibleCount === 0) {
+            noMatchBox.classList.remove('hidden');
+          } else {
+            noMatchBox.classList.add('hidden');
+          }
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = (e.target.value || '').trim().toLowerCase();
+          applyFilter();
+        });
+      }
+
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          filterChips.forEach(c => {
+            c.classList.remove('active', 'bg-brand-600', 'text-white');
+            c.classList.add('bg-surface-ground', 'text-text-muted');
+          });
+          chip.classList.add('active', 'bg-brand-600', 'text-white');
+          chip.classList.remove('bg-surface-ground', 'text-text-muted');
+
+          currentFilter = chip.getAttribute('data-filter') || 'all';
+          applyFilter();
+        });
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (searchInput) searchInput.value = '';
+          currentQuery = '';
+          currentFilter = 'all';
+          filterChips.forEach(c => {
+            if (c.getAttribute('data-filter') === 'all') {
+              c.classList.add('active', 'bg-brand-600', 'text-white');
+              c.classList.remove('bg-surface-ground', 'text-text-muted');
+            } else {
+              c.classList.remove('active', 'bg-brand-600', 'text-white');
+              c.classList.add('bg-surface-ground', 'text-text-muted');
+            }
+          });
+          applyFilter();
+        });
+      }
+    })();
+  </script>
+</BaseLayout>

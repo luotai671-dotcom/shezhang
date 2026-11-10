@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #334155;
+    font-size: 16px;
+    line-height: 1.85;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @screen lg {
+    body {
+      font-size: 17px;
+    }
+  }
+
+  /* Headings use deep dark ink #0f172a with high contrast (16:1) */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0f172a;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+  }
+
+  /* Force font-mono for data, parameters, code, and numerical statistics */
+  code, kbd, samp, pre, .stat-value, .param-mono, [data-mono] {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Subtle modern scrollbar (Vercel style) */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pagefind UI minimal overrides */
+.pagefind-ui {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: #2563eb;
+  --pagefind-ui-text: #0f172a;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border: #e2e8f0;
+  --pagefind-ui-tag: #f1f5f9;
+  --pagefind-ui-border-radius: 12px;
+  --pagefind-ui-font: inherit;
+}

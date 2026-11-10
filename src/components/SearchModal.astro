@@ -1,0 +1,258 @@
+---
+---
+
+<!-- Search Trigger Button -->
+<button
+  type="button"
+  id="open-search-modal"
+  class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-subtle border border-surface-border hover:border-slate-300 text-ink-muted hover:text-ink-heading text-xs transition-colors"
+  aria-label="搜索全站评测与专线"
+>
+  <svg class="w-3.5 h-3.5 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+  <span class="hidden sm:inline">搜索评测 / 教程...</span>
+  <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white border border-surface-border text-[10px] font-mono text-ink-faint shadow-sm">
+    ⌘K
+  </kbd>
+</button>
+
+<!-- Search Modal Backdrop -->
+<div
+  id="search-dialog"
+  class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 md:p-20 flex justify-center items-start overflow-y-auto"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-modal-title"
+>
+  <div class="relative w-full max-w-2xl bg-white rounded-2xl border border-surface-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    
+    <!-- Modal Header / Input -->
+    <div class="flex items-center px-4 border-b border-surface-border">
+      <svg class="w-5 h-5 text-brand-600 shrink-0 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input
+        type="search"
+        id="pagefind-search-input"
+        placeholder="搜索机场名称、IPLC线路、ChatGPT解锁、优惠码..."
+        class="w-full py-4 text-sm sm:text-base text-ink-heading placeholder:text-ink-faint focus:outline-none bg-transparent"
+        autocomplete="off"
+      />
+      <button
+        type="button"
+        id="close-search-modal"
+        class="p-1.5 rounded-lg text-ink-muted hover:text-ink-heading hover:bg-surface-subtle"
+        aria-label="关闭搜索"
+      >
+        <span class="text-xs font-mono px-1.5 py-0.5 rounded bg-surface-subtle border border-surface-border">ESC</span>
+      </button>
+    </div>
+
+    <!-- Quick Navigation Filters inside Modal -->
+    <div class="px-4 py-2.5 bg-surface-subtle border-b border-surface-border flex items-center gap-2 overflow-x-auto text-xs text-ink-muted scrollbar-none">
+      <span class="font-medium shrink-0">快捷搜索:</span>
+      <button type="button" class="quick-term px-2 py-0.5 rounded-md bg-white border border-surface-border hover:border-brand-500 text-ink-body font-mono text-[11px]">
+        IPLC专线
+      </button>
+      <button type="button" class="quick-term px-2 py-0.5 rounded-md bg-white border border-surface-border hover:border-brand-500 text-ink-body font-mono text-[11px]">
+        ChatGPT 4o
+      </button>
+      <button type="button" class="quick-term px-2 py-0.5 rounded-md bg-white border border-surface-border hover:border-brand-500 text-ink-body font-mono text-[11px]">
+        游戏加速 &lt;20ms
+      </button>
+      <button type="button" class="quick-term px-2 py-0.5 rounded-md bg-white border border-surface-border hover:border-brand-500 text-ink-body font-mono text-[11px]">
+        按量不限时
+      </button>
+    </div>
+
+    <!-- Results Area -->
+    <div id="pagefind-results" class="max-h-[60vh] overflow-y-auto p-4 divide-y divide-surface-border/60">
+      <div class="py-8 text-center text-xs text-ink-muted">
+        输入关键词开始搜索 2026 翻墙机场实测与专线报告...
+      </div>
+    </div>
+
+    <!-- Footer Status -->
+    <div class="px-4 py-2 bg-surface-subtle border-t border-surface-border flex items-center justify-between text-[11px] text-ink-muted">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>基于 Pagefind 纯静态本地毫秒级索引引擎</span>
+      </div>
+      <div class="font-mono">
+        ↑↓ 导航 · Enter 确认 · ESC 关闭
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var pagefindInstance = null;
+
+    function initPagefind() {
+      if (!pagefindInstance && window.location.protocol !== 'file:') {
+        try {
+          var pagefindUrl = '/pagefind/pagefind.js';
+          (new Function('u', 'return import(u)'))(pagefindUrl).then(function(inst) {
+            pagefindInstance = inst;
+            pagefindInstance.init();
+          }).catch(function(e) {
+            console.warn('Pagefind index not found or loading.', e);
+          });
+        } catch (e) {
+          console.warn('Pagefind init failed.', e);
+        }
+      }
+    }
+
+    function setupSearchModal() {
+      var dialog = document.getElementById('search-dialog');
+      var openBtn = document.getElementById('open-search-modal');
+      var closeBtn = document.getElementById('close-search-modal');
+      var input = document.getElementById('pagefind-search-input');
+      var resultsContainer = document.getElementById('pagefind-results');
+      var quickTerms = document.querySelectorAll('.quick-term');
+
+      function openModal() {
+        if (!dialog) return;
+        dialog.classList.remove('hidden');
+        initPagefind();
+        setTimeout(function() { if (input) input.focus(); }, 50);
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        if (!dialog) return;
+        dialog.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      if (openBtn) openBtn.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+      // Keyboard shortcut (⌘K or Ctrl+K)
+      window.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          if (dialog && dialog.classList.contains('hidden')) {
+            openModal();
+          } else {
+            closeModal();
+          }
+        }
+        if (e.key === 'Escape' && dialog && !dialog.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      // Close on backdrop click
+      if (dialog) {
+        dialog.addEventListener('click', function(e) {
+          if (e.target === dialog) closeModal();
+        });
+      }
+
+      // Handle Quick Terms
+      quickTerms.forEach(function(term) {
+        term.addEventListener('click', function() {
+          if (input) {
+            input.value = term.textContent ? term.textContent.trim() : '';
+            performSearch(input.value);
+          }
+        });
+      });
+
+      // Perform Search
+      function performSearch(query) {
+        if (!resultsContainer) return;
+        var q = query.trim();
+
+        if (!q) {
+          resultsContainer.innerHTML = '<div class="py-8 text-center text-xs text-ink-muted">输入关键词开始搜索 2026 翻墙机场实测与专线报告...</div>';
+          return;
+        }
+
+        resultsContainer.innerHTML = '<div class="py-8 text-center text-xs text-ink-muted"><div class="inline-block w-4 h-4 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mb-2"></div><div>正在搜索「' + q + '」...</div></div>';
+
+        if (pagefindInstance) {
+          pagefindInstance.search(q).then(function(search) {
+            return Promise.all(search.results.slice(0, 8).map(function(r) { return r.data(); }));
+          }).then(function(results) {
+            if (results.length === 0) {
+              fallbackSearch(q);
+              return;
+            }
+
+            resultsContainer.innerHTML = results.map(function(item) {
+              var badgeText = item.url.indexOf('/airports/') !== -1 ? '机场评测' : item.url.indexOf('/guides/') !== -1 ? '进阶指南' : '权威页面';
+              return '<a href="' + item.url + '" class="block py-3 px-3 rounded-xl hover:bg-surface-subtle transition-colors group">' +
+                '<div class="flex items-center justify-between text-xs mb-1">' +
+                  '<span class="font-bold text-ink-heading group-hover:text-brand-600 transition-colors">' +
+                    (item.meta && item.meta.title ? item.meta.title : '评测文档') +
+                  '</span>' +
+                  '<span class="text-[10px] font-mono text-ink-faint">' + badgeText + '</span>' +
+                '</div>' +
+                '<p class="text-xs text-ink-body line-clamp-2 leading-relaxed">' + item.excerpt + '</p>' +
+              '</a>';
+            }).join('');
+          }).catch(function() {
+            fallbackSearch(q);
+          });
+        } else {
+          fallbackSearch(q);
+        }
+      }
+
+      function fallbackSearch(q) {
+        if (!resultsContainer) return;
+        var fallbackData = [
+          { title: '闪电鼠 2026 评测与优惠码', url: '/airports/shandianshu', desc: 'IEPL+内网专线综合榜首，晚高峰 980Mbps 满跑，88折券码 sd88，¥8/月起。' },
+          { title: '大佬云 2026 深度实测', url: '/airports/dalaoyun', desc: 'IEPL 国际专线，全绿解锁 ChatGPT 4o 与 Netflix，88折券码 dly88，¥8/月起。' },
+          { title: '榴莲云 流媒体解锁实测', url: '/airports/liulianyun', desc: 'IEPL 极速专线，支持 VLESS 协议，88折券码 ll88，¥8/月起。' },
+          { title: '神行加速 企业大带宽专线', url: '/airports/shenxing', desc: 'IEPL 专线，高并发多设备支持，专属优惠码 sx0077，¥15/月起。' },
+          { title: '云界线 晚高峰性能评测', url: '/airports/yunjiexian', desc: 'IEPL 优质专线，支持主流客户端一键订阅，专属优惠码 yjx888，¥15/月起。' },
+          { title: '环球梯 平价内网专线', url: '/airports/huanqiuti', desc: '内网专线+IEPL，起步仅 ¥8/月，专属优惠码 hq66。' },
+          { title: '光年梯 7元平价专线', url: '/airports/guangnianti', desc: 'IEPL 专线，起步仅 ¥7/月，学生党与轻量备用高性价比首选。' },
+          { title: '2026 最新 Clash Verge Rev 配置教程', url: '/guides/clash-verge-rev-guide', desc: '开源跨平台客户端安装、一键订阅导入与 TUN 模式开启图文教程。' },
+          { title: 'IPLC vs IEPL 专线底层科普', url: '/guides/iplc-vs-iepl-guide', desc: '为什么真专线不过 GFW 防火墙？深度拆解物理光纤与公网中继差异。' }
+        ];
+
+        var lowerQ = q.toLowerCase();
+        var matches = fallbackData.filter(function(item) {
+          return item.title.toLowerCase().indexOf(lowerQ) !== -1 || item.desc.toLowerCase().indexOf(lowerQ) !== -1;
+        });
+
+        if (matches.length > 0) {
+          resultsContainer.innerHTML = matches.map(function(item) {
+            return '<a href="' + item.url + '" class="block py-3 px-3 rounded-xl hover:bg-surface-subtle transition-colors group">' +
+              '<div class="flex items-center justify-between text-xs mb-1">' +
+                '<span class="font-bold text-ink-heading group-hover:text-brand-600 transition-colors">' + item.title + '</span>' +
+                '<span class="text-[10px] font-mono text-ink-faint">推荐结果</span>' +
+              '</div>' +
+              '<p class="text-xs text-ink-body line-clamp-2 leading-relaxed">' + item.desc + '</p>' +
+            '</a>';
+          }).join('');
+        } else {
+          resultsContainer.innerHTML = '<div class="py-8 text-center text-xs text-ink-muted">未找到与「<strong class="text-ink-heading">' + q + '</strong>」相关的评测或教程内容。</div>';
+        }
+      }
+
+      var searchTimeout;
+      if (input) {
+        input.addEventListener('input', function(e) {
+          clearTimeout(searchTimeout);
+          var val = e.target.value;
+          searchTimeout = setTimeout(function() { performSearch(val); }, 180);
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupSearchModal);
+    } else {
+      setupSearchModal();
+    }
+  })();
+</script>

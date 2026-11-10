@@ -1,0 +1,50 @@
+# ==============================================================================
+# Cloudflare Pages Headers Configuration
+# ==============================================================================
+
+# Global security headers for all routes
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
+
+# Immutable caching for Astro build hashed chunks
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Caching for Pagefind static index assets
+/pagefind/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+# HTML revalidation
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# XML Sitemaps & RSS Feeds
+/sitemap*.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+# Block indexing of affiliate redirection endpoints
+/go/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/go.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
+
