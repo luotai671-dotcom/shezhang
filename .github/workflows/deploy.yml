@@ -16,13 +16,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build Static Site
-        run: npm run build:astro
+        run: |
+          set -e
+          if ! npx astro build --verbose > build.log 2>&1; then
+            echo "::error title=Astro Build Error::$(tail -n 25 build.log | tr '\n' ' ')"
+            cat build.log
+            exit 1
+          fi
+          cat build.log
 
       - name: Build Search Indexes
         run: npx pagefind --site dist
