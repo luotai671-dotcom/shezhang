@@ -24,11 +24,11 @@ jobs:
       - name: Build Static Site
         run: npm run build:astro
 
-      - name: Build Search Indexes & Sync
-        run: |
-          npx pagefind --site dist
-          node sync_root_index.cjs
+      - name: Build Search Indexes
+        run: npx pagefind --site dist
+
+      - name: Sync Root Files
+        run: node sync_root_index.cjs
 
       - name: Submit URLs to IndexNow
         run: node scripts/indexnow.cjs
-
