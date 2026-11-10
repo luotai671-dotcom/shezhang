@@ -8,8 +8,15 @@
       ]
     }
   },
+  "include": [
+    "src/**/*",
+    "src/env.d.ts"
+  ],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "pagefind",
+    "_astro",
+    "scripts"
   ]
 }
